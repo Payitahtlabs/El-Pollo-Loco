@@ -8,7 +8,11 @@ class World {
     ];
 
     clouds = [
-        new Cloud()
+        new Cloud(80, 18, 12),
+        new Cloud(420, 35, 16),
+        new Cloud(760, 10, 10),
+        new Cloud(1120, 28, 14),
+        new Cloud(1480, 20, 18),
     ];
 
     backgroundObjects = [
@@ -24,6 +28,8 @@ class World {
 
     // ── Game-Loop-Steuerung ──────────────────────────────
     animationId = null;
+    lastFrameTime = 0;
+    maxDeltaTime = 0.1;
     paused = false;
     drawables = [];
 
@@ -39,20 +45,24 @@ class World {
             this.character,
         ];
 
-        this.gameLoop();
+        this.gameLoop(0);
     }
 
     // ── Game Loop ────────────────────────────────────────
-    gameLoop() {
-        this.update();
+    gameLoop(timestamp) {
+        let deltaTime = this.lastFrameTime ? (timestamp - this.lastFrameTime) / 1000 : 0;
+        this.lastFrameTime = timestamp;
+
+        if (deltaTime > this.maxDeltaTime) deltaTime = this.maxDeltaTime;
+
+        this.update(deltaTime);
         this.draw();
-        this.animationId = requestAnimationFrame(() => this.gameLoop());
+        this.animationId = requestAnimationFrame((nextTimestamp) => this.gameLoop(nextTimestamp));
     }
 
     // ── Logik (wird später befüllt) ──────────────────────
-    update() {
-        // this.checkCollisions();
-        // this.character.move();
+    update(deltaTime) {
+        this.clouds.forEach((cloud) => cloud.update(deltaTime, this.canvas.width));
     }
 
     // ── Rendering ────────────────────────────────────────
@@ -75,7 +85,8 @@ class World {
     resume() {
         if (!this.paused) return;
         this.paused = false;
-        this.gameLoop();
+        this.lastFrameTime = 0;
+        this.gameLoop(0);
     }
 
     gameOver() {
