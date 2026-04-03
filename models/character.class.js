@@ -12,6 +12,8 @@ class Character extends MovableObject {
         'img/2_character_pepe/2_walk/W-26.png',
     ];
 
+    animationCounter = 0;
+
     constructor() {
         super();
         this.loadImage(this.IMAGES_WALKING[0]);
@@ -20,5 +22,13 @@ class Character extends MovableObject {
 
     jump() {
 
+    }
+
+    animate(deltaTime) {
+        this.animationCounter += deltaTime;
+        if (this.animationCounter >= 1 / 10) {  // 10 FPS für Animation
+            this.playAnimation(this.IMAGES_WALKING);
+            this.animationCounter = 0;
+        }
     }
 }

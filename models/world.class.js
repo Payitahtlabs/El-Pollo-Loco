@@ -63,6 +63,7 @@ class World {
     // ── Logik (wird später befüllt) ──────────────────────
     update(deltaTime) {
         this.clouds.forEach((cloud) => cloud.update(deltaTime, this.canvas.width));
+        this.character.animate(deltaTime);
     }
 
     // ── Rendering ────────────────────────────────────────
