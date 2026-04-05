@@ -9,7 +9,7 @@ class Chicken extends MovableObject {
 		'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png',
 	];
 
-	animationCounter = 0;
+	animationFps = 12;
 
 	constructor() {
 		super();
@@ -19,10 +19,8 @@ class Chicken extends MovableObject {
 	}
 
 	animate(deltaTime) {
-		this.animationCounter += deltaTime;
-		if (this.animationCounter >= 1 / 12) {
+		if (this.isAnimationFrameDue(deltaTime)) {
 			this.playAnimation(this.IMAGES_WALKING);
-			this.animationCounter = 0;
 		}
 	}
 }

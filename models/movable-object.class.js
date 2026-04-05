@@ -6,6 +6,8 @@ class MovableObject {
     img;
     imageCache = {};
     currentImage = 0;
+    animationCounter = 0;
+    animationFps = 10;
 
     loadImage(path) {
         this.img = new Image();
@@ -24,6 +26,15 @@ class MovableObject {
         let i = this.currentImage % images.length;
         this.img = this.imageCache[images[i]];
         this.currentImage++;
+    }
+
+    isAnimationFrameDue(deltaTime) {
+        this.animationCounter += deltaTime;
+        if (this.animationCounter >= 1 / this.animationFps) {
+            this.animationCounter = 0;
+            return true;
+        }
+        return false;
     }
 
 	moveRight() {
