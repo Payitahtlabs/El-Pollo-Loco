@@ -64,6 +64,7 @@ class World {
     update(deltaTime) {
         this.clouds.forEach((cloud) => cloud.update(deltaTime, this.canvas.width));
         this.character.animate(deltaTime);
+        this.enemies.forEach((enemy) => enemy.animate(deltaTime));
     }
 
     // ── Rendering ────────────────────────────────────────
