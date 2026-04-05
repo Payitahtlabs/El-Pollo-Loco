@@ -8,6 +8,7 @@ class MovableObject {
     currentImage = 0;
     animationCounter = 0;
     animationFps = 10;
+    speed = 0;
 
     loadImage(path) {
         this.img = new Image();
@@ -37,11 +38,11 @@ class MovableObject {
         return false;
     }
 
-	moveRight() {
-		console.log('moving right');
-	}
+    moveRight(deltaTime) {
+        this.x += this.speed * deltaTime;
+    }
 
-    moveLeft() {
-		console.log('moving left');
+    moveLeft(deltaTime) {
+        this.x -= this.speed * deltaTime;
     }
 }

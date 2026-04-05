@@ -60,11 +60,14 @@ class World {
         this.animationId = requestAnimationFrame((nextTimestamp) => this.gameLoop(nextTimestamp));
     }
 
-    // ── Logik (wird später befüllt) ──────────────────────
+    // ── Logik ──────────────────────
     update(deltaTime) {
         this.clouds.forEach((cloud) => cloud.update(deltaTime, this.canvas.width));
         this.character.animate(deltaTime);
-        this.enemies.forEach((enemy) => enemy.animate(deltaTime));
+        this.enemies.forEach((enemy) => {
+            enemy.update(deltaTime, this.canvas.width);
+            enemy.animate(deltaTime);
+        });
     }
 
     // ── Rendering ────────────────────────────────────────
