@@ -25,6 +25,7 @@ class World {
     // ── Canvas ───────────────────────────────────────────
     canvas;
     ctx;
+    keyboard;
 
     // ── Game-Loop-Steuerung ──────────────────────────────
     animationId = null;
@@ -33,9 +34,10 @@ class World {
     paused = false;
     drawables = [];
 
-    constructor(canvas) {
+    constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
+        this.keyboard = keyboard;
 
         // Alle Objekte in einer einzigen Liste zusammenführen
         this.drawables = [
@@ -63,6 +65,7 @@ class World {
     // ── Logik ──────────────────────
     update(deltaTime) {
         this.clouds.forEach((cloud) => cloud.update(deltaTime, this.canvas.width));
+        this.character.update(deltaTime, this.keyboard, this.canvas.width);
         this.character.animate(deltaTime);
         this.enemies.forEach((enemy) => {
             enemy.update(deltaTime, this.canvas.width);
