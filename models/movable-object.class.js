@@ -9,6 +9,7 @@ class MovableObject {
     animationCounter = 0;
     animationFps = 10;
     speed = 0;
+    otherDirection = false;
 
     loadImage(path) {
         this.img = new Image();
