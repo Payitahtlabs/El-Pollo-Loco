@@ -7,6 +7,7 @@ function initLevel() {
             new Chicken(980),
             new Chicken(1440),
         ],
+        new Endboss(),
         [
             new Cloud(80, 18, 12),
             new Cloud(780, 35, 16),

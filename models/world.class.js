@@ -44,6 +44,7 @@ class World {
             enemy.update(deltaTime, this.level.levelEndX);
             enemy.animate(deltaTime);
         });
+        this.level.endboss.animate(deltaTime);
         this.updateCamera();
     }
 
@@ -56,6 +57,7 @@ class World {
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
         this.addObjectsToMap(this.level.enemies);
+        this.addToMap(this.level.endboss);
         this.addToMap(this.character);
 
         this.ctx.restore();
