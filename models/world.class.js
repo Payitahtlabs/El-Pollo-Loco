@@ -40,6 +40,7 @@ class World {
         this.level.clouds.forEach((cloud) => cloud.update(deltaTime, this.level.levelEndX));
         this.character.update(deltaTime, this.keyboard, this.level);
         this.character.animate(deltaTime);
+        this.level.coins.forEach((coin) => coin.animate(deltaTime));
         this.level.enemies.forEach((enemy) => {
             enemy.update(deltaTime, this.level.levelEndX);
             enemy.animate(deltaTime);
@@ -56,6 +57,7 @@ class World {
 
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
+        this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.level.enemies);
         this.addToMap(this.level.endboss);
         this.addToMap(this.character);

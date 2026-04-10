@@ -9,6 +9,15 @@ function initLevel() {
             new Chicken(1440),
             new SmallChicken(1860),
         ],
+        [
+            new Coin(380, 120),
+            new Coin(620, 170),
+            new Coin(860, 120),
+            new Coin(1260, 160),
+            new Coin(1540, 110),
+            new Coin(1780, 170),
+            new Coin(2140, 130),
+        ],
         new Endboss(),
         [
             new Cloud(80, 18, 12),
