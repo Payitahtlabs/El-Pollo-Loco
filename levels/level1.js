@@ -18,6 +18,13 @@ function initLevel() {
             new Coin(1780, 170),
             new Coin(2140, 130),
         ],
+        [
+            new SalsaBottle(460),
+            new SalsaBottle(900),
+            new SalsaBottle(1360),
+            new SalsaBottle(1740),
+            new SalsaBottle(2280),
+        ],
         new Endboss(),
         [
             new Cloud(80, 18, 12),
