@@ -11,11 +11,11 @@ class Cloud extends MovableObject {
         this.speed = speed;
     }
 
-    update(deltaTime, canvasWidth) {
+    update(deltaTime, levelEndX) {
         this.moveLeft(deltaTime);
 
         if (this.x + this.width < 0) {
-            this.x = canvasWidth + Math.random() * 400;
+            this.x = levelEndX + Math.random() * 400;
             this.y = 8 + Math.random() * 40;
             this.speed = 10 + Math.random() * 10;
         }

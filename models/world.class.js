@@ -1,51 +1,24 @@
 class World {
     // ── Spielobjekte ─────────────────────────────────────
     character = new Character();
-    enemies = [
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
-    ];
-
-    clouds = [
-        new Cloud(80, 18, 12),
-        new Cloud(420, 35, 16),
-        new Cloud(760, 10, 10),
-        new Cloud(1120, 28, 14),
-        new Cloud(1480, 20, 18),
-    ];
-
-    backgroundObjects = [
-        new BackgroundObject('img/5_background/layers/air.png', 0),
-        new BackgroundObject('img/5_background/layers/3_third_layer/1.png', 0),
-        new BackgroundObject('img/5_background/layers/2_second_layer/1.png', 0),
-        new BackgroundObject('img/5_background/layers/1_first_layer/1.png', 0),
-    ];
+    level = level1;
 
     // ── Canvas ───────────────────────────────────────────
     canvas;
     ctx;
     keyboard;
+    camera_x = 0;
 
     // ── Game-Loop-Steuerung ──────────────────────────────
     animationId = null;
     lastFrameTime = 0;
     maxDeltaTime = 0.1;
     paused = false;
-    drawables = [];
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
-
-        // Alle Objekte in einer einzigen Liste zusammenführen
-        this.drawables = [
-            ...this.backgroundObjects,
-            ...this.enemies,
-            ...this.clouds,
-            this.character,
-        ];
 
         this.gameLoop(0);
     }
@@ -64,19 +37,32 @@ class World {
 
     // ── Logik ──────────────────────
     update(deltaTime) {
-        this.clouds.forEach((cloud) => cloud.update(deltaTime, this.canvas.width));
-        this.character.update(deltaTime, this.keyboard, this.canvas.width);
+        this.level.clouds.forEach((cloud) => cloud.update(deltaTime, this.level.levelEndX));
+        this.character.update(deltaTime, this.keyboard, this.level);
         this.character.animate(deltaTime);
-        this.enemies.forEach((enemy) => {
-            enemy.update(deltaTime, this.canvas.width);
+        this.level.enemies.forEach((enemy) => {
+            enemy.update(deltaTime, this.level.levelEndX);
             enemy.animate(deltaTime);
         });
+        this.updateCamera();
     }
 
     // ── Rendering ────────────────────────────────────────
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.drawables.forEach(obj => this.addToMap(obj));
+        this.ctx.save();
+        this.ctx.translate(Math.round(this.camera_x), 0);
+
+        this.addObjectsToMap(this.level.backgroundObjects);
+        this.addObjectsToMap(this.level.clouds);
+        this.addObjectsToMap(this.level.enemies);
+        this.addToMap(this.character);
+
+        this.ctx.restore();
+    }
+
+    addObjectsToMap(objects) {
+        objects.forEach((object) => this.addToMap(object));
     }
 
     addToMap(mo) {
@@ -86,7 +72,7 @@ class World {
             this.flipImage(mo);
         }
 
-        this.ctx.drawImage(mo.img, mo.x, mo.y, mo.width, mo.height);
+        this.ctx.drawImage(mo.img, Math.round(mo.x), Math.round(mo.y), mo.width, mo.height);
 
         if (mo.otherDirection) {
             this.flipImageBack(mo);
@@ -103,6 +89,13 @@ class World {
     flipImageBack(mo) {
         mo.x = mo.x * -1;
         this.ctx.restore();
+    }
+
+    updateCamera() {
+        let maxCameraX = this.level.levelEndX - this.canvas.width;
+        let targetCameraX = -this.character.x + 120;
+
+        this.camera_x = Math.max(-maxCameraX, Math.min(0, targetCameraX));
     }
 
     // ── Steuerung ────────────────────────────────────────

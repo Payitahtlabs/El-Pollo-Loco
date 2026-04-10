@@ -11,11 +11,11 @@ class Chicken extends MovableObject {
 
 	animationFps = 12;
 
-	constructor() {
+	constructor(x = 200 + Math.random() * 800) {
 		super();
 		this.loadImage(this.IMAGES_WALKING[0]);
 		this.loadImages(this.IMAGES_WALKING);
-		this.x = 200 + Math.random() * 800;
+		this.x = x;
 		this.setRandomSpeed();
 	}
 
@@ -23,11 +23,11 @@ class Chicken extends MovableObject {
 		this.speed = 40 + Math.random() * 80;
 	}
 
-	update(deltaTime, canvasWidth) {
+	update(deltaTime, levelEndX) {
 		this.moveLeft(deltaTime);
 
 		if (this.x + this.width < 0) {
-			this.x = canvasWidth + Math.random() * 600;
+			this.x = levelEndX + Math.random() * 600;
 			this.setRandomSpeed();
 		}
 	}

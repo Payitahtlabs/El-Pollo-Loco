@@ -1,5 +1,6 @@
 class Character extends MovableObject {
 
+    x = 220;
     height = 280;
     y = 155;
     speed = 240;
@@ -25,7 +26,7 @@ class Character extends MovableObject {
 
     }
 
-    update(deltaTime, keyboard, canvasWidth) {
+    update(deltaTime, keyboard, level) {
         this.isMoving = keyboard.RIGHT || keyboard.LEFT;
 
         if (keyboard.RIGHT) {
@@ -42,8 +43,8 @@ class Character extends MovableObject {
             this.x = 0;
         }
 
-        if (this.x + this.width > canvasWidth) {
-            this.x = canvasWidth - this.width;
+        if (this.x + this.width > level.levelEndX) {
+            this.x = level.levelEndX - this.width;
         }
     }
 
