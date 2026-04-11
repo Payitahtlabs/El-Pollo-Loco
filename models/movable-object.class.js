@@ -1,6 +1,7 @@
 class MovableObject {
     x = 120;
 	y = 280;
+    groundY = 280;
     height = 150;
     width = 100;
     img;
@@ -9,6 +10,9 @@ class MovableObject {
     animationCounter = 0;
     animationFps = 10;
     speed = 0;
+    speedY = 0;
+    jumpStrength = 900;
+    gravity = 2200;
     otherDirection = false;
 
     loadImage(path) {
@@ -45,5 +49,30 @@ class MovableObject {
 
     moveLeft(deltaTime) {
         this.x -= this.speed * deltaTime;
+    }
+
+    applyGravity(deltaTime) {
+        if (!this.isAboveGround() && this.speedY >= 0) {
+            this.y = this.groundY;
+            this.speedY = 0;
+            return;
+        }
+
+        this.y += this.speedY * deltaTime;
+        this.speedY += this.gravity * deltaTime;
+
+        if (this.y > this.groundY) {
+            this.y = this.groundY;
+            this.speedY = 0;
+        }
+    }
+
+    isAboveGround() {
+        return this.y < this.groundY;
+    }
+
+    jump() {
+        if (this.isAboveGround()) return;
+        this.speedY = -this.jumpStrength;
     }
 }
