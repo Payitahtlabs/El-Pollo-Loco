@@ -3,9 +3,14 @@ class Cloud extends MovableObject {
     width = 500;
     speed = 12;
 
+    IMAGES = [
+        'img/5_background/layers/4_clouds/1.png',
+        'img/5_background/layers/4_clouds/2.png',
+    ];
+
     constructor(x = 0, y = 20, speed = 12) {
         super();
-        this.loadImage('img/5_background/layers/4_clouds/1.png');
+        this.loadImage(this.getRandomImage());
         this.x = x;
         this.y = y;
         this.speed = speed;
@@ -18,6 +23,12 @@ class Cloud extends MovableObject {
             this.x = levelEndX + Math.random() * 400;
             this.y = 8 + Math.random() * 40;
             this.speed = 10 + Math.random() * 10;
+            this.loadImage(this.getRandomImage());
         }
+    }
+
+    getRandomImage() {
+        let randomIndex = Math.floor(Math.random() * this.IMAGES.length);
+        return this.IMAGES[randomIndex];
     }
 }
