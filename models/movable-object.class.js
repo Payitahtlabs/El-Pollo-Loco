@@ -13,6 +13,8 @@ class MovableObject {
     speedY = 0;
     jumpStrength = 900;
     gravity = 2200;
+    energy = 100;
+    lastHit = 0;
     otherDirection = false;
     offset = {
         top: 0,
@@ -87,5 +89,20 @@ class MovableObject {
             this.y + this.height - this.offset.bottom > otherObject.y + otherObject.offset.top &&
             this.x + this.offset.left < otherObject.x + otherObject.width - otherObject.offset.right &&
             this.y + this.offset.top < otherObject.y + otherObject.height - otherObject.offset.bottom;
+    }
+
+    hit() {
+        if (this.isHurt()) return;
+
+        this.energy -= 20;
+        if (this.energy < 0) {
+            this.energy = 0;
+        }
+
+        this.lastHit = Date.now();
+    }
+
+    isHurt() {
+        return (Date.now() - this.lastHit) / 1000 < 0.75;
     }
 }

@@ -131,8 +131,17 @@ class World {
     }
 
     checkCollisions() {
+        this.checkEnemyCollisions();
         this.checkCoinCollisions();
         this.checkBottleCollisions();
+    }
+
+    checkEnemyCollisions() {
+        this.level.enemies.forEach((enemy) => {
+            if (this.character.isColliding(enemy)) {
+                this.character.hit();
+            }
+        });
     }
 
     checkCoinCollisions() {
