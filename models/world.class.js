@@ -8,6 +8,7 @@ class World {
     ctx;
     keyboard;
     camera_x = 0;
+    showHitboxes = false;
 
     // ── Game-Loop-Steuerung ──────────────────────────────
     animationId = null;
@@ -80,9 +81,34 @@ class World {
 
         this.ctx.drawImage(mo.img, Math.round(mo.x), Math.round(mo.y), mo.width, mo.height);
 
+        if (this.showHitboxes && this.shouldShowHitbox(mo)) {
+            this.drawHitbox(mo);
+        }
+
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }
+    }
+
+    drawHitbox(mo) {
+        this.ctx.beginPath();
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeStyle = 'rgba(0, 140, 255, 0.85)';
+        this.ctx.rect(
+            Math.round(mo.x + mo.offset.left),
+            Math.round(mo.y + mo.offset.top),
+            mo.width - mo.offset.left - mo.offset.right,
+            mo.height - mo.offset.top - mo.offset.bottom
+        );
+        this.ctx.stroke();
+    }
+
+    shouldShowHitbox(mo) {
+        return mo === this.character ||
+            this.level.enemies.includes(mo) ||
+            this.level.coins.includes(mo) ||
+            this.level.bottles.includes(mo) ||
+            mo === this.level.endboss;
     }
 
     flipImage(mo) {
