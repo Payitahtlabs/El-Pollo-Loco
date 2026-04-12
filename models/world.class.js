@@ -46,6 +46,7 @@ class World {
             enemy.animate(deltaTime);
         });
         this.level.endboss.animate(deltaTime);
+        this.checkCollisions();
         this.updateCamera();
     }
 
@@ -101,6 +102,33 @@ class World {
         let targetCameraX = -this.character.x + 120;
 
         this.camera_x = Math.max(-maxCameraX, Math.min(0, targetCameraX));
+    }
+
+    checkCollisions() {
+        this.checkCoinCollisions();
+        this.checkBottleCollisions();
+    }
+
+    checkCoinCollisions() {
+        this.level.coins = this.level.coins.filter((coin) => {
+            if (!this.character.isColliding(coin)) {
+                return true;
+            }
+
+            this.character.collectCoin();
+            return false;
+        });
+    }
+
+    checkBottleCollisions() {
+        this.level.bottles = this.level.bottles.filter((bottle) => {
+            if (!this.character.isColliding(bottle)) {
+                return true;
+            }
+
+            this.character.collectBottle();
+            return false;
+        });
     }
 
     // ── Steuerung ────────────────────────────────────────

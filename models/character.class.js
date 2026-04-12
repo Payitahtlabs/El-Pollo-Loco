@@ -8,6 +8,14 @@ class Character extends MovableObject {
     isMoving = false;
     wasMoving = false;
     jumpKeyPressed = false;
+    collectedCoins = 0;
+    collectedBottles = 0;
+    offset = {
+        top: 100,
+        right: 20,
+        bottom: 10,
+        left: 20,
+    };
 
     IMAGES_WALKING = [
         'img/2_character_pepe/2_walk/W-21.png',
@@ -70,6 +78,14 @@ class Character extends MovableObject {
         }
 
         this.jumpKeyPressed = jumpKeyActive;
+    }
+
+    collectCoin() {
+        this.collectedCoins++;
+    }
+
+    collectBottle() {
+        this.collectedBottles++;
     }
 
     animate(deltaTime) {

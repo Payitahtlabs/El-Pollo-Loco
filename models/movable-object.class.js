@@ -14,6 +14,12 @@ class MovableObject {
     jumpStrength = 900;
     gravity = 2200;
     otherDirection = false;
+    offset = {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+    };
 
     loadImage(path) {
         this.img = new Image();
@@ -74,5 +80,12 @@ class MovableObject {
     jump() {
         if (this.isAboveGround()) return;
         this.speedY = -this.jumpStrength;
+    }
+
+    isColliding(otherObject) {
+        return this.x + this.width - this.offset.right > otherObject.x + otherObject.offset.left &&
+            this.y + this.height - this.offset.bottom > otherObject.y + otherObject.offset.top &&
+            this.x + this.offset.left < otherObject.x + otherObject.width - otherObject.offset.right &&
+            this.y + this.offset.top < otherObject.y + otherObject.height - otherObject.offset.bottom;
     }
 }

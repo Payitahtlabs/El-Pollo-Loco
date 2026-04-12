@@ -2,6 +2,12 @@ class Coin extends MovableObject {
     width = 120;
     height = 120;
     animationFps = 4;
+    offset = {
+        top: 35,
+        right: 35,
+        bottom: 35,
+        left: 35,
+    };
 
     IMAGES = [
         'img/8_coin/coin_1.png',
