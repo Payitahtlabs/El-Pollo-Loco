@@ -2,7 +2,22 @@ class World {
     // ── Spielobjekte ─────────────────────────────────────
     character = new Character();
     level = level1;
-    statusBar = new StatusBar();
+    healthStatusBar = new StatusBar([
+        'img/7_statusbars/1_statusbar/2_statusbar_health/blue/0.png',
+        'img/7_statusbars/1_statusbar/2_statusbar_health/blue/20.png',
+        'img/7_statusbars/1_statusbar/2_statusbar_health/blue/40.png',
+        'img/7_statusbars/1_statusbar/2_statusbar_health/blue/60.png',
+        'img/7_statusbars/1_statusbar/2_statusbar_health/blue/80.png',
+        'img/7_statusbars/1_statusbar/2_statusbar_health/blue/100.png',
+    ], 20, 20);
+    bottleStatusBar = new StatusBar([
+        'img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/0.png',
+        'img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/20.png',
+        'img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/40.png',
+        'img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/60.png',
+        'img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/80.png',
+        'img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/100.png',
+    ], 20, 70);
 
     // ── Canvas ───────────────────────────────────────────
     canvas;
@@ -42,7 +57,8 @@ class World {
         this.level.clouds.forEach((cloud) => cloud.update(deltaTime, this.level.levelEndX));
         this.character.update(deltaTime, this.keyboard, this.level);
         this.character.animate(deltaTime);
-        this.statusBar.setPercentage(this.character.energy);
+        this.healthStatusBar.setPercentage(this.character.energy);
+        this.bottleStatusBar.setPercentage(this.character.collectedBottles * 20);
         this.level.coins.forEach((coin) => coin.animate(deltaTime));
         this.level.enemies.forEach((enemy) => {
             enemy.update(deltaTime, this.level.levelEndX);
@@ -68,7 +84,8 @@ class World {
         this.addToMap(this.character);
 
         this.ctx.restore();
-        this.addToMap(this.statusBar);
+        this.addToMap(this.healthStatusBar);
+        this.addToMap(this.bottleStatusBar);
     }
 
     addObjectsToMap(objects) {
