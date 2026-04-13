@@ -2,6 +2,7 @@ class World {
     // ── Spielobjekte ─────────────────────────────────────
     character = new Character();
     level = level1;
+    statusBar = new StatusBar();
 
     // ── Canvas ───────────────────────────────────────────
     canvas;
@@ -41,6 +42,7 @@ class World {
         this.level.clouds.forEach((cloud) => cloud.update(deltaTime, this.level.levelEndX));
         this.character.update(deltaTime, this.keyboard, this.level);
         this.character.animate(deltaTime);
+        this.statusBar.setPercentage(this.character.energy);
         this.level.coins.forEach((coin) => coin.animate(deltaTime));
         this.level.enemies.forEach((enemy) => {
             enemy.update(deltaTime, this.level.levelEndX);
@@ -66,6 +68,7 @@ class World {
         this.addToMap(this.character);
 
         this.ctx.restore();
+        this.addToMap(this.statusBar);
     }
 
     addObjectsToMap(objects) {
