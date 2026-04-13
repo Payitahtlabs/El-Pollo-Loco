@@ -44,17 +44,34 @@ class Character extends MovableObject {
         'img/2_character_pepe/4_hurt/H-43.png',
     ];
 
+    IMAGES_DEAD = [
+        'img/2_character_pepe/5_dead/D-51.png',
+        'img/2_character_pepe/5_dead/D-52.png',
+        'img/2_character_pepe/5_dead/D-53.png',
+        'img/2_character_pepe/5_dead/D-54.png',
+        'img/2_character_pepe/5_dead/D-55.png',
+        'img/2_character_pepe/5_dead/D-56.png',
+        'img/2_character_pepe/5_dead/D-57.png',
+    ];
+
     constructor() {
         super();
         this.loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_JUMPING);
         this.loadImages(this.IMAGES_HURT);
+        this.loadImages(this.IMAGES_DEAD);
     }
 
     update(deltaTime, keyboard, level) {
         this.isMoving = keyboard.RIGHT || keyboard.LEFT;
         this.applyGravity(deltaTime);
+
+        if (this.isDead()) {
+            this.isMoving = false;
+            this.jumpKeyPressed = false;
+            return;
+        }
 
         if (keyboard.RIGHT) {
             this.otherDirection = false;
@@ -96,6 +113,15 @@ class Character extends MovableObject {
     }
 
     animate(deltaTime) {
+        if (this.isDead()) {
+            this.wasMoving = false;
+
+            if (this.isAnimationFrameDue(deltaTime)) {
+                this.playAnimation(this.IMAGES_DEAD);
+            }
+            return;
+        }
+
         if (this.isHurt()) {
             this.wasMoving = false;
 
