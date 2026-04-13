@@ -38,11 +38,18 @@ class Character extends MovableObject {
         'img/2_character_pepe/3_jump/J-39.png',
     ];
 
+    IMAGES_HURT = [
+        'img/2_character_pepe/4_hurt/H-41.png',
+        'img/2_character_pepe/4_hurt/H-42.png',
+        'img/2_character_pepe/4_hurt/H-43.png',
+    ];
+
     constructor() {
         super();
         this.loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_JUMPING);
+        this.loadImages(this.IMAGES_HURT);
     }
 
     update(deltaTime, keyboard, level) {
@@ -89,6 +96,15 @@ class Character extends MovableObject {
     }
 
     animate(deltaTime) {
+        if (this.isHurt()) {
+            this.wasMoving = false;
+
+            if (this.isAnimationFrameDue(deltaTime)) {
+                this.playAnimation(this.IMAGES_HURT);
+            }
+            return;
+        }
+
         if (this.isAboveGround()) {
             this.wasMoving = false;
 
