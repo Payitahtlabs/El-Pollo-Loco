@@ -9,23 +9,9 @@ class World {
         'img/7_statusbars/1_statusbar/2_statusbar_health/blue/60.png',
         'img/7_statusbars/1_statusbar/2_statusbar_health/blue/80.png',
         'img/7_statusbars/1_statusbar/2_statusbar_health/blue/100.png',
-    ], 20, 20);
-    bottleStatusBar = new StatusBar([
-        'img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/0.png',
-        'img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/20.png',
-        'img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/40.png',
-        'img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/60.png',
-        'img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/80.png',
-        'img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/100.png',
-    ], 20, 70);
-    coinStatusBar = new StatusBar([
-        'img/7_statusbars/1_statusbar/1_statusbar_coin/blue/0.png',
-        'img/7_statusbars/1_statusbar/1_statusbar_coin/blue/20.png',
-        'img/7_statusbars/1_statusbar/1_statusbar_coin/blue/40.png',
-        'img/7_statusbars/1_statusbar/1_statusbar_coin/blue/60.png',
-        'img/7_statusbars/1_statusbar/1_statusbar_coin/blue/80.png',
-        'img/7_statusbars/1_statusbar/1_statusbar_coin/blue/100.png',
-    ], 20, 120);
+    ], 12, 6);
+    bottleCounter = new CounterDisplay('img/7_statusbars/3_icons/icon_salsa_bottle.png', 540, 16);
+    coinCounter = new CounterDisplay('img/7_statusbars/3_icons/icon_coin.png', 620, 16);
 
     // ── Canvas ───────────────────────────────────────────
     canvas;
@@ -66,8 +52,8 @@ class World {
         this.character.update(deltaTime, this.keyboard, this.level);
         this.character.animate(deltaTime);
         this.healthStatusBar.setPercentage(this.character.energy);
-        this.bottleStatusBar.setPercentage(this.character.collectedBottles * 20);
-        this.coinStatusBar.setPercentage(this.character.collectedCoins * 20);
+        this.bottleCounter.setValue(this.character.collectedBottles);
+        this.coinCounter.setValue(this.character.collectedCoins);
         this.level.coins.forEach((coin) => coin.animate(deltaTime));
         this.level.enemies.forEach((enemy) => {
             enemy.update(deltaTime, this.level.levelEndX);
@@ -94,8 +80,8 @@ class World {
 
         this.ctx.restore();
         this.addToMap(this.healthStatusBar);
-        this.addToMap(this.bottleStatusBar);
-        this.addToMap(this.coinStatusBar);
+        this.bottleCounter.draw(this.ctx);
+        this.coinCounter.draw(this.ctx);
     }
 
     addObjectsToMap(objects) {
