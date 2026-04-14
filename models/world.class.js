@@ -21,6 +21,8 @@ class World {
     bottleCounter = new CounterDisplay('img/7_statusbars/3_icons/icon_salsa_bottle.png', 540, 16);
     coinCounter = new CounterDisplay('img/7_statusbars/3_icons/icon_coin.png', 620, 16);
     bossFightStarted = false;
+    throwableObjects = [];
+    throwKeyPressed = false;
 
     // ── Canvas ───────────────────────────────────────────
     canvas;
@@ -63,8 +65,13 @@ class World {
         this.healthStatusBar.setPercentage(this.character.energy);
         this.bottleCounter.setValue(this.character.collectedBottles);
         this.coinCounter.setValue(this.character.collectedCoins);
+        this.handleBottleThrow();
         this.updateEndbossFightState();
         this.endbossStatusBar.setPercentage(this.level.endboss.energy);
+        this.throwableObjects = this.throwableObjects.filter((bottle) => {
+            bottle.update(deltaTime);
+            return !bottle.shouldRemove();
+        });
         this.level.coins.forEach((coin) => coin.animate(deltaTime));
         this.level.enemies.forEach((enemy) => {
             enemy.update(deltaTime, this.level.levelEndX);
@@ -86,6 +93,7 @@ class World {
         this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.level.bottles);
         this.addObjectsToMap(this.level.enemies);
+        this.addObjectsToMap(this.throwableObjects);
         this.addToMap(this.level.endboss);
         this.addToMap(this.character);
 
@@ -138,6 +146,7 @@ class World {
             this.level.enemies.includes(mo) ||
             this.level.coins.includes(mo) ||
             this.level.bottles.includes(mo) ||
+            this.throwableObjects.includes(mo) ||
             mo === this.level.endboss;
     }
 
@@ -169,6 +178,27 @@ class World {
         if (characterFront >= triggerX) {
             this.bossFightStarted = true;
         }
+    }
+
+    handleBottleThrow() {
+        if (this.keyboard.D && !this.throwKeyPressed && !this.character.isDead()) {
+            this.throwBottle();
+        }
+
+        this.throwKeyPressed = this.keyboard.D;
+    }
+
+    throwBottle() {
+        if (!this.character.throwBottle()) {
+            return;
+        }
+
+        let throwToLeft = this.character.otherDirection;
+        let horizontalOffset = throwToLeft ? 10 : this.character.width - 70;
+        let bottleX = this.character.x + horizontalOffset;
+        let bottleY = this.character.y + 100;
+
+        this.throwableObjects.push(new ThrowableBottle(bottleX, bottleY, throwToLeft));
     }
 
     checkCollisions() {

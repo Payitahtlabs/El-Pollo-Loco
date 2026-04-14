@@ -112,6 +112,17 @@ class Character extends MovableObject {
         this.collectedBottles++;
     }
 
+    hasBottle() {
+        return this.collectedBottles > 0;
+    }
+
+    throwBottle() {
+        if (!this.hasBottle()) return false;
+
+        this.collectedBottles--;
+        return true;
+    }
+
     animate(deltaTime) {
         if (this.isDead()) {
             this.wasMoving = false;

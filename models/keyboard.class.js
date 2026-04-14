@@ -4,6 +4,7 @@ class Keyboard {
     UP = false;
     DOWN = false;
     SPACE = false;
+    D = false;
 
     constructor() {
         window.addEventListener('keydown', (event) => this.handleKeyChange(event, true));
@@ -26,6 +27,9 @@ class Keyboard {
                 break;
             case 'Space':
                 this.SPACE = isPressed;
+                break;
+            case 'KeyD':
+                this.D = isPressed;
                 break;
             default:
                 return;
