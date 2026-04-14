@@ -24,6 +24,9 @@ class CounterDisplay extends DrawableObject {
         ctx.font = this.font;
         ctx.fillStyle = this.color;
         ctx.textBaseline = 'middle';
-        ctx.fillText(`${this.value}`, this.x + this.width + 5, this.y + this.height / 2 + 1);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
+        ctx.strokeText(`${this.value}`, this.x + this.width + 8, this.y + this.height / 2 + 1);
+        ctx.fillText(`${this.value}`, this.x + this.width + 8, this.y + this.height / 2 + 1);
     }
 }
