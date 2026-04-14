@@ -58,6 +58,10 @@ class MovableObject extends DrawableObject {
         this.speedY = -this.jumpStrength;
     }
 
+    bounce(strength = 600) {
+        this.speedY = -strength;
+    }
+
     isColliding(otherObject) {
         return this.x + this.width - this.offset.right > otherObject.x + otherObject.offset.left &&
             this.y + this.height - this.offset.bottom > otherObject.y + otherObject.offset.top &&

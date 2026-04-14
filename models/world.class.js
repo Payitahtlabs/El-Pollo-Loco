@@ -153,11 +153,31 @@ class World {
     }
 
     checkEnemyCollisions() {
-        this.level.enemies.forEach((enemy) => {
-            if (this.character.isColliding(enemy)) {
-                this.character.hit();
+        this.level.enemies = this.level.enemies.filter((enemy) => {
+            if (enemy.shouldRemove && enemy.shouldRemove()) {
+                return false;
             }
+
+            if (enemy.isDefeated || !this.character.isColliding(enemy)) {
+                return true;
+            }
+
+            if (this.isStompCollision(enemy)) {
+                enemy.stomp();
+                this.character.bounce();
+                return true;
+            }
+
+            this.character.hit();
+            return true;
         });
+    }
+
+    isStompCollision(enemy) {
+        let characterBottom = this.character.y + this.character.height - this.character.offset.bottom;
+        let enemyTop = enemy.y + enemy.offset.top;
+
+        return this.character.speedY > 0 && characterBottom <= enemyTop + 35;
     }
 
     checkCoinCollisions() {
