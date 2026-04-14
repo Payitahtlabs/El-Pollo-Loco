@@ -10,8 +10,17 @@ class World {
         'img/7_statusbars/1_statusbar/2_statusbar_health/blue/80.png',
         'img/7_statusbars/1_statusbar/2_statusbar_health/blue/100.png',
     ], 12, 6);
+    endbossStatusBar = new StatusBar([
+        'img/7_statusbars/2_statusbar_endboss/blue/blue0.png',
+        'img/7_statusbars/2_statusbar_endboss/blue/blue20.png',
+        'img/7_statusbars/2_statusbar_endboss/blue/blue40.png',
+        'img/7_statusbars/2_statusbar_endboss/blue/blue60.png',
+        'img/7_statusbars/2_statusbar_endboss/blue/blue80.png',
+        'img/7_statusbars/2_statusbar_endboss/blue/blue100.png',
+    ], 270, 8);
     bottleCounter = new CounterDisplay('img/7_statusbars/3_icons/icon_salsa_bottle.png', 540, 16);
     coinCounter = new CounterDisplay('img/7_statusbars/3_icons/icon_coin.png', 620, 16);
+    bossFightStarted = false;
 
     // ── Canvas ───────────────────────────────────────────
     canvas;
@@ -54,6 +63,8 @@ class World {
         this.healthStatusBar.setPercentage(this.character.energy);
         this.bottleCounter.setValue(this.character.collectedBottles);
         this.coinCounter.setValue(this.character.collectedCoins);
+        this.updateEndbossFightState();
+        this.endbossStatusBar.setPercentage(this.level.endboss.energy);
         this.level.coins.forEach((coin) => coin.animate(deltaTime));
         this.level.enemies.forEach((enemy) => {
             enemy.update(deltaTime, this.level.levelEndX);
@@ -80,6 +91,9 @@ class World {
 
         this.ctx.restore();
         this.addToMap(this.healthStatusBar);
+        if (this.bossFightStarted) {
+            this.addToMap(this.endbossStatusBar);
+        }
         this.bottleCounter.draw(this.ctx);
         this.coinCounter.draw(this.ctx);
     }
@@ -144,6 +158,17 @@ class World {
         let targetCameraX = -this.character.x + 120;
 
         this.camera_x = Math.max(-maxCameraX, Math.min(0, targetCameraX));
+    }
+
+    updateEndbossFightState() {
+        if (this.bossFightStarted) return;
+
+        let triggerX = this.level.endboss.x - 300;
+        let characterFront = this.character.x + this.character.width;
+
+        if (characterFront >= triggerX) {
+            this.bossFightStarted = true;
+        }
     }
 
     checkCollisions() {
