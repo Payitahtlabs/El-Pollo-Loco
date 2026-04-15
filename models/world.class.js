@@ -78,7 +78,7 @@ class World {
             enemy.animate(deltaTime);
         });
         this.level.endboss.update(deltaTime, this.character, this.bossFightStarted);
-        this.level.endboss.animate(deltaTime, this.bossFightStarted);
+        this.level.endboss.animate(deltaTime, this.bossFightStarted, this.character);
         this.checkCollisions();
         this.updateCamera();
     }
@@ -207,6 +207,7 @@ class World {
         this.checkCoinCollisions();
         this.checkBottleCollisions();
         this.checkThrowableCollisions();
+        this.checkEndbossCollisions();
     }
 
     checkEnemyCollisions() {
@@ -269,6 +270,16 @@ class World {
             this.level.endboss.hit();
             bottle.startSplash();
         });
+    }
+
+    checkEndbossCollisions() {
+        if (!this.bossFightStarted || !this.level.endboss.isAttacking(this.character)) {
+            return;
+        }
+
+        if (this.character.isColliding(this.level.endboss)) {
+            this.character.hit();
+        }
     }
 
     // ── Steuerung ────────────────────────────────────────
