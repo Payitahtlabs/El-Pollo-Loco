@@ -261,6 +261,10 @@ class World {
     }
 
     checkThrowableCollisions() {
+        if (this.level.endboss.isDead()) {
+            return;
+        }
+
         this.throwableObjects.forEach((bottle) => {
             if (bottle.isSplashing || !bottle.isColliding(this.level.endboss)) {
                 return;
@@ -273,7 +277,7 @@ class World {
     }
 
     checkEndbossCollisions() {
-        if (!this.bossFightStarted || !this.level.endboss.isAttacking(this.character)) {
+        if (this.level.endboss.isDead() || !this.bossFightStarted || !this.level.endboss.isAttacking(this.character)) {
             return;
         }
 

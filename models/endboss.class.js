@@ -7,6 +7,7 @@ class Endboss extends MovableObject {
     animationFps = 7;
     attackRange = 120;
     currentState = 'alert';
+    deathAnimationFinished = false;
     offset = {
         top: 70,
         right: 20,
@@ -49,6 +50,12 @@ class Endboss extends MovableObject {
         'img/4_enemie_boss_chicken/4_hurt/G23.png',
     ];
 
+    IMAGES_DEAD = [
+        'img/4_enemie_boss_chicken/5_dead/G24.png',
+        'img/4_enemie_boss_chicken/5_dead/G25.png',
+        'img/4_enemie_boss_chicken/5_dead/G26.png',
+    ];
+
     constructor() {
         super();
         this.loadImage(this.IMAGES_ALERT[0]);
@@ -56,6 +63,7 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_ATTACK);
         this.loadImages(this.IMAGES_HURT);
+        this.loadImages(this.IMAGES_DEAD);
     }
 
     hit() {
@@ -94,20 +102,48 @@ class Endboss extends MovableObject {
             this.animationCounter = 0;
         }
 
+        if (this.currentState === 'dead') {
+            this.animateDeath(deltaTime);
+            return;
+        }
+
         if (this.isAnimationFrameDue(deltaTime)) {
             this.playAnimation(this.getAnimationFramesForState());
         }
     }
 
     resolveState(bossFightStarted, character) {
+        if (this.isDead()) return 'dead';
         if (this.isHurt()) return 'hurt';
         if (!bossFightStarted) return 'alert';
         if (this.isAttacking(character)) return 'attack';
         return 'walk';
     }
 
+    animateDeath(deltaTime) {
+        if (this.deathAnimationFinished) {
+            this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
+            return;
+        }
+
+        if (!this.isAnimationFrameDue(deltaTime)) {
+            return;
+        }
+
+        if (this.currentImage < this.IMAGES_DEAD.length) {
+            this.img = this.imageCache[this.IMAGES_DEAD[this.currentImage]];
+            this.currentImage++;
+            return;
+        }
+
+        this.deathAnimationFinished = true;
+        this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
+    }
+
     getAnimationFramesForState() {
         switch (this.currentState) {
+            case 'dead':
+                return this.IMAGES_DEAD;
             case 'hurt':
                 return this.IMAGES_HURT;
             case 'attack':
