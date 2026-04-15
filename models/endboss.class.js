@@ -4,6 +4,12 @@ class Endboss extends MovableObject {
     width = 250;
     height = 400;
     animationFps = 7;
+    offset = {
+        top: 70,
+        right: 20,
+        bottom: 30,
+        left: 20,
+    };
 
     IMAGES_ALERT = [
         'img/4_enemie_boss_chicken/2_alert/G5.png',

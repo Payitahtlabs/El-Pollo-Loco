@@ -205,6 +205,7 @@ class World {
         this.checkEnemyCollisions();
         this.checkCoinCollisions();
         this.checkBottleCollisions();
+        this.checkThrowableCollisions();
     }
 
     checkEnemyCollisions() {
@@ -254,6 +255,18 @@ class World {
 
             this.character.collectBottle();
             return false;
+        });
+    }
+
+    checkThrowableCollisions() {
+        this.throwableObjects.forEach((bottle) => {
+            if (bottle.isSplashing || !bottle.isColliding(this.level.endboss)) {
+                return;
+            }
+
+            this.bossFightStarted = true;
+            this.level.endboss.hit();
+            bottle.startSplash();
         });
     }
 
