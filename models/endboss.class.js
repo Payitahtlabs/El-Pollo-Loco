@@ -22,13 +22,35 @@ class Endboss extends MovableObject {
         'img/4_enemie_boss_chicken/2_alert/G12.png',
     ];
 
+    IMAGES_HURT = [
+        'img/4_enemie_boss_chicken/4_hurt/G21.png',
+        'img/4_enemie_boss_chicken/4_hurt/G22.png',
+        'img/4_enemie_boss_chicken/4_hurt/G23.png',
+    ];
+
     constructor() {
         super();
         this.loadImage(this.IMAGES_ALERT[0]);
         this.loadImages(this.IMAGES_ALERT);
+        this.loadImages(this.IMAGES_HURT);
+    }
+
+    hit() {
+        if (this.isHurt()) return;
+
+        super.hit();
+        this.currentImage = 0;
+        this.animationCounter = 0;
     }
 
     animate(deltaTime) {
+        if (this.isHurt()) {
+            if (this.isAnimationFrameDue(deltaTime)) {
+                this.playAnimation(this.IMAGES_HURT);
+            }
+            return;
+        }
+
         if (this.isAnimationFrameDue(deltaTime)) {
             this.playAnimation(this.IMAGES_ALERT);
         }
