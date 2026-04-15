@@ -77,7 +77,8 @@ class World {
             enemy.update(deltaTime, this.level.levelEndX);
             enemy.animate(deltaTime);
         });
-        this.level.endboss.animate(deltaTime);
+        this.level.endboss.update(deltaTime, this.character, this.bossFightStarted);
+        this.level.endboss.animate(deltaTime, this.bossFightStarted);
         this.checkCollisions();
         this.updateCamera();
     }

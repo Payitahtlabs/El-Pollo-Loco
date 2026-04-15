@@ -3,6 +3,7 @@ class Endboss extends MovableObject {
     y = 55;
     width = 250;
     height = 400;
+    speed = 110;
     animationFps = 7;
     offset = {
         top: 70,
@@ -22,6 +23,13 @@ class Endboss extends MovableObject {
         'img/4_enemie_boss_chicken/2_alert/G12.png',
     ];
 
+    IMAGES_WALKING = [
+        'img/4_enemie_boss_chicken/1_walk/G1.png',
+        'img/4_enemie_boss_chicken/1_walk/G2.png',
+        'img/4_enemie_boss_chicken/1_walk/G3.png',
+        'img/4_enemie_boss_chicken/1_walk/G4.png',
+    ];
+
     IMAGES_HURT = [
         'img/4_enemie_boss_chicken/4_hurt/G21.png',
         'img/4_enemie_boss_chicken/4_hurt/G22.png',
@@ -32,6 +40,7 @@ class Endboss extends MovableObject {
         super();
         this.loadImage(this.IMAGES_ALERT[0]);
         this.loadImages(this.IMAGES_ALERT);
+        this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_HURT);
     }
 
@@ -43,10 +52,28 @@ class Endboss extends MovableObject {
         this.animationCounter = 0;
     }
 
-    animate(deltaTime) {
+    update(deltaTime, character, bossFightStarted) {
+        if (!bossFightStarted || this.isHurt() || this.isDead()) {
+            return;
+        }
+
+        let distanceToCharacter = this.x - character.x;
+        if (distanceToCharacter > 140) {
+            this.moveLeft(deltaTime);
+        }
+    }
+
+    animate(deltaTime, bossFightStarted) {
         if (this.isHurt()) {
             if (this.isAnimationFrameDue(deltaTime)) {
                 this.playAnimation(this.IMAGES_HURT);
+            }
+            return;
+        }
+
+        if (bossFightStarted) {
+            if (this.isAnimationFrameDue(deltaTime)) {
+                this.playAnimation(this.IMAGES_WALKING);
             }
             return;
         }
