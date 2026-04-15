@@ -29,7 +29,12 @@
 <body onload="init()">
     <h1>El Pollo Loco</h1>
 
-<canvas id="canvas" width="720" height="480"></canvas>
+    <div class="game-shell">
+        <canvas id="canvas" width="720" height="480"></canvas>
+        <div id="win-screen" class="game-overlay hidden" aria-hidden="true">
+            <img src="img/You won, you lost/You Won B.png" alt="You won">
+        </div>
+    </div>
 </body>
 
 </html>

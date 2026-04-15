@@ -21,6 +21,7 @@ class World {
     bottleCounter = new CounterDisplay('img/7_statusbars/3_icons/icon_salsa_bottle.png', 540, 16);
     coinCounter = new CounterDisplay('img/7_statusbars/3_icons/icon_coin.png', 620, 16);
     bossFightStarted = false;
+    gameWon = false;
     throwableObjects = [];
     throwKeyPressed = false;
 
@@ -28,6 +29,7 @@ class World {
     canvas;
     ctx;
     keyboard;
+    winScreenOverlay;
     camera_x = 0;
     showHitboxes = false;
 
@@ -41,6 +43,8 @@ class World {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
+        this.winScreenOverlay = document.getElementById('win-screen');
+        this.hideWinOverlay();
 
         this.gameLoop(0);
     }
@@ -59,6 +63,10 @@ class World {
 
     // ── Logik ──────────────────────
     update(deltaTime) {
+        if (this.gameWon) {
+            return;
+        }
+
         this.level.clouds.forEach((cloud) => cloud.update(deltaTime, this.level.levelEndX));
         this.character.update(deltaTime, this.keyboard, this.level);
         this.character.animate(deltaTime);
@@ -80,6 +88,7 @@ class World {
         this.level.endboss.update(deltaTime, this.character, this.bossFightStarted);
         this.level.endboss.animate(deltaTime, this.bossFightStarted, this.character);
         this.checkCollisions();
+        this.checkWinCondition();
         this.updateCamera();
     }
 
@@ -284,6 +293,31 @@ class World {
         if (this.character.isColliding(this.level.endboss)) {
             this.character.hit();
         }
+    }
+
+    checkWinCondition() {
+        if (this.level.endboss.isDead() && this.level.endboss.deathAnimationFinished) {
+            this.gameWon = true;
+            this.showWinOverlay();
+        }
+    }
+
+    showWinOverlay() {
+        if (!this.winScreenOverlay) {
+            return;
+        }
+
+        this.winScreenOverlay.classList.remove('hidden');
+        this.winScreenOverlay.setAttribute('aria-hidden', 'false');
+    }
+
+    hideWinOverlay() {
+        if (!this.winScreenOverlay) {
+            return;
+        }
+
+        this.winScreenOverlay.classList.add('hidden');
+        this.winScreenOverlay.setAttribute('aria-hidden', 'true');
     }
 
     // ── Steuerung ────────────────────────────────────────
