@@ -32,6 +32,8 @@ class World {
     keyboard;
     winScreenOverlay;
     gameOverScreenOverlay;
+    onGameWon;
+    onGameLost;
     camera_x = 0;
     showHitboxes = false;
 
@@ -41,12 +43,14 @@ class World {
     maxDeltaTime = 0.1;
     paused = false;
 
-    constructor(canvas, keyboard) {
+    constructor(canvas, keyboard, gameEvents = {}) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
         this.winScreenOverlay = document.getElementById('win-screen');
         this.gameOverScreenOverlay = document.getElementById('game-over-screen');
+        this.onGameWon = gameEvents.onGameWon || null;
+        this.onGameLost = gameEvents.onGameLost || null;
         this.hideWinOverlay();
         this.hideGameOverOverlay();
 
@@ -301,16 +305,28 @@ class World {
     }
 
     checkLoseCondition() {
-        if (this.character.isDead()) {
-            this.gameLost = true;
-            this.showGameOverOverlay();
+        if (this.gameWon || this.gameLost || !this.character.isDead()) {
+            return;
+        }
+
+        this.gameLost = true;
+        this.showGameOverOverlay();
+
+        if (this.onGameLost) {
+            this.onGameLost();
         }
     }
 
     checkWinCondition() {
-        if (this.level.endboss.isDead() && this.level.endboss.deathAnimationFinished) {
-            this.gameWon = true;
-            this.showWinOverlay();
+        if (this.gameWon || this.gameLost || !this.level.endboss.isDead() || !this.level.endboss.deathAnimationFinished) {
+            return;
+        }
+
+        this.gameWon = true;
+        this.showWinOverlay();
+
+        if (this.onGameWon) {
+            this.onGameWon();
         }
     }
 

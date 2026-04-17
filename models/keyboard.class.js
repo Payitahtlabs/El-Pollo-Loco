@@ -6,9 +6,15 @@ class Keyboard {
     SPACE = false;
     D = false;
 
+    keydownHandler;
+    keyupHandler;
+
     constructor() {
-        window.addEventListener('keydown', (event) => this.handleKeyChange(event, true));
-        window.addEventListener('keyup', (event) => this.handleKeyChange(event, false));
+        this.keydownHandler = (event) => this.handleKeyChange(event, true);
+        this.keyupHandler = (event) => this.handleKeyChange(event, false);
+
+        window.addEventListener('keydown', this.keydownHandler);
+        window.addEventListener('keyup', this.keyupHandler);
     }
 
     handleKeyChange(event, isPressed) {
@@ -36,5 +42,10 @@ class Keyboard {
         }
 
         event.preventDefault();
+    }
+
+    destroy() {
+        window.removeEventListener('keydown', this.keydownHandler);
+        window.removeEventListener('keyup', this.keyupHandler);
     }
 }
