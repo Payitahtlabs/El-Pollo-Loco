@@ -10,6 +10,7 @@ class Character extends MovableObject {
     jumpKeyPressed = false;
     collectedCoins = 0;
     collectedBottles = 0;
+    deathAnimationFinished = false;
     offset = {
         top: 100,
         right: 20,
@@ -123,13 +124,22 @@ class Character extends MovableObject {
         return true;
     }
 
+    hit() {
+        let wasDead = this.isDead();
+
+        super.hit();
+
+        if (!wasDead && this.isDead()) {
+            this.currentImage = 0;
+            this.animationCounter = 0;
+            this.deathAnimationFinished = false;
+        }
+    }
+
     animate(deltaTime) {
         if (this.isDead()) {
             this.wasMoving = false;
-
-            if (this.isAnimationFrameDue(deltaTime)) {
-                this.playAnimation(this.IMAGES_DEAD);
-            }
+            this.animateDeath(deltaTime);
             return;
         }
 
@@ -170,5 +180,25 @@ class Character extends MovableObject {
         if (this.isAnimationFrameDue(deltaTime)) {
             this.playAnimation(this.IMAGES_WALKING);
         }
+    }
+
+    animateDeath(deltaTime) {
+        if (this.deathAnimationFinished) {
+            this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
+            return;
+        }
+
+        if (!this.isAnimationFrameDue(deltaTime)) {
+            return;
+        }
+
+        if (this.currentImage < this.IMAGES_DEAD.length) {
+            this.img = this.imageCache[this.IMAGES_DEAD[this.currentImage]];
+            this.currentImage++;
+            return;
+        }
+
+        this.deathAnimationFinished = true;
+        this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
     }
 }

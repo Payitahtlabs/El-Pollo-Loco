@@ -305,7 +305,7 @@ class World {
     }
 
     checkLoseCondition() {
-        if (this.gameWon || this.gameLost || !this.character.isDead()) {
+        if (this.gameWon || this.gameLost || !this.character.isDead() || !this.character.deathAnimationFinished) {
             return;
         }
 
