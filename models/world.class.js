@@ -22,6 +22,7 @@ class World {
     coinCounter = new CounterDisplay('img/7_statusbars/3_icons/icon_coin.png', 620, 16);
     bossFightStarted = false;
     gameWon = false;
+    gameLost = false;
     throwableObjects = [];
     throwKeyPressed = false;
 
@@ -30,6 +31,7 @@ class World {
     ctx;
     keyboard;
     winScreenOverlay;
+    gameOverScreenOverlay;
     camera_x = 0;
     showHitboxes = false;
 
@@ -44,7 +46,9 @@ class World {
         this.canvas = canvas;
         this.keyboard = keyboard;
         this.winScreenOverlay = document.getElementById('win-screen');
+        this.gameOverScreenOverlay = document.getElementById('game-over-screen');
         this.hideWinOverlay();
+        this.hideGameOverOverlay();
 
         this.gameLoop(0);
     }
@@ -63,7 +67,7 @@ class World {
 
     // ── Logik ──────────────────────
     update(deltaTime) {
-        if (this.gameWon) {
+        if (this.gameWon || this.gameLost) {
             return;
         }
 
@@ -88,6 +92,7 @@ class World {
         this.level.endboss.update(deltaTime, this.character, this.bossFightStarted);
         this.level.endboss.animate(deltaTime, this.bossFightStarted, this.character);
         this.checkCollisions();
+        this.checkLoseCondition();
         this.checkWinCondition();
         this.updateCamera();
     }
@@ -295,6 +300,13 @@ class World {
         }
     }
 
+    checkLoseCondition() {
+        if (this.character.isDead()) {
+            this.gameLost = true;
+            this.showGameOverOverlay();
+        }
+    }
+
     checkWinCondition() {
         if (this.level.endboss.isDead() && this.level.endboss.deathAnimationFinished) {
             this.gameWon = true;
@@ -318,6 +330,24 @@ class World {
 
         this.winScreenOverlay.classList.add('hidden');
         this.winScreenOverlay.setAttribute('aria-hidden', 'true');
+    }
+
+    showGameOverOverlay() {
+        if (!this.gameOverScreenOverlay) {
+            return;
+        }
+
+        this.gameOverScreenOverlay.classList.remove('hidden');
+        this.gameOverScreenOverlay.setAttribute('aria-hidden', 'false');
+    }
+
+    hideGameOverOverlay() {
+        if (!this.gameOverScreenOverlay) {
+            return;
+        }
+
+        this.gameOverScreenOverlay.classList.add('hidden');
+        this.gameOverScreenOverlay.setAttribute('aria-hidden', 'true');
     }
 
     // ── Steuerung ────────────────────────────────────────
