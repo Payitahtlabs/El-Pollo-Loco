@@ -30,7 +30,10 @@
     <h1>El Pollo Loco</h1>
 
     <div class="game-shell">
-        <canvas id="canvas" width="720" height="480"></canvas>
+        <div id="start-screen" class="game-overlay" aria-hidden="false">
+            <img src="img/9_intro_outro_screens/start/startscreen_1.png" alt="Start Game">
+        </div>
+        <canvas id="canvas" class="hidden" width="720" height="480"></canvas>
         <div id="win-screen" class="game-overlay hidden" aria-hidden="true">
             <img src="img/9_intro_outro_screens/win/win_4.png" alt="You won">
         </div>
