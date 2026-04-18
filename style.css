@@ -76,13 +76,61 @@ canvas {
 #start-screen {
     padding: 0;
     background: black;
+    justify-content: flex-end;
 }
 
 #start-screen img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
+}
+
+.start-hint {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    margin-bottom: clamp(20px, 5vw, 42px);
+    padding: 0 20px;
+    text-align: center;
+    animation: start-hint-float 2.4s ease-in-out infinite;
+}
+
+.start-hint-title,
+.start-hint-subtitle {
+    margin: 0;
+    font-family: 'Boogaloo', cursive;
+    color: #fff6cc;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.95), 0 0 14px rgba(0, 0, 0, 0.65);
+}
+
+.start-hint-title {
+    font-size: clamp(1.5rem, 3vw, 2.3rem);
+    letter-spacing: 0.04em;
+}
+
+.start-hint-subtitle {
+    font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+    letter-spacing: 0.05em;
+    opacity: 0.92;
+}
+
+@keyframes start-hint-float {
+    0%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.9;
+    }
+
+    50% {
+        transform: translateY(-4px);
+        opacity: 1;
+    }
 }
 
 .hidden {
