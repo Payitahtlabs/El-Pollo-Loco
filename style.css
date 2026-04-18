@@ -133,6 +133,63 @@ canvas {
     }
 }
 
+.touch-controls {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 2;
+    display: none;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    pointer-events: none;
+}
+
+.touch-controls-group {
+    display: flex;
+    gap: clamp(8px, 1.8vw, 12px);
+    pointer-events: auto;
+}
+
+.touch-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: clamp(54px, 10vw, 72px);
+    min-height: clamp(54px, 10vw, 72px);
+    border: 2px solid rgba(70, 33, 8, 0.35);
+    border-radius: 999px;
+    padding: 0;
+    color: #2f1202;
+    background: linear-gradient(180deg, rgba(255, 199, 91, 0.82) 0%, rgba(242, 164, 44, 0.82) 100%);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+    backdrop-filter: blur(2px);
+    touch-action: none;
+}
+
+.touch-button-icon {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    line-height: 1;
+}
+
+.touch-button-bottle {
+    width: clamp(24px, 4.5vw, 30px);
+    height: auto;
+    display: block;
+}
+
+.touch-button:active,
+.touch-button.is-pressed {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: landscape) {
+    .touch-controls {
+        display: flex;
+    }
+}
+
 .hidden {
     display: none;
 }
