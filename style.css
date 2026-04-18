@@ -184,8 +184,117 @@ canvas {
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
 }
 
+.rotate-device-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: linear-gradient(180deg, rgba(44, 20, 4, 0.96) 0%, rgba(18, 9, 3, 0.98) 100%);
+}
+
+.rotate-device-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-width: 280px;
+    text-align: center;
+}
+
+.rotate-device-icon {
+    position: relative;
+    width: 92px;
+    height: 92px;
+}
+
+.rotate-device-icon-phone {
+    position: absolute;
+    top: 16px;
+    left: 30px;
+    width: 32px;
+    height: 56px;
+    border: 3px solid rgba(255, 246, 204, 0.92);
+    border-radius: 10px;
+    box-sizing: border-box;
+    animation: rotate-device-phone 1.8s ease-in-out infinite;
+}
+
+.rotate-device-icon-phone::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 5px;
+    width: 10px;
+    height: 3px;
+    background: rgba(255, 246, 204, 0.92);
+    border-radius: 999px;
+    transform: translateX(-50%);
+}
+
+.rotate-device-icon-arrow {
+    position: absolute;
+    top: 18px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border-top: 3px solid rgba(255, 246, 204, 0.92);
+    border-right: 3px solid rgba(255, 246, 204, 0.92);
+    border-radius: 0 8px 0 0;
+    transform: rotate(45deg);
+}
+
+.rotate-device-title,
+.rotate-device-text {
+    margin: 0;
+    font-family: 'Boogaloo', cursive;
+    color: #fff6cc;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+}
+
+.rotate-device-title {
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    letter-spacing: 0.04em;
+}
+
+.rotate-device-text {
+    font-size: clamp(1rem, 3.6vw, 1.25rem);
+    opacity: 0.92;
+}
+
+@keyframes rotate-device-phone {
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    40%,
+    60% {
+        transform: rotate(90deg);
+    }
+}
+
 @media (hover: none) and (pointer: coarse) and (orientation: landscape) {
     .touch-controls {
+        display: flex;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: portrait) {
+    body {
+        justify-content: center;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    h1,
+    .game-shell {
+        display: none;
+    }
+
+    .rotate-device-overlay {
         display: flex;
     }
 }
