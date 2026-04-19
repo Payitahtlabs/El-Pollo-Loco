@@ -31,39 +31,47 @@
 <body onload="init()">
     <h1>El Pollo Loco</h1>
 
-    <div class="game-shell">
-        <div id="start-screen" class="game-overlay" aria-hidden="false">
-            <img src="img/9_intro_outro_screens/start/startscreen_1.png" alt="Start Game">
-            <div class="start-hint">
-                <p class="start-hint-title">Click to Start</p>
-                <p class="start-hint-subtitle">or Press Enter / Space</p>
+    <div id="game-shell-frame" class="game-shell-frame">
+        <div class="game-toolbar" aria-label="Game controls">
+            <button id="fullscreen-button" class="fullscreen-button" type="button" aria-label="Enter fullscreen" title="Enter fullscreen">
+                <img id="fullscreen-icon" src="img/icons/icon-fullscreen.svg" alt="" aria-hidden="true">
+            </button>
+        </div>
+
+        <div class="game-shell">
+            <div id="start-screen" class="game-overlay" aria-hidden="false">
+                <img src="img/9_intro_outro_screens/start/startscreen_1.png" alt="Start Game">
+                <div class="start-hint">
+                    <p class="start-hint-title">Click to Start</p>
+                    <p class="start-hint-subtitle">or Press Enter / Space</p>
+                </div>
             </div>
-        </div>
-        <canvas id="canvas" class="hidden" width="720" height="480"></canvas>
-        <div id="win-screen" class="game-overlay hidden" aria-hidden="true">
-            <img src="img/9_intro_outro_screens/win/win_4.png" alt="You won">
-            <p class="restart-hint">Click or Press Enter / Space to Restart</p>
-        </div>
-        <div id="game-over-screen" class="game-overlay hidden" aria-hidden="true">
-            <img src="img/9_intro_outro_screens/game_over/you_lost_3.png" alt="Game over">
-            <p class="restart-hint">Click or Press Enter / Space to Restart</p>
-        </div>
-        <div id="touch-controls" class="touch-controls hidden" aria-hidden="true">
-            <div class="touch-controls-group touch-controls-left">
-                <button type="button" class="touch-button" data-action="LEFT" aria-label="Move left">
-                    <span class="touch-button-icon" aria-hidden="true">&larr;</span>
-                </button>
-                <button type="button" class="touch-button" data-action="RIGHT" aria-label="Move right">
-                    <span class="touch-button-icon" aria-hidden="true">&rarr;</span>
-                </button>
+            <canvas id="canvas" class="hidden" width="720" height="480"></canvas>
+            <div id="win-screen" class="game-overlay hidden" aria-hidden="true">
+                <img src="img/9_intro_outro_screens/win/win_4.png" alt="You won">
+                <p class="restart-hint">Click or Press Enter / Space to Restart</p>
             </div>
-            <div class="touch-controls-group touch-controls-right">
-                <button type="button" class="touch-button" data-action="SPACE" aria-label="Jump">
-                    <span class="touch-button-icon" aria-hidden="true">&uarr;</span>
-                </button>
-                <button type="button" class="touch-button touch-button-throw" data-action="D" aria-label="Throw bottle">
-                    <img src="img/7_statusbars/3_icons/icon_salsa_bottle.png" alt="" class="touch-button-bottle" aria-hidden="true">
-                </button>
+            <div id="game-over-screen" class="game-overlay hidden" aria-hidden="true">
+                <img src="img/9_intro_outro_screens/game_over/you_lost_3.png" alt="Game over">
+                <p class="restart-hint">Click or Press Enter / Space to Restart</p>
+            </div>
+            <div id="touch-controls" class="touch-controls hidden" aria-hidden="true">
+                <div class="touch-controls-group touch-controls-left">
+                    <button type="button" class="touch-button" data-action="LEFT" aria-label="Move left">
+                        <span class="touch-button-icon" aria-hidden="true">&larr;</span>
+                    </button>
+                    <button type="button" class="touch-button" data-action="RIGHT" aria-label="Move right">
+                        <span class="touch-button-icon" aria-hidden="true">&rarr;</span>
+                    </button>
+                </div>
+                <div class="touch-controls-group touch-controls-right">
+                    <button type="button" class="touch-button" data-action="SPACE" aria-label="Jump">
+                        <span class="touch-button-icon" aria-hidden="true">&uarr;</span>
+                    </button>
+                    <button type="button" class="touch-button touch-button-throw" data-action="D" aria-label="Throw bottle">
+                        <img src="img/7_statusbars/3_icons/icon_salsa_bottle.png" alt="" class="touch-button-bottle" aria-hidden="true">
+                    </button>
+                </div>
             </div>
         </div>
     </div>

@@ -7,6 +7,9 @@ let gameOverScreen;
 let touchControls;
 let touchButtons = [];
 let audioManager;
+let gameShellFrame;
+let fullscreenButton;
+let fullscreenIcon;
 let startListenersAttached = false;
 let restartListenersAttached = false;
 
@@ -18,8 +21,13 @@ function init() {
     touchControls = document.getElementById('touch-controls');
     touchButtons = Array.from(document.querySelectorAll('.touch-button'));
     audioManager = new AudioManager('audio/background-music.mp3');
+    gameShellFrame = document.getElementById('game-shell-frame');
+    fullscreenButton = document.getElementById('fullscreen-button');
+    fullscreenIcon = document.getElementById('fullscreen-icon');
     attachTouchControlListeners();
     attachStartListeners();
+    attachFullscreenListeners();
+    updateFullscreenButtonState();
 }
 
 function startGame() {
@@ -220,4 +228,75 @@ function detachRestartListeners() {
         gameOverScreen.removeEventListener('click', restartGame);
     }
     restartListenersAttached = false;
+}
+
+function attachFullscreenListeners() {
+    if (fullscreenButton) {
+        fullscreenButton.addEventListener('click', toggleFullscreen);
+    }
+
+    document.addEventListener('fullscreenchange', updateFullscreenButtonState);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenButtonState);
+}
+
+function toggleFullscreen() {
+    if (!gameShellFrame) {
+        return;
+    }
+
+    if (getFullscreenElement() === gameShellFrame) {
+        exitFullscreenMode();
+        return;
+    }
+
+    enterFullscreenMode();
+}
+
+function enterFullscreenMode() {
+    let requestFullscreen = gameShellFrame.requestFullscreen || gameShellFrame.webkitRequestFullscreen;
+
+    if (!requestFullscreen) {
+        return;
+    }
+
+    let fullscreenResult = requestFullscreen.call(gameShellFrame);
+    if (fullscreenResult && typeof fullscreenResult.catch === 'function') {
+        fullscreenResult.catch((error) => {
+            console.warn('Fullscreen could not be started.', error);
+        });
+    }
+}
+
+function exitFullscreenMode() {
+    let exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+
+    if (!exitFullscreen) {
+        return;
+    }
+
+    let fullscreenResult = exitFullscreen.call(document);
+    if (fullscreenResult && typeof fullscreenResult.catch === 'function') {
+        fullscreenResult.catch((error) => {
+            console.warn('Fullscreen could not be exited.', error);
+        });
+    }
+}
+
+function getFullscreenElement() {
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
+}
+
+function updateFullscreenButtonState() {
+    if (!fullscreenButton || !fullscreenIcon) {
+        return;
+    }
+
+    let isFullscreen = getFullscreenElement() === gameShellFrame;
+    let label = isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen';
+
+    fullscreenIcon.src = isFullscreen
+        ? 'img/icons/icon-fullscreen-exit.svg'
+        : 'img/icons/icon-fullscreen.svg';
+    fullscreenButton.setAttribute('aria-label', label);
+    fullscreenButton.setAttribute('title', label);
 }
