@@ -8,12 +8,12 @@ class SmallChicken extends MovableObject {
     defeatedAt = 0;
 
     IMAGES_WALKING = [
-        'img/3_enemies_chicken/chicken_small/1_walk/1_w.png',
-        'img/3_enemies_chicken/chicken_small/1_walk/2_w.png',
-        'img/3_enemies_chicken/chicken_small/1_walk/3_w.png',
+        'img/enemies_chicken/chicken_small/1_walk/1_w.png',
+        'img/enemies_chicken/chicken_small/1_walk/2_w.png',
+        'img/enemies_chicken/chicken_small/1_walk/3_w.png',
     ];
 
-    IMAGE_DEAD = 'img/3_enemies_chicken/chicken_small/2_dead/dead.png';
+    IMAGE_DEAD = 'img/enemies_chicken/chicken_small/2_dead/dead.png';
 
     constructor(x = 200 + Math.random() * 800) {
         super();

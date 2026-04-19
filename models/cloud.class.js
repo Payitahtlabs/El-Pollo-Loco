@@ -4,8 +4,8 @@ class Cloud extends MovableObject {
     speed = 12;
 
     IMAGES = [
-        'img/5_background/layers/4_clouds/1.png',
-        'img/5_background/layers/4_clouds/2.png',
+        'img/background/layers/4_clouds/1.png',
+        'img/background/layers/4_clouds/2.png',
     ];
 
     constructor(x = 0, y = 20, speed = 12) {

@@ -3,23 +3,23 @@ class World {
     character = new Character();
     level = level1;
     healthStatusBar = new StatusBar([
-        'img/7_statusbars/1_statusbar/2_statusbar_health/blue/0.png',
-        'img/7_statusbars/1_statusbar/2_statusbar_health/blue/20.png',
-        'img/7_statusbars/1_statusbar/2_statusbar_health/blue/40.png',
-        'img/7_statusbars/1_statusbar/2_statusbar_health/blue/60.png',
-        'img/7_statusbars/1_statusbar/2_statusbar_health/blue/80.png',
-        'img/7_statusbars/1_statusbar/2_statusbar_health/blue/100.png',
+        'img/statusbars/1_statusbar/2_statusbar_health/blue/0.png',
+        'img/statusbars/1_statusbar/2_statusbar_health/blue/20.png',
+        'img/statusbars/1_statusbar/2_statusbar_health/blue/40.png',
+        'img/statusbars/1_statusbar/2_statusbar_health/blue/60.png',
+        'img/statusbars/1_statusbar/2_statusbar_health/blue/80.png',
+        'img/statusbars/1_statusbar/2_statusbar_health/blue/100.png',
     ], 12, 6);
     endbossStatusBar = new StatusBar([
-        'img/7_statusbars/2_statusbar_endboss/blue/blue0.png',
-        'img/7_statusbars/2_statusbar_endboss/blue/blue20.png',
-        'img/7_statusbars/2_statusbar_endboss/blue/blue40.png',
-        'img/7_statusbars/2_statusbar_endboss/blue/blue60.png',
-        'img/7_statusbars/2_statusbar_endboss/blue/blue80.png',
-        'img/7_statusbars/2_statusbar_endboss/blue/blue100.png',
+        'img/statusbars/2_statusbar_endboss/blue/blue0.png',
+        'img/statusbars/2_statusbar_endboss/blue/blue20.png',
+        'img/statusbars/2_statusbar_endboss/blue/blue40.png',
+        'img/statusbars/2_statusbar_endboss/blue/blue60.png',
+        'img/statusbars/2_statusbar_endboss/blue/blue80.png',
+        'img/statusbars/2_statusbar_endboss/blue/blue100.png',
     ], 270, 8);
-    bottleCounter = new CounterDisplay('img/7_statusbars/3_icons/icon_salsa_bottle.png', 540, 16);
-    coinCounter = new CounterDisplay('img/7_statusbars/3_icons/icon_coin.png', 620, 16);
+    bottleCounter = new CounterDisplay('img/statusbars/3_icons/icon_salsa_bottle.png', 540, 16);
+    coinCounter = new CounterDisplay('img/statusbars/3_icons/icon_coin.png', 620, 16);
     bossFightStarted = false;
     gameWon = false;
     gameLost = false;

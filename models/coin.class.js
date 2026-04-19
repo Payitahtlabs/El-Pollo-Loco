@@ -10,8 +10,8 @@ class Coin extends MovableObject {
     };
 
     IMAGES = [
-        'img/8_coin/coin_1.png',
-        'img/8_coin/coin_2.png',
+        'img/coin/coin_1.png',
+        'img/coin/coin_2.png',
     ];
 
     constructor(x, y) {
