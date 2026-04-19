@@ -8,10 +8,13 @@ let touchControls;
 let touchButtons = [];
 let audioManager;
 let gameShellFrame;
+let muteButton;
+let muteIcon;
 let fullscreenButton;
 let fullscreenIcon;
 let startListenersAttached = false;
 let restartListenersAttached = false;
+const MUTE_STORAGE_KEY = 'el-pollo-loco-audio-muted';
 
 function init() {
     canvas = document.getElementById('canvas');
@@ -21,12 +24,17 @@ function init() {
     touchControls = document.getElementById('touch-controls');
     touchButtons = Array.from(document.querySelectorAll('.touch-button'));
     audioManager = new AudioManager('audio/background-music.mp3');
+    applyStoredAudioState();
     gameShellFrame = document.getElementById('game-shell-frame');
+    muteButton = document.getElementById('mute-button');
+    muteIcon = document.getElementById('mute-icon');
     fullscreenButton = document.getElementById('fullscreen-button');
     fullscreenIcon = document.getElementById('fullscreen-icon');
     attachTouchControlListeners();
     attachStartListeners();
+    attachAudioControlListeners();
     attachFullscreenListeners();
+    updateMuteButtonState();
     updateFullscreenButtonState();
 }
 
@@ -239,6 +247,49 @@ function attachFullscreenListeners() {
     document.addEventListener('webkitfullscreenchange', updateFullscreenButtonState);
 }
 
+function attachAudioControlListeners() {
+    if (!muteButton) {
+        return;
+    }
+
+    muteButton.addEventListener('click', toggleMutedAudio);
+}
+
+function toggleMutedAudio() {
+    if (!audioManager) {
+        return;
+    }
+
+    let isMuted = audioManager.toggleMuted();
+    persistMutedState(isMuted);
+    updateMuteButtonState();
+}
+
+function applyStoredAudioState() {
+    if (!audioManager) {
+        return;
+    }
+
+    audioManager.setMuted(readStoredMutedState());
+}
+
+function readStoredMutedState() {
+    try {
+        return localStorage.getItem(MUTE_STORAGE_KEY) === 'true';
+    } catch (error) {
+        console.warn('Muted audio state could not be read.', error);
+        return false;
+    }
+}
+
+function persistMutedState(isMuted) {
+    try {
+        localStorage.setItem(MUTE_STORAGE_KEY, String(isMuted));
+    } catch (error) {
+        console.warn('Muted audio state could not be stored.', error);
+    }
+}
+
 function toggleFullscreen() {
     if (!gameShellFrame) {
         return;
@@ -299,4 +350,19 @@ function updateFullscreenButtonState() {
         : 'img/icons/icon-fullscreen.svg';
     fullscreenButton.setAttribute('aria-label', label);
     fullscreenButton.setAttribute('title', label);
+}
+
+function updateMuteButtonState() {
+    if (!audioManager || !muteButton || !muteIcon) {
+        return;
+    }
+
+    let isMuted = audioManager.backgroundMusic.muted;
+    let label = isMuted ? 'Unmute audio' : 'Mute audio';
+
+    muteIcon.src = isMuted
+        ? 'img/icons/icon-volume-mute.svg'
+        : 'img/icons/icon-volume.svg';
+    muteButton.setAttribute('aria-label', label);
+    muteButton.setAttribute('title', label);
 }
