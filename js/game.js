@@ -6,6 +6,7 @@ let winScreen;
 let gameOverScreen;
 let touchControls;
 let touchButtons = [];
+let audioManager;
 let startListenersAttached = false;
 let restartListenersAttached = false;
 
@@ -16,6 +17,7 @@ function init() {
     gameOverScreen = document.getElementById('game-over-screen');
     touchControls = document.getElementById('touch-controls');
     touchButtons = Array.from(document.querySelectorAll('.touch-button'));
+    audioManager = new AudioManager('audio/background-music.mp3');
     attachTouchControlListeners();
     attachStartListeners();
 }
@@ -33,6 +35,7 @@ function startGame() {
     canvas.classList.remove('hidden');
     detachStartListeners();
     showTouchControls();
+    audioManager.playBackgroundMusic();
     initializeGame();
 }
 
@@ -53,6 +56,7 @@ function restartGame() {
     teardownCurrentGame();
     detachRestartListeners();
     showTouchControls();
+    audioManager.playBackgroundMusic();
     initializeGame();
 }
 
