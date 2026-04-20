@@ -34,6 +34,7 @@ function init() {
     attachGameSurfaceInteractionGuards();
     attachStartListeners();
     attachAudioControlListeners();
+    updateFullscreenAvailability();
     attachFullscreenListeners();
     updateMuteButtonState();
     updateFullscreenButtonState();
@@ -269,12 +270,36 @@ function detachRestartListeners() {
 }
 
 function attachFullscreenListeners() {
-    if (fullscreenButton) {
+    if (fullscreenButton && canUseNativeFullscreen()) {
         fullscreenButton.addEventListener('click', toggleFullscreen);
     }
 
     document.addEventListener('fullscreenchange', updateFullscreenButtonState);
     document.addEventListener('webkitfullscreenchange', updateFullscreenButtonState);
+}
+
+function updateFullscreenAvailability() {
+    if (!fullscreenButton) {
+        return;
+    }
+
+    let isAvailable = canUseNativeFullscreen();
+
+    fullscreenButton.classList.toggle('hidden', !isAvailable);
+    fullscreenButton.setAttribute('aria-hidden', String(!isAvailable));
+}
+
+function canUseNativeFullscreen() {
+    if (!gameShellFrame || isStandaloneMode()) {
+        return false;
+    }
+
+    return typeof gameShellFrame.requestFullscreen === 'function'
+        || typeof gameShellFrame.webkitRequestFullscreen === 'function';
+}
+
+function isStandaloneMode() {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }
 
 function attachAudioControlListeners() {
@@ -321,7 +346,7 @@ function persistMutedState(isMuted) {
 }
 
 function toggleFullscreen() {
-    if (!gameShellFrame) {
+    if (!gameShellFrame || !canUseNativeFullscreen()) {
         return;
     }
 
@@ -368,7 +393,7 @@ function getFullscreenElement() {
 }
 
 function updateFullscreenButtonState() {
-    if (!fullscreenButton || !fullscreenIcon) {
+    if (!fullscreenButton || !fullscreenIcon || !canUseNativeFullscreen()) {
         return;
     }
 
