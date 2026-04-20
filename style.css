@@ -270,15 +270,16 @@ canvas {
 }
 
 .touch-button-icon {
-    font-family: 'Boogaloo', cursive;
-    font-size: clamp(1.4rem, 3vw, 2rem);
-    line-height: 1;
+    width: clamp(24px, 4.5vw, 30px);
+    height: clamp(24px, 4.5vw, 30px);
+    display: block;
+    object-fit: contain;
 }
 
 .touch-button-bottle {
-    width: clamp(24px, 4.5vw, 30px);
-    height: auto;
-    display: block;
+    width: clamp(22px, 4.2vw, 28px);
+    height: clamp(22px, 4.2vw, 28px);
+    object-fit: contain;
 }
 
 .touch-button:active,

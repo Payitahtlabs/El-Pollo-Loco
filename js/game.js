@@ -346,8 +346,8 @@ function updateFullscreenButtonState() {
     let label = isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen';
 
     fullscreenIcon.src = isFullscreen
-        ? 'img/icons/icon-fullscreen-exit.svg'
-        : 'img/icons/icon-fullscreen.svg';
+        ? 'img/icons/toolbar-fullscreen-exit.svg'
+        : 'img/icons/toolbar-fullscreen.svg';
     fullscreenButton.setAttribute('aria-label', label);
     fullscreenButton.setAttribute('title', label);
 }
@@ -361,8 +361,8 @@ function updateMuteButtonState() {
     let label = isMuted ? 'Unmute audio' : 'Mute audio';
 
     muteIcon.src = isMuted
-        ? 'img/icons/icon-volume-mute.svg'
-        : 'img/icons/icon-volume.svg';
+        ? 'img/icons/toolbar-volume-mute.svg'
+        : 'img/icons/toolbar-volume.svg';
     muteButton.setAttribute('aria-label', label);
     muteButton.setAttribute('title', label);
 }
