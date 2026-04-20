@@ -22,6 +22,22 @@ body {
     background-size: cover;
 }
 
+h1,
+.game-shell-frame,
+.game-shell-frame canvas,
+.game-shell-frame button,
+.game-shell-frame img,
+.game-overlay,
+.restart-hint,
+.start-hint,
+.start-hint-title,
+.start-hint-subtitle {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
 .game-shell-frame {
     width: min(720px, 100%);
     display: flex;
@@ -132,6 +148,7 @@ canvas {
     border: none;
     border-radius: 8px;
     background-color: black;
+    touch-action: manipulation;
 }
 
 .game-overlay {
@@ -150,6 +167,7 @@ canvas {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+    -webkit-user-drag: none;
 }
 
 .restart-hint {
@@ -267,6 +285,10 @@ canvas {
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
     backdrop-filter: blur(2px);
     touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .touch-button-icon {
@@ -274,6 +296,11 @@ canvas {
     height: clamp(24px, 4.5vw, 30px);
     display: block;
     object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
 }
 
 .touch-button-bottle {

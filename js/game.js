@@ -31,11 +31,35 @@ function init() {
     fullscreenButton = document.getElementById('fullscreen-button');
     fullscreenIcon = document.getElementById('fullscreen-icon');
     attachTouchControlListeners();
+    attachGameSurfaceInteractionGuards();
     attachStartListeners();
     attachAudioControlListeners();
     attachFullscreenListeners();
     updateMuteButtonState();
     updateFullscreenButtonState();
+}
+
+function attachGameSurfaceInteractionGuards() {
+    let guardedElements = [
+        canvas,
+        startScreen,
+        winScreen,
+        gameOverScreen,
+        muteButton,
+        fullscreenButton,
+        gameShellFrame,
+        document.querySelector('h1'),
+    ];
+
+    guardedElements.forEach((element) => {
+        if (!element) {
+            return;
+        }
+
+        element.addEventListener('contextmenu', preventTouchControlDefault);
+        element.addEventListener('dragstart', preventTouchControlDefault);
+        element.addEventListener('selectstart', preventTouchControlDefault);
+    });
 }
 
 function startGame() {
@@ -119,7 +143,13 @@ function attachTouchControlListeners() {
         button.addEventListener('pointerup', handleTouchControlRelease);
         button.addEventListener('pointercancel', handleTouchControlRelease);
         button.addEventListener('pointerleave', handleTouchControlRelease);
+        button.addEventListener('contextmenu', preventTouchControlDefault);
+        button.addEventListener('dragstart', preventTouchControlDefault);
     });
+}
+
+function preventTouchControlDefault(event) {
+    event.preventDefault();
 }
 
 function handleTouchControlPress(event) {
