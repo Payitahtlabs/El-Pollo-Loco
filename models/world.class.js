@@ -23,6 +23,7 @@ class World {
     bossFightStarted = false;
     gameWon = false;
     gameLost = false;
+    bottleDropChance = 0.25;
     throwableObjects = [];
     throwKeyPressed = false;
 
@@ -87,6 +88,11 @@ class World {
         this.throwableObjects = this.throwableObjects.filter((bottle) => {
             bottle.update(deltaTime);
             return !bottle.shouldRemove();
+        });
+        this.level.bottles.forEach((bottle) => {
+            if (bottle.update) {
+                bottle.update(deltaTime);
+            }
         });
         this.level.coins.forEach((coin) => coin.animate(deltaTime));
         this.level.enemies.forEach((enemy) => {
@@ -240,6 +246,7 @@ class World {
 
             if (this.isStompCollision(enemy)) {
                 enemy.stomp();
+                this.maybeDropBottle(enemy);
                 this.character.bounce();
                 return true;
             }
@@ -279,19 +286,36 @@ class World {
     }
 
     checkThrowableCollisions() {
-        if (this.level.endboss.isDead()) {
-            return;
-        }
-
         this.throwableObjects.forEach((bottle) => {
-            if (bottle.isSplashing || !bottle.isColliding(this.level.endboss)) {
+            if (bottle.isSplashing) {
                 return;
             }
 
-            this.bossFightStarted = true;
-            this.level.endboss.hit();
-            bottle.startSplash();
+            let hitEnemy = this.level.enemies.find((enemy) => !enemy.isDefeated && bottle.isColliding(enemy));
+
+            if (hitEnemy) {
+                hitEnemy.stomp();
+                bottle.startSplash();
+                return;
+            }
+
+            if (!this.level.endboss.isDead() && bottle.isColliding(this.level.endboss)) {
+                this.bossFightStarted = true;
+                this.level.endboss.hit();
+                bottle.startSplash();
+            }
         });
+    }
+
+    maybeDropBottle(enemy) {
+        if (!(enemy instanceof Chicken) || Math.random() >= this.bottleDropChance) {
+            return;
+        }
+
+        let dropX = enemy.x + enemy.width / 2 - 40;
+        let droppedBottle = new SalsaBottle(dropX);
+        droppedBottle.startDropEffect();
+        this.level.bottles.push(droppedBottle);
     }
 
     checkEndbossCollisions() {
