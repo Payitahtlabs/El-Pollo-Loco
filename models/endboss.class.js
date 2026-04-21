@@ -5,7 +5,7 @@ class Endboss extends MovableObject {
     height = 400;
     speed = 110;
     animationFps = 7;
-    attackRange = 120;
+    attackRange = 40;
     currentState = 'alert';
     deathAnimationFinished = false;
     offset = {
@@ -79,19 +79,19 @@ class Endboss extends MovableObject {
             return;
         }
 
-        if (this.isAttacking(character)) {
-            return;
-        }
-
-        let distanceToCharacter = this.x - character.x;
-        if (distanceToCharacter > 140) {
+        if (this.getHorizontalGapToCharacter(character) > 0) {
             this.moveLeft(deltaTime);
         }
     }
 
     isAttacking(character) {
+        return this.getHorizontalGapToCharacter(character) <= this.attackRange;
+    }
+
+    getHorizontalGapToCharacter(character) {
         let characterFront = character.x + character.width - character.offset.right;
-        return this.x - characterFront <= this.attackRange;
+        let bossFront = this.x + this.offset.left;
+        return bossFront - characterFront;
     }
 
     animate(deltaTime, bossFightStarted, character) {
