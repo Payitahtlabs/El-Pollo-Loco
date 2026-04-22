@@ -12,6 +12,10 @@ let muteButton;
 let muteIcon;
 let fullscreenButton;
 let fullscreenIcon;
+let restartButtons = [];
+let homeButtons = [];
+let startHintTitle;
+let startHintSubtitle;
 let startListenersAttached = false;
 let restartListenersAttached = false;
 const MUTE_STORAGE_KEY = 'el-pollo-loco-audio-muted';
@@ -30,14 +34,37 @@ function init() {
     muteIcon = document.getElementById('mute-icon');
     fullscreenButton = document.getElementById('fullscreen-button');
     fullscreenIcon = document.getElementById('fullscreen-icon');
+    restartButtons = Array.from(document.querySelectorAll('[id$="restart-button"]'));
+    homeButtons = Array.from(document.querySelectorAll('[id$="home-button"]'));
+    startHintTitle = document.getElementById('start-hint-title');
+    startHintSubtitle = document.getElementById('start-hint-subtitle');
     attachTouchControlListeners();
     attachGameSurfaceInteractionGuards();
     attachStartListeners();
     attachAudioControlListeners();
     updateFullscreenAvailability();
     attachFullscreenListeners();
+    attachResponsiveHintListeners();
+    updateInteractionHints();
     updateMuteButtonState();
     updateFullscreenButtonState();
+}
+
+function attachResponsiveHintListeners() {
+    window.addEventListener('resize', updateInteractionHints);
+    window.addEventListener('orientationchange', updateInteractionHints);
+}
+
+function updateInteractionHints() {
+    let usesTouchPrimary = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+    if (startHintTitle) {
+        startHintTitle.textContent = usesTouchPrimary ? 'Tap to Start' : 'Click to Start';
+    }
+
+    if (startHintSubtitle) {
+        startHintSubtitle.textContent = usesTouchPrimary ? 'or tap anywhere on the screen' : 'or Press Enter / Space';
+    }
 }
 
 function attachGameSurfaceInteractionGuards() {
@@ -68,16 +95,30 @@ function startGame() {
         return;
     }
 
-    if (startScreen) {
-        startScreen.classList.add('hidden');
-        startScreen.setAttribute('aria-hidden', 'true');
-    }
-
+    hideStartScreen();
     canvas.classList.remove('hidden');
     detachStartListeners();
     showTouchControls();
     audioManager.playBackgroundMusic();
     initializeGame();
+}
+
+function hideStartScreen() {
+    if (!startScreen) {
+        return;
+    }
+
+    startScreen.classList.add('hidden');
+    startScreen.setAttribute('aria-hidden', 'true');
+}
+
+function showStartScreen() {
+    if (!startScreen) {
+        return;
+    }
+
+    startScreen.classList.remove('hidden');
+    startScreen.setAttribute('aria-hidden', 'false');
 }
 
 function initializeGame() {
@@ -99,6 +140,33 @@ function restartGame() {
     showTouchControls();
     audioManager.playBackgroundMusic();
     initializeGame();
+}
+
+function returnToHome() {
+    teardownCurrentGame();
+    detachRestartListeners();
+    hideTouchControls();
+
+    if (audioManager) {
+        audioManager.stopBackgroundMusic();
+    }
+
+    if (winScreen) {
+        winScreen.classList.add('hidden');
+        winScreen.setAttribute('aria-hidden', 'true');
+    }
+
+    if (gameOverScreen) {
+        gameOverScreen.classList.add('hidden');
+        gameOverScreen.setAttribute('aria-hidden', 'true');
+    }
+
+    if (canvas) {
+        canvas.classList.add('hidden');
+    }
+
+    showStartScreen();
+    attachStartListeners();
 }
 
 function teardownCurrentGame() {
@@ -245,12 +313,8 @@ function attachRestartListeners() {
     }
 
     window.addEventListener('keydown', handleRestartKeydown);
-    if (winScreen) {
-        winScreen.addEventListener('click', restartGame);
-    }
-    if (gameOverScreen) {
-        gameOverScreen.addEventListener('click', restartGame);
-    }
+    restartButtons.forEach((button) => button.addEventListener('click', restartGame));
+    homeButtons.forEach((button) => button.addEventListener('click', returnToHome));
     restartListenersAttached = true;
 }
 
@@ -260,12 +324,8 @@ function detachRestartListeners() {
     }
 
     window.removeEventListener('keydown', handleRestartKeydown);
-    if (winScreen) {
-        winScreen.removeEventListener('click', restartGame);
-    }
-    if (gameOverScreen) {
-        gameOverScreen.removeEventListener('click', restartGame);
-    }
+    restartButtons.forEach((button) => button.removeEventListener('click', restartGame));
+    homeButtons.forEach((button) => button.removeEventListener('click', returnToHome));
     restartListenersAttached = false;
 }
 

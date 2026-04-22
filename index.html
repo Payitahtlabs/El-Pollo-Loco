@@ -51,18 +51,24 @@
             <div id="start-screen" class="game-overlay" aria-hidden="false">
                 <img src="img/intro_outro_screens/start/startscreen_1.png" alt="Start Game" draggable="false">
                 <div class="start-hint">
-                    <p class="start-hint-title">Click to Start</p>
-                    <p class="start-hint-subtitle">or Press Enter / Space</p>
+                    <p id="start-hint-title" class="start-hint-title">Click to Start</p>
+                    <p id="start-hint-subtitle" class="start-hint-subtitle">or Press Enter / Space</p>
                 </div>
             </div>
             <canvas id="canvas" class="hidden" width="720" height="480"></canvas>
             <div id="win-screen" class="game-overlay hidden" aria-hidden="true">
                 <img src="img/intro_outro_screens/win/win_4.png" alt="You won" draggable="false">
-                <p class="restart-hint">Click or Press Enter / Space to Restart</p>
+                <div class="overlay-actions">
+                    <button id="win-restart-button" class="overlay-action-button overlay-action-button-primary" type="button">Restart</button>
+                    <button id="win-home-button" class="overlay-action-button overlay-action-button-secondary" type="button">Home</button>
+                </div>
             </div>
             <div id="game-over-screen" class="game-overlay hidden" aria-hidden="true">
                 <img src="img/intro_outro_screens/game_over/you_lost_3.png" alt="Game over" draggable="false">
-                <p class="restart-hint">Click or Press Enter / Space to Restart</p>
+                <div class="overlay-actions">
+                    <button id="game-over-restart-button" class="overlay-action-button overlay-action-button-primary" type="button">Restart</button>
+                    <button id="game-over-home-button" class="overlay-action-button overlay-action-button-secondary" type="button">Home</button>
+                </div>
             </div>
             <div id="touch-controls" class="touch-controls hidden" aria-hidden="true">
                 <div class="touch-controls-group touch-controls-left">
