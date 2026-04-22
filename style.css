@@ -394,6 +394,13 @@ canvas {
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.22);
 }
 
+.start-control-key-icon {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+    filter: brightness(0) invert(0.98) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.55));
+}
+
 .start-control-icon {
     width: 26px;
     height: 26px;
