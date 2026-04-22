@@ -14,8 +14,7 @@ let fullscreenButton;
 let fullscreenIcon;
 let restartButtons = [];
 let homeButtons = [];
-let startHintTitle;
-let startHintSubtitle;
+let startHintText;
 let startListenersAttached = false;
 let restartListenersAttached = false;
 const MUTE_STORAGE_KEY = 'el-pollo-loco-audio-muted';
@@ -36,8 +35,7 @@ function init() {
     fullscreenIcon = document.getElementById('fullscreen-icon');
     restartButtons = Array.from(document.querySelectorAll('[id$="restart-button"]'));
     homeButtons = Array.from(document.querySelectorAll('[id$="home-button"]'));
-    startHintTitle = document.getElementById('start-hint-title');
-    startHintSubtitle = document.getElementById('start-hint-subtitle');
+    startHintText = document.getElementById('start-hint-text');
     attachTouchControlListeners();
     attachGameSurfaceInteractionGuards();
     attachStartListeners();
@@ -58,12 +56,8 @@ function attachResponsiveHintListeners() {
 function updateInteractionHints() {
     let usesTouchPrimary = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
-    if (startHintTitle) {
-        startHintTitle.textContent = usesTouchPrimary ? 'Tap to Start' : 'Click to Start';
-    }
-
-    if (startHintSubtitle) {
-        startHintSubtitle.textContent = usesTouchPrimary ? 'or tap anywhere on the screen' : 'or Press Enter / Space';
+    if (startHintText) {
+        startHintText.textContent = usesTouchPrimary ? 'Tap to Start' : 'Press Enter / Space to Start';
     }
 }
 
