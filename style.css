@@ -463,6 +463,20 @@ canvas {
     padding: 0;
 }
 
+.help-imprint-link {
+    font-family: 'Boogaloo', cursive;
+    font-size: 0.98rem;
+    letter-spacing: 0.03em;
+    color: rgba(255, 246, 204, 0.82);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 246, 204, 0.24);
+}
+
+.help-imprint-link:hover {
+    color: #fff6cc;
+    border-bottom-color: rgba(255, 246, 204, 0.5);
+}
+
 .start-screen-content {
     position: relative;
     z-index: 1;
