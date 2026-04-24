@@ -492,8 +492,7 @@ function applyStoredAudioState() {
 function readStoredMutedState() {
     try {
         return localStorage.getItem(MUTE_STORAGE_KEY) === 'true';
-    } catch (error) {
-        console.warn('Muted audio state could not be read.', error);
+    } catch {
         return false;
     }
 }
@@ -501,8 +500,8 @@ function readStoredMutedState() {
 function persistMutedState(isMuted) {
     try {
         localStorage.setItem(MUTE_STORAGE_KEY, String(isMuted));
-    } catch (error) {
-        console.warn('Muted audio state could not be stored.', error);
+    } catch {
+        return;
     }
 }
 
@@ -528,9 +527,7 @@ function enterFullscreenMode() {
 
     let fullscreenResult = requestFullscreen.call(gameShellFrame);
     if (fullscreenResult && typeof fullscreenResult.catch === 'function') {
-        fullscreenResult.catch((error) => {
-            console.warn('Fullscreen could not be started.', error);
-        });
+        fullscreenResult.catch(() => {});
     }
 }
 
@@ -543,9 +540,7 @@ function exitFullscreenMode() {
 
     let fullscreenResult = exitFullscreen.call(document);
     if (fullscreenResult && typeof fullscreenResult.catch === 'function') {
-        fullscreenResult.catch((error) => {
-            console.warn('Fullscreen could not be exited.', error);
-        });
+        fullscreenResult.catch(() => {});
     }
 }
 

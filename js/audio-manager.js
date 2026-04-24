@@ -24,9 +24,7 @@ class AudioManager {
             .then(() => {
                 this.backgroundMusicStarted = true;
             })
-            .catch((error) => {
-                console.warn('Background music could not start.', error);
-            });
+            .catch(() => {});
     }
 
     pauseBackgroundMusic() {
