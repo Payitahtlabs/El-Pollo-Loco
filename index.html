@@ -50,11 +50,47 @@
         <div class="game-shell">
             <div id="start-screen" class="game-overlay" aria-hidden="false">
                 <img src="img/intro_outro_screens/start/startscreen_1.png" alt="Start Game" draggable="false">
+                <button id="help-button" class="help-button" type="button" aria-label="Show help and controls">?</button>
                 <div class="start-screen-content">
                     <div class="start-hint">
                         <p id="start-hint-text" class="start-hint-text">Press Enter / Space to Start</p>
                     </div>
-                    <p class="start-objective">Collect coins and bottles, dodge the chickens, and defeat the endboss.</p>
+                </div>
+                <div id="help-overlay" class="help-overlay hidden" aria-hidden="true">
+                    <div class="help-card" role="dialog" aria-modal="true" aria-labelledby="help-title">
+                        <button id="help-close-button" class="help-close-button" type="button" aria-label="Close help">×</button>
+                        <h2 id="help-title" class="help-title">How to Play</h2>
+                        <p class="help-objective">Collect coins and bottles, dodge the chickens, and defeat the endboss.</p>
+                        <div class="start-info-panel help-info-panel" aria-label="Game controls">
+                            <div class="start-control-item">
+                                <div class="start-control-icons" aria-hidden="true">
+                                    <span class="start-control-key">
+                                        <img src="img/icons/control-left.svg" alt="" class="start-control-key-icon" draggable="false">
+                                    </span>
+                                    <span class="start-control-key">
+                                        <img src="img/icons/control-right.svg" alt="" class="start-control-key-icon" draggable="false">
+                                    </span>
+                                </div>
+                                <span class="start-control-label">Move</span>
+                            </div>
+                            <div class="start-control-item">
+                                <div class="start-control-icons" aria-hidden="true">
+                                    <span class="start-control-key">
+                                        <img src="img/icons/control-jump.svg" alt="" class="start-control-key-icon" draggable="false">
+                                    </span>
+                                    <span class="start-control-or">or</span>
+                                    <span class="start-control-key">Space</span>
+                                </div>
+                                <span class="start-control-label">Jump</span>
+                            </div>
+                            <div class="start-control-item">
+                                <div class="start-control-icons" aria-hidden="true">
+                                    <span class="start-control-key">D</span>
+                                </div>
+                                <span class="start-control-label">Throw</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <canvas id="canvas" class="hidden" width="720" height="480"></canvas>
@@ -92,35 +128,6 @@
             </div>
         </div>
 
-        <div class="start-info-panel" aria-label="Game controls">
-            <div class="start-control-item">
-                <div class="start-control-icons" aria-hidden="true">
-                    <span class="start-control-key">
-                        <img src="img/icons/control-left.svg" alt="" class="start-control-key-icon" draggable="false">
-                    </span>
-                    <span class="start-control-key">
-                        <img src="img/icons/control-right.svg" alt="" class="start-control-key-icon" draggable="false">
-                    </span>
-                </div>
-                <span class="start-control-label">Move</span>
-            </div>
-            <div class="start-control-item">
-                <div class="start-control-icons" aria-hidden="true">
-                    <span class="start-control-key">
-                        <img src="img/icons/control-jump.svg" alt="" class="start-control-key-icon" draggable="false">
-                    </span>
-                    <span class="start-control-or">or</span>
-                    <span class="start-control-key">Space</span>
-                </div>
-                <span class="start-control-label">Jump</span>
-            </div>
-            <div class="start-control-item">
-                <div class="start-control-icons" aria-hidden="true">
-                    <span class="start-control-key">D</span>
-                </div>
-                <span class="start-control-label">Throw</span>
-            </div>
-        </div>
     </div>
 
     <div class="rotate-device-overlay" aria-hidden="true">

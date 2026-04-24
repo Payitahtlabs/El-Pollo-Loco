@@ -15,6 +15,9 @@ let fullscreenIcon;
 let restartButtons = [];
 let homeButtons = [];
 let startHintText;
+let helpButton;
+let helpOverlay;
+let helpCloseButton;
 let startListenersAttached = false;
 let restartListenersAttached = false;
 const MUTE_STORAGE_KEY = 'el-pollo-loco-audio-muted';
@@ -36,16 +39,82 @@ function init() {
     restartButtons = Array.from(document.querySelectorAll('[id$="restart-button"]'));
     homeButtons = Array.from(document.querySelectorAll('[id$="home-button"]'));
     startHintText = document.getElementById('start-hint-text');
+    helpButton = document.getElementById('help-button');
+    helpOverlay = document.getElementById('help-overlay');
+    helpCloseButton = document.getElementById('help-close-button');
     attachTouchControlListeners();
     attachGameSurfaceInteractionGuards();
     attachStartListeners();
     attachAudioControlListeners();
     updateFullscreenAvailability();
     attachFullscreenListeners();
+    attachHelpOverlayListeners();
     attachResponsiveHintListeners();
     updateInteractionHints();
     updateMuteButtonState();
     updateFullscreenButtonState();
+}
+
+function attachHelpOverlayListeners() {
+    if (helpButton) {
+        helpButton.addEventListener('click', openHelpOverlay);
+    }
+
+    if (helpCloseButton) {
+        helpCloseButton.addEventListener('click', closeHelpOverlay);
+    }
+
+    if (helpOverlay) {
+        helpOverlay.addEventListener('click', handleHelpOverlayBackdropClick);
+    }
+
+    window.addEventListener('keydown', handleHelpOverlayKeydown);
+}
+
+function openHelpOverlay(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    if (!helpOverlay) {
+        return;
+    }
+
+    helpOverlay.classList.remove('hidden');
+    helpOverlay.setAttribute('aria-hidden', 'false');
+}
+
+function closeHelpOverlay(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    if (!helpOverlay) {
+        return;
+    }
+
+    helpOverlay.classList.add('hidden');
+    helpOverlay.setAttribute('aria-hidden', 'true');
+}
+
+function handleHelpOverlayBackdropClick(event) {
+    event.stopPropagation();
+
+    if (event.target !== helpOverlay) {
+        return;
+    }
+
+    closeHelpOverlay();
+}
+
+function handleHelpOverlayKeydown(event) {
+    if (event.code !== 'Escape' || !helpOverlay || helpOverlay.classList.contains('hidden')) {
+        return;
+    }
+
+    closeHelpOverlay();
 }
 
 function attachResponsiveHintListeners() {
@@ -69,6 +138,9 @@ function attachGameSurfaceInteractionGuards() {
         gameOverScreen,
         muteButton,
         fullscreenButton,
+        helpButton,
+        helpOverlay,
+        helpCloseButton,
         gameShellFrame,
         document.querySelector('h1'),
     ];
