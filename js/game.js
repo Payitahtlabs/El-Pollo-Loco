@@ -18,9 +18,11 @@ let startHintText;
 let helpButton;
 let helpOverlay;
 let helpCloseButton;
+let helpOverlayCloseTimeout;
 let startListenersAttached = false;
 let restartListenersAttached = false;
 const MUTE_STORAGE_KEY = 'el-pollo-loco-audio-muted';
+const HELP_OVERLAY_ANIMATION_DURATION_MS = 180;
 
 function init() {
     canvas = document.getElementById('canvas');
@@ -81,8 +83,26 @@ function openHelpOverlay(event) {
         return;
     }
 
+    if (helpButton) {
+        helpButton.blur();
+    }
+
+    window.clearTimeout(helpOverlayCloseTimeout);
     helpOverlay.classList.remove('hidden');
+    helpOverlay.classList.remove('is-closing');
     helpOverlay.setAttribute('aria-hidden', 'false');
+
+    requestAnimationFrame(() => {
+        if (!helpOverlay) {
+            return;
+        }
+
+        helpOverlay.classList.add('is-visible');
+
+        if (helpCloseButton) {
+            helpCloseButton.focus({ preventScroll: true });
+        }
+    });
 }
 
 function closeHelpOverlay(event) {
@@ -95,8 +115,23 @@ function closeHelpOverlay(event) {
         return;
     }
 
-    helpOverlay.classList.add('hidden');
+    if (helpOverlay.contains(document.activeElement)) {
+        document.activeElement.blur();
+    }
+
+    helpOverlay.classList.remove('is-visible');
+    helpOverlay.classList.add('is-closing');
     helpOverlay.setAttribute('aria-hidden', 'true');
+
+    window.clearTimeout(helpOverlayCloseTimeout);
+    helpOverlayCloseTimeout = window.setTimeout(() => {
+        if (!helpOverlay) {
+            return;
+        }
+
+        helpOverlay.classList.add('hidden');
+        helpOverlay.classList.remove('is-closing');
+    }, HELP_OVERLAY_ANIMATION_DURATION_MS);
 }
 
 function handleHelpOverlayBackdropClick(event) {

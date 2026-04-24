@@ -107,6 +107,12 @@ h1,
         filter: brightness(1.08);
     }
 
+    .help-button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 246, 204, 0.28);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 246, 204, 0.1);
+    }
+
     .toolbar-button:hover,
     .fullscreen-button:hover {
         transform: translateY(-1px);
@@ -118,6 +124,11 @@ h1,
 .fullscreen-button:active {
     transform: translateY(0);
     opacity: 0.76;
+}
+
+.help-button:active,
+.help-close-button:active {
+    transform: translateY(1px);
 }
 
 .toolbar-button:focus-visible,
@@ -338,15 +349,19 @@ canvas {
     justify-content: center;
     width: 38px;
     height: 38px;
-    border: 1px solid rgba(255, 246, 204, 0.3);
+    border: 1px solid rgba(255, 246, 204, 0.18);
     border-radius: 999px;
     padding: 0;
     font-family: 'Boogaloo', cursive;
-    font-size: 1.25rem;
-    color: #fff6cc;
-    background: linear-gradient(180deg, rgba(49, 25, 10, 0.9), rgba(24, 12, 5, 0.94));
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.24);
+    font-size: 1.05rem;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: rgba(255, 246, 204, 0.96);
+    background: linear-gradient(180deg, rgba(67, 36, 14, 0.72), rgba(25, 13, 5, 0.86));
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 246, 204, 0.08);
+    backdrop-filter: blur(4px);
     cursor: pointer;
+    transition: transform 140ms ease, filter 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
 }
 
 .help-button:focus-visible,
@@ -364,6 +379,16 @@ canvas {
     justify-content: center;
     padding: 20px;
     background: rgba(0, 0, 0, 0.48);
+    opacity: 0;
+    transition: opacity 180ms ease;
+}
+
+.help-overlay.is-visible {
+    opacity: 1;
+}
+
+.help-overlay.is-closing {
+    opacity: 0;
 }
 
 .help-card {
@@ -379,6 +404,19 @@ canvas {
     background: linear-gradient(180deg, rgba(44, 22, 8, 0.94), rgba(20, 10, 4, 0.96));
     box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
     text-align: center;
+    transform: translateY(12px) scale(0.97);
+    opacity: 0;
+    transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.help-overlay.is-visible .help-card {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+.help-overlay.is-closing .help-card {
+    transform: translateY(10px) scale(0.98);
+    opacity: 0;
 }
 
 .help-close-button {
@@ -810,7 +848,7 @@ canvas {
         bottom: 10px;
         width: 34px;
         height: 34px;
-        font-size: 1.1rem;
+        font-size: 0.96rem;
     }
 
     .game-toolbar {
