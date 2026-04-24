@@ -32,6 +32,7 @@ function init() {
     touchControls = document.getElementById('touch-controls');
     touchButtons = Array.from(document.querySelectorAll('.touch-button'));
     audioManager = new AudioManager('audio/background-music.mp3');
+    audioManager.registerSound('coinCollect', 'audio/sfx/items/coin-collect.mp3', 0.35);
     applyStoredAudioState();
     gameShellFrame = document.getElementById('game-shell-frame');
     muteButton = document.getElementById('mute-button');
@@ -226,6 +227,7 @@ function initializeGame() {
     initLevel();
     keyboard = new Keyboard();
     world = new World(canvas, keyboard, {
+        audioManager,
         onGameLost: enableRestart,
         onGameWon: enableRestart,
     });

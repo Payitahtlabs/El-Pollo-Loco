@@ -35,6 +35,7 @@ class World {
     gameOverScreenOverlay;
     onGameWon;
     onGameLost;
+    audioManager;
     camera_x = 0;
     showHitboxes = false;
 
@@ -50,6 +51,7 @@ class World {
         this.keyboard = keyboard;
         this.winScreenOverlay = document.getElementById('win-screen');
         this.gameOverScreenOverlay = document.getElementById('game-over-screen');
+        this.audioManager = gameEvents.audioManager || null;
         this.onGameWon = gameEvents.onGameWon || null;
         this.onGameLost = gameEvents.onGameLost || null;
         this.hideWinOverlay();
@@ -270,6 +272,7 @@ class World {
             }
 
             this.character.collectCoin();
+            this.audioManager?.playSound('coinCollect');
             return false;
         });
     }
