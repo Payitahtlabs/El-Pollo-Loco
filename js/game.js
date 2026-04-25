@@ -21,8 +21,10 @@ let helpCloseButton;
 let helpOverlayCloseTimeout;
 let startListenersAttached = false;
 let restartListenersAttached = false;
+let lastHelpOverlayOpenAt = 0;
 const MUTE_STORAGE_KEY = 'el-pollo-loco-audio-muted';
 const HELP_OVERLAY_ANIMATION_DURATION_MS = 180;
+const HELP_OVERLAY_INTERACTION_GUARD_MS = 400;
 
 function init() {
     canvas = document.getElementById('canvas');
@@ -60,6 +62,7 @@ function init() {
 
 function attachHelpOverlayListeners() {
     if (helpButton) {
+        helpButton.addEventListener('pointerup', openHelpOverlay);
         helpButton.addEventListener('click', openHelpOverlay);
     }
 
@@ -88,6 +91,7 @@ function openHelpOverlay(event) {
         helpButton.blur();
     }
 
+    lastHelpOverlayOpenAt = Date.now();
     window.clearTimeout(helpOverlayCloseTimeout);
     helpOverlay.classList.remove('hidden');
     helpOverlay.classList.remove('is-closing');
@@ -201,6 +205,7 @@ function startGame() {
     canvas.classList.remove('hidden');
     detachStartListeners();
     showTouchControls();
+    audioManager.unlockAudio();
     audioManager.playBackgroundMusic();
     initializeGame();
 }
@@ -241,6 +246,7 @@ function restartGame() {
     teardownCurrentGame();
     detachRestartListeners();
     showTouchControls();
+    audioManager.unlockAudio();
     audioManager.playBackgroundMusic();
     initializeGame();
 }
@@ -393,7 +399,7 @@ function attachStartListeners() {
 
     window.addEventListener('keydown', handleStartKeydown);
     if (startScreen) {
-        startScreen.addEventListener('click', startGame);
+        startScreen.addEventListener('click', handleStartScreenClick);
     }
     startListenersAttached = true;
 }
@@ -405,9 +411,21 @@ function detachStartListeners() {
 
     window.removeEventListener('keydown', handleStartKeydown);
     if (startScreen) {
-        startScreen.removeEventListener('click', startGame);
+        startScreen.removeEventListener('click', handleStartScreenClick);
     }
     startListenersAttached = false;
+}
+
+function handleStartScreenClick(event) {
+    if (Date.now() - lastHelpOverlayOpenAt < HELP_OVERLAY_INTERACTION_GUARD_MS) {
+        return;
+    }
+
+    if (event.target.closest('button, a, [role="dialog"]')) {
+        return;
+    }
+
+    startGame();
 }
 
 function attachRestartListeners() {
