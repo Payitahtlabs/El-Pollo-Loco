@@ -262,6 +262,7 @@ class World {
 
             if (this.isStompCollision(enemy)) {
                 enemy.stomp();
+                this.playChickenStompSound(enemy);
                 this.maybeDropBottle(enemy);
                 this.character.bounce();
                 return true;
@@ -279,6 +280,38 @@ class World {
         let enemyTop = enemy.y + enemy.offset.top;
 
         return this.character.speedY > 0 && characterBottom <= enemyTop + 35;
+    }
+
+    isChickenEnemy(enemy) {
+        return enemy instanceof Chicken || enemy instanceof SmallChicken;
+    }
+
+    isSmallChicken(enemy) {
+        return enemy instanceof SmallChicken;
+    }
+
+    playChickenStompSound(enemy) {
+        if (!this.isChickenEnemy(enemy)) {
+            return;
+        }
+
+        this.audioManager?.playSound('chickenStomp');
+
+        if (this.isSmallChicken(enemy)) {
+            this.audioManager?.playSound('chickenSmallStompAccent');
+            return;
+        }
+
+        this.audioManager?.playSound('chickenStompAccent');
+    }
+
+    playChickenBottleHitSound(enemy) {
+        if (!this.isChickenEnemy(enemy)) {
+            return;
+        }
+
+        this.audioManager?.playSound('chickenHit');
+        this.audioManager?.playSound(this.isSmallChicken(enemy) ? 'chickenSmallHurt' : 'chickenHurt');
     }
 
     checkCoinCollisions() {
@@ -315,6 +348,7 @@ class World {
 
             if (hitEnemy) {
                 hitEnemy.stomp();
+                this.playChickenBottleHitSound(hitEnemy);
                 bottle.startSplash();
                 return;
             }

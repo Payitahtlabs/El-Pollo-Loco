@@ -35,6 +35,12 @@ function init() {
     touchButtons = Array.from(document.querySelectorAll('.touch-button'));
     audioManager = new AudioManager('audio/background-music.mp3');
     audioManager.registerSound('characterHurt', 'audio/sfx/items/character-hurt.wav', 0.32);
+    audioManager.registerSound('chickenHit', 'audio/sfx/items/chicken-hit.wav', 0.18);
+    audioManager.registerSound('chickenHurt', 'audio/sfx/items/chicken-hurt.wav', 0.34);
+    audioManager.registerSound('chickenStompAccent', 'audio/sfx/items/chicken-hurt.wav', 0.26);
+    audioManager.registerSound('chickenSmallHurt', 'audio/sfx/items/chicken-small-hurt.wav', 0.2);
+    audioManager.registerSound('chickenStomp', 'audio/sfx/items/chicken-stomp.wav', 0.28);
+    audioManager.registerSound('chickenSmallStompAccent', 'audio/sfx/items/chicken-small-hurt.wav', 0.12);
     audioManager.registerSound('coinCollect', 'audio/sfx/items/coin-collect.mp3', 0.35);
     audioManager.registerSound('bottleCollect', 'audio/sfx/items/bottle-collect.wav', 0.3);
     audioManager.registerSound('bottleThrow', 'audio/sfx/items/bottle-throw.wav', 0.3);
