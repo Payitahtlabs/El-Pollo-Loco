@@ -34,9 +34,11 @@ function init() {
     touchControls = document.getElementById('touch-controls');
     touchButtons = Array.from(document.querySelectorAll('.touch-button'));
     audioManager = new AudioManager('audio/background-music.mp3');
+    audioManager.registerSound('characterHurt', 'audio/sfx/items/character-hurt.wav', 0.32);
     audioManager.registerSound('coinCollect', 'audio/sfx/items/coin-collect.mp3', 0.35);
+    audioManager.registerSound('bottleCollect', 'audio/sfx/items/bottle-collect.wav', 0.3);
     audioManager.registerSound('bottleThrow', 'audio/sfx/items/bottle-throw.wav', 0.3);
-    audioManager.registerSound('bottleHit', 'audio/sfx/items/bottle-hit.mp3', 0.34);
+    audioManager.registerSound('bottleSplash', 'audio/sfx/items/bottle-splash.wav', 0.34);
     audioManager.registerSound('jump', 'audio/sfx/items/jump.wav', 0.26);
     applyStoredAudioState();
     gameShellFrame = document.getElementById('game-shell-frame');

@@ -177,14 +177,19 @@ class Character extends MovableObject {
 
     hit() {
         let wasDead = this.isDead();
+        let wasHit = super.hit();
 
-        super.hit();
+        if (!wasHit) {
+            return false;
+        }
 
         if (!wasDead && this.isDead()) {
             this.currentImage = 0;
             this.animationCounter = 0;
             this.deathAnimationFinished = false;
         }
+
+        return true;
     }
 
     animate(deltaTime) {

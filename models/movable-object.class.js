@@ -74,7 +74,7 @@ class MovableObject extends DrawableObject {
     }
 
     hit() {
-        if (this.isHurt()) return;
+        if (this.isHurt()) return false;
 
         this.energy -= 20;
         if (this.energy < 0) {
@@ -82,6 +82,7 @@ class MovableObject extends DrawableObject {
         }
 
         this.lastHit = Date.now();
+        return true;
     }
 
     isHurt() {
