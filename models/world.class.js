@@ -81,6 +81,7 @@ class World {
         this.level.clouds.forEach((cloud) => cloud.update(deltaTime, this.level.levelEndX));
         this.character.update(deltaTime, this.keyboard, this.level);
         this.character.animate(deltaTime);
+        this.playJumpSoundIfNeeded();
         this.healthStatusBar.setPercentage(this.character.energy);
         this.bottleCounter.setValue(this.character.collectedBottles);
         this.coinCounter.setValue(this.character.collectedCoins);
@@ -88,7 +89,13 @@ class World {
         this.updateEndbossFightState();
         this.endbossStatusBar.setPercentage(this.level.endboss.energy);
         this.throwableObjects = this.throwableObjects.filter((bottle) => {
+            let wasSplashing = bottle.isSplashing;
             bottle.update(deltaTime);
+
+            if (!wasSplashing && bottle.isSplashing) {
+                this.audioManager?.playSound('bottleHit');
+            }
+
             return !bottle.shouldRemove();
         });
         this.level.bottles.forEach((bottle) => {
@@ -207,6 +214,12 @@ class World {
         }
     }
 
+    playJumpSoundIfNeeded() {
+        if (this.character.didJumpThisFrame) {
+            this.audioManager?.playSound('jump');
+        }
+    }
+
     handleBottleThrow() {
         if (this.keyboard.D && !this.throwKeyPressed && !this.character.isDead()) {
             this.throwBottle();
@@ -226,6 +239,7 @@ class World {
         let bottleY = this.character.y + 100;
 
         this.throwableObjects.push(new ThrowableBottle(bottleX, bottleY, throwToLeft));
+        this.audioManager?.playSound('bottleThrow');
     }
 
     checkCollisions() {
@@ -298,14 +312,18 @@ class World {
 
             if (hitEnemy) {
                 hitEnemy.stomp();
-                bottle.startSplash();
+                if (bottle.startSplash()) {
+                    this.audioManager?.playSound('bottleHit');
+                }
                 return;
             }
 
             if (!this.level.endboss.isDead() && bottle.isColliding(this.level.endboss)) {
                 this.bossFightStarted = true;
                 this.level.endboss.hit();
-                bottle.startSplash();
+                if (bottle.startSplash()) {
+                    this.audioManager?.playSound('bottleHit');
+                }
             }
         });
     }

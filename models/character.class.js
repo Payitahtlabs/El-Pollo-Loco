@@ -8,6 +8,7 @@ class Character extends MovableObject {
     isMoving = false;
     wasMoving = false;
     jumpKeyPressed = false;
+    didJumpThisFrame = false;
     idleTime = 0;
     longIdleDelay = 10;
     currentAnimationState = 'walk';
@@ -105,6 +106,7 @@ class Character extends MovableObject {
 
     update(deltaTime, keyboard, level) {
         this.isMoving = keyboard.RIGHT || keyboard.LEFT;
+        this.didJumpThisFrame = false;
         this.applyGravity(deltaTime);
         this.updateIdleTime(deltaTime);
 
@@ -138,8 +140,8 @@ class Character extends MovableObject {
     handleJumpInput(keyboard) {
         let jumpKeyActive = keyboard.UP || keyboard.SPACE;
 
-        if (jumpKeyActive && !this.jumpKeyPressed) {
-            this.jump();
+        if (jumpKeyActive && !this.jumpKeyPressed && this.jump()) {
+            this.didJumpThisFrame = true;
         }
 
         this.jumpKeyPressed = jumpKeyActive;

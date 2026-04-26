@@ -71,13 +71,16 @@ class ThrowableBottle extends MovableObject {
     }
 
     startSplash() {
-        if (this.isSplashing) return;
+        if (this.isSplashing) {
+            return false;
+        }
 
         this.isSplashing = true;
         this.splashStartedAt = Date.now();
         this.currentImage = 0;
         this.animationCounter = 0;
         this.img = this.imageCache[this.IMAGES_SPLASH[0]];
+        return true;
     }
 
     shouldRemove() {

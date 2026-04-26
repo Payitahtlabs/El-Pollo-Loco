@@ -54,8 +54,12 @@ class MovableObject extends DrawableObject {
     }
 
     jump() {
-        if (this.isAboveGround()) return;
+        if (this.isAboveGround()) {
+            return false;
+        }
+
         this.speedY = -this.jumpStrength;
+        return true;
     }
 
     bounce(strength = 600) {
