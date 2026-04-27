@@ -33,7 +33,7 @@ function init() {
     gameOverScreen = document.getElementById('game-over-screen');
     touchControls = document.getElementById('touch-controls');
     touchButtons = Array.from(document.querySelectorAll('.touch-button'));
-    audioManager = new AudioManager('audio/background-music.mp3');
+    audioManager = new AudioManager('audio/music/background-music.mp3');
     audioManager.registerSound('characterHurt', 'audio/sfx/items/character-hurt.wav', 0.32);
     audioManager.registerSound('chickenHit', 'audio/sfx/items/chicken-hit.wav', 0.18);
     audioManager.registerSound('chickenHurt', 'audio/sfx/items/chicken-hurt.wav', 0.34);
@@ -46,6 +46,11 @@ function init() {
     audioManager.registerSound('bottleThrow', 'audio/sfx/items/bottle-throw.wav', 0.3);
     audioManager.registerSound('bottleSplash', 'audio/sfx/items/bottle-splash.wav', 0.34);
     audioManager.registerSound('jump', 'audio/sfx/items/jump.wav', 0.26);
+    audioManager.registerSound('endbossAlert', 'audio/sfx/endboss/endboss-alert.wav', 0.4);
+    audioManager.registerSound('endbossAttack', 'audio/sfx/endboss/endboss-attack.wav', 0.36);
+    audioManager.registerSound('endbossHurt', 'audio/sfx/endboss/endboss-hurt.wav', 0.42);
+    audioManager.registerSound('endbossDeath', 'audio/sfx/endboss/endboss-death.wav', 0.46);
+    audioManager.registerSound('endbossImpact', 'audio/sfx/endboss/endboss-impact.wav', 0.34);
     applyStoredAudioState();
     gameShellFrame = document.getElementById('game-shell-frame');
     muteButton = document.getElementById('mute-button');

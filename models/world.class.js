@@ -113,6 +113,7 @@ class World {
         this.level.endboss.update(deltaTime, this.character, this.bossFightStarted);
         this.level.endboss.animate(deltaTime, this.bossFightStarted, this.character);
         this.checkCollisions();
+        this.playPendingEndbossSounds();
         this.checkLoseCondition();
         this.checkWinCondition();
         this.updateCamera();
@@ -212,9 +213,34 @@ class World {
         let characterFront = this.character.x + this.character.width;
 
         if (characterFront >= triggerX) {
-            this.bossFightStarted = true;
-            this.bossArenaLeftX = Math.max(0, triggerX - 180);
+            this.startBossFight(triggerX);
         }
+    }
+
+    startBossFight(triggerX = this.level.endboss.x - 300) {
+        if (this.bossFightStarted) {
+            return;
+        }
+
+        this.bossFightStarted = true;
+        this.bossArenaLeftX = Math.max(0, triggerX - 180);
+        this.audioManager?.playSound('endbossAlert');
+    }
+
+    playPendingEndbossSounds() {
+        this.level.endboss.consumeAudioEvents().forEach((eventName) => {
+            switch (eventName) {
+                case 'attack':
+                    this.audioManager?.playSound('endbossAttack');
+                    break;
+                case 'hurt':
+                    this.audioManager?.playSound('endbossHurt');
+                    break;
+                case 'death':
+                    this.audioManager?.playSound('endbossDeath');
+                    break;
+            }
+        });
     }
 
     playJumpSoundIfNeeded() {
@@ -357,7 +383,7 @@ class World {
             }
 
             if (!this.level.endboss.isDead() && bottle.isColliding(this.level.endboss)) {
-                this.bossFightStarted = true;
+                this.startBossFight();
                 this.level.endboss.hit();
                 bottle.startSplash();
             }
@@ -382,6 +408,7 @@ class World {
 
         if (this.character.isColliding(this.level.endboss)) {
             if (this.character.hit()) {
+                this.audioManager?.playSound('endbossImpact');
                 this.audioManager?.playSound('characterHurt');
             }
         }

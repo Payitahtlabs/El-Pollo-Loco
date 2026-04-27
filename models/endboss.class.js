@@ -17,6 +17,7 @@ class Endboss extends MovableObject {
     combatPhase = 'idle';
     phaseTimer = 0;
     attackCooldownTimer = 0;
+    pendingAudioEvents = [];
     deathAnimationFinished = false;
     offset = {
         top: 70,
@@ -83,6 +84,7 @@ class Endboss extends MovableObject {
         this.resetCombatPhase();
         this.attackCooldownTimer = this.attackCooldownDuration;
         this.currentImage = 0;
+        this.emitAudioEvent(this.isDead() ? 'death' : 'hurt');
         return true;
     }
 
@@ -176,6 +178,7 @@ class Endboss extends MovableObject {
             this.phaseTimer = this.attackDuration;
             this.currentImage = 0;
             this.animationCounter = 0;
+            this.emitAudioEvent('attack');
             return;
         }
 
@@ -194,6 +197,16 @@ class Endboss extends MovableObject {
     resetCombatPhase() {
         this.combatPhase = 'idle';
         this.phaseTimer = 0;
+    }
+
+    emitAudioEvent(eventName) {
+        this.pendingAudioEvents.push(eventName);
+    }
+
+    consumeAudioEvents() {
+        let events = [...this.pendingAudioEvents];
+        this.pendingAudioEvents.length = 0;
+        return events;
     }
 
     updateFacingDirection(character) {
