@@ -373,7 +373,7 @@ class World {
     }
 
     checkEndbossCollisions() {
-        if (this.level.endboss.isDead() || !this.bossFightStarted || !this.level.endboss.isAttacking(this.character)) {
+        if (this.level.endboss.isDead() || !this.bossFightStarted || !this.level.endboss.isAttacking()) {
             return;
         }
 

@@ -5,8 +5,17 @@ class Endboss extends MovableObject {
     height = 400;
     speed = 110;
     animationFps = 7;
-    attackRange = 40;
+    attackTriggerRange = 65;
+    attackSpeed = 260;
+    retreatSpeed = 140;
+    windupDuration = 0.45;
+    attackDuration = 0.65;
+    retreatDuration = 0.35;
+    attackCooldownDuration = 0.9;
     currentState = 'alert';
+    combatPhase = 'idle';
+    phaseTimer = 0;
+    attackCooldownTimer = 0;
     deathAnimationFinished = false;
     offset = {
         top: 70,
@@ -67,25 +76,121 @@ class Endboss extends MovableObject {
     }
 
     hit() {
-        if (this.isHurt()) return;
+        if (this.isHurt()) return false;
 
         super.hit();
+        this.resetCombatPhase();
+        this.attackCooldownTimer = this.attackCooldownDuration;
         this.currentImage = 0;
-        this.animationCounter = 0;
+        return true;
     }
 
     update(deltaTime, character, bossFightStarted) {
-        if (!bossFightStarted || this.isHurt() || this.isDead()) {
+        if (!bossFightStarted || this.isDead()) {
             return;
         }
 
-        if (this.getHorizontalGapToCharacter(character) > 0) {
+        this.updateCombatTimers(deltaTime);
+
+        if (this.isHurt()) {
+            return;
+        }
+
+        if (this.isAttacking()) {
+            this.x -= this.attackSpeed * deltaTime;
+            return;
+        }
+
+        if (this.isRetreating()) {
+            this.x += this.retreatSpeed * deltaTime;
+            return;
+        }
+
+        if (this.isWindingUp()) {
+            return;
+        }
+
+        if (this.canStartAttack(character)) {
+            this.startWindup();
+            return;
+        }
+
+        if (this.shouldMoveTowardsCharacter(character)) {
             this.moveLeft(deltaTime);
         }
     }
 
-    isAttacking(character) {
-        return this.getHorizontalGapToCharacter(character) <= this.attackRange;
+    isAttacking() {
+        return this.combatPhase === 'attack';
+    }
+
+    isWindingUp() {
+        return this.combatPhase === 'windup';
+    }
+
+    isRetreating() {
+        return this.combatPhase === 'retreat';
+    }
+
+    isInAttackCooldown() {
+        return this.attackCooldownTimer > 0;
+    }
+
+    canStartAttack(character) {
+        return !this.isInAttackCooldown() && this.getHorizontalGapToCharacter(character) <= this.attackTriggerRange;
+    }
+
+    shouldMoveTowardsCharacter(character) {
+        return this.getHorizontalGapToCharacter(character) > this.attackTriggerRange;
+    }
+
+    startWindup() {
+        this.combatPhase = 'windup';
+        this.phaseTimer = this.windupDuration;
+        this.currentImage = 0;
+        this.animationCounter = 0;
+    }
+
+    updateCombatTimers(deltaTime) {
+        if (this.attackCooldownTimer > 0) {
+            this.attackCooldownTimer = Math.max(0, this.attackCooldownTimer - deltaTime);
+        }
+
+        if (this.phaseTimer <= 0) {
+            return;
+        }
+
+        this.phaseTimer = Math.max(0, this.phaseTimer - deltaTime);
+
+        if (this.phaseTimer === 0) {
+            this.advanceCombatPhase();
+        }
+    }
+
+    advanceCombatPhase() {
+        if (this.isWindingUp()) {
+            this.combatPhase = 'attack';
+            this.phaseTimer = this.attackDuration;
+            this.currentImage = 0;
+            this.animationCounter = 0;
+            return;
+        }
+
+        if (this.combatPhase === 'attack') {
+            this.combatPhase = 'retreat';
+            this.phaseTimer = this.retreatDuration;
+            return;
+        }
+
+        if (this.isRetreating()) {
+            this.resetCombatPhase();
+            this.attackCooldownTimer = this.attackCooldownDuration;
+        }
+    }
+
+    resetCombatPhase() {
+        this.combatPhase = 'idle';
+        this.phaseTimer = 0;
     }
 
     getHorizontalGapToCharacter(character) {
@@ -116,7 +221,9 @@ class Endboss extends MovableObject {
         if (this.isDead()) return 'dead';
         if (this.isHurt()) return 'hurt';
         if (!bossFightStarted) return 'alert';
-        if (this.isAttacking(character)) return 'attack';
+        if (this.isAttacking()) return 'attack';
+        if (this.isRetreating()) return 'walk';
+        if (this.isWindingUp() || this.isInAttackCooldown()) return 'alert';
         return 'walk';
     }
 
