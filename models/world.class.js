@@ -26,6 +26,7 @@ class World {
     bottleDropChance = 0.25;
     throwableObjects = [];
     throwKeyPressed = false;
+    bossArenaLeftX = 0;
 
     // ── Canvas ───────────────────────────────────────────
     canvas;
@@ -78,6 +79,7 @@ class World {
             return;
         }
 
+        this.level.playerMinX = this.bossFightStarted ? this.bossArenaLeftX : 0;
         this.level.clouds.forEach((cloud) => cloud.update(deltaTime, this.level.levelEndX));
         this.character.update(deltaTime, this.keyboard, this.level);
         this.character.animate(deltaTime);
@@ -211,6 +213,7 @@ class World {
 
         if (characterFront >= triggerX) {
             this.bossFightStarted = true;
+            this.bossArenaLeftX = Math.max(0, triggerX - 180);
         }
     }
 

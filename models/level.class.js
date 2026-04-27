@@ -6,6 +6,7 @@ class Level {
     clouds;
     backgroundObjects;
     levelEndX;
+    playerMinX = 0;
 
     constructor(enemies, coins, bottles, endboss, clouds, backgroundObjects, levelEndX) {
         this.enemies = enemies;

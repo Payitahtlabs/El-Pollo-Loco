@@ -109,6 +109,7 @@ class Character extends MovableObject {
         this.didJumpThisFrame = false;
         this.applyGravity(deltaTime);
         this.updateIdleTime(deltaTime);
+        let minX = level.playerMinX ?? 0;
 
         if (this.isDead()) {
             this.isMoving = false;
@@ -128,8 +129,8 @@ class Character extends MovableObject {
 
         this.handleJumpInput(keyboard);
 
-        if (this.x < 0) {
-            this.x = 0;
+        if (this.x < minX) {
+            this.x = minX;
         }
 
         if (this.x + this.width > level.levelEndX) {

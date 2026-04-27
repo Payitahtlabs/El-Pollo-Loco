@@ -8,6 +8,7 @@ class Endboss extends MovableObject {
     attackTriggerRange = 65;
     attackSpeed = 260;
     retreatSpeed = 140;
+    turnThreshold = 20;
     windupDuration = 0.45;
     attackDuration = 0.65;
     retreatDuration = 0.35;
@@ -97,12 +98,14 @@ class Endboss extends MovableObject {
         }
 
         if (this.isAttacking()) {
-            this.x -= this.attackSpeed * deltaTime;
+            this.x += this.getFacingDirection() * this.attackSpeed * deltaTime;
             return;
         }
 
+        this.updateFacingDirection(character);
+
         if (this.isRetreating()) {
-            this.x += this.retreatSpeed * deltaTime;
+            this.x -= this.getFacingDirection() * this.retreatSpeed * deltaTime;
             return;
         }
 
@@ -116,7 +119,7 @@ class Endboss extends MovableObject {
         }
 
         if (this.shouldMoveTowardsCharacter(character)) {
-            this.moveLeft(deltaTime);
+            this.moveTowardsCharacter(deltaTime);
         }
     }
 
@@ -137,11 +140,11 @@ class Endboss extends MovableObject {
     }
 
     canStartAttack(character) {
-        return !this.isInAttackCooldown() && this.getHorizontalGapToCharacter(character) <= this.attackTriggerRange;
+        return !this.isInAttackCooldown() && this.getDistanceToCharacter(character) <= this.attackTriggerRange;
     }
 
     shouldMoveTowardsCharacter(character) {
-        return this.getHorizontalGapToCharacter(character) > this.attackTriggerRange;
+        return this.getDistanceToCharacter(character) > this.attackTriggerRange;
     }
 
     startWindup() {
@@ -193,10 +196,43 @@ class Endboss extends MovableObject {
         this.phaseTimer = 0;
     }
 
-    getHorizontalGapToCharacter(character) {
-        let characterFront = character.x + character.width - character.offset.right;
-        let bossFront = this.x + this.offset.left;
-        return bossFront - characterFront;
+    updateFacingDirection(character) {
+        let characterCenter = character.x + character.width / 2;
+        let bossCenter = this.x + this.width / 2;
+
+        if (characterCenter > bossCenter + this.turnThreshold) {
+            this.otherDirection = true;
+            return;
+        }
+
+        if (characterCenter < bossCenter - this.turnThreshold) {
+            this.otherDirection = false;
+        }
+    }
+
+    moveTowardsCharacter(deltaTime) {
+        this.x += this.getFacingDirection() * this.speed * deltaTime;
+    }
+
+    getFacingDirection() {
+        return this.otherDirection ? 1 : -1;
+    }
+
+    getDistanceToCharacter(character) {
+        let characterLeft = character.x + character.offset.left;
+        let characterRight = character.x + character.width - character.offset.right;
+        let bossLeft = this.x + this.offset.left;
+        let bossRight = this.x + this.width - this.offset.right;
+
+        if (characterRight < bossLeft) {
+            return bossLeft - characterRight;
+        }
+
+        if (characterLeft > bossRight) {
+            return characterLeft - bossRight;
+        }
+
+        return 0;
     }
 
     animate(deltaTime, bossFightStarted, character) {
