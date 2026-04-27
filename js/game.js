@@ -33,7 +33,7 @@ function init() {
     gameOverScreen = document.getElementById('game-over-screen');
     touchControls = document.getElementById('touch-controls');
     touchButtons = Array.from(document.querySelectorAll('.touch-button'));
-    audioManager = new AudioManager('audio/music/background-music.mp3');
+    audioManager = new AudioManager('audio/music/background-music.mp3', 'audio/music/endboss-battle-music.mp3');
     audioManager.registerSound('characterHurt', 'audio/sfx/items/character-hurt.wav', 0.32);
     audioManager.registerSound('chickenHit', 'audio/sfx/items/chicken-hit.wav', 0.18);
     audioManager.registerSound('chickenHurt', 'audio/sfx/items/chicken-hurt.wav', 0.34);
@@ -222,6 +222,7 @@ function startGame() {
     detachStartListeners();
     showTouchControls();
     audioManager.unlockAudio();
+    audioManager.resetMusicBlend();
     audioManager.playBackgroundMusic();
     initializeGame();
 }
@@ -263,6 +264,7 @@ function restartGame() {
     detachRestartListeners();
     showTouchControls();
     audioManager.unlockAudio();
+    audioManager.resetMusicBlend();
     audioManager.playBackgroundMusic();
     initializeGame();
 }
@@ -273,7 +275,7 @@ function returnToHome() {
     hideTouchControls();
 
     if (audioManager) {
-        audioManager.stopBackgroundMusic();
+        audioManager.stopAllMusic();
     }
 
     if (winScreen) {

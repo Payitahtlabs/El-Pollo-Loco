@@ -224,6 +224,7 @@ class World {
 
         this.bossFightStarted = true;
         this.bossArenaLeftX = Math.max(0, triggerX - 180);
+        this.audioManager?.crossfadeToBossMusic();
         this.audioManager?.playSound('endbossAlert');
     }
 

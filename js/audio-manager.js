@@ -1,37 +1,109 @@
 class AudioManager {
     backgroundMusic;
+    bossMusic;
     backgroundMusicStarted = false;
+    bossMusicStarted = false;
+    backgroundMusicTargetVolume = 0.2;
+    bossMusicTargetVolume = 0.24;
+    musicFadeInterval = null;
     soundEffects = new Map();
     audioUnlocked = false;
 
-    constructor(backgroundMusicPath) {
-        this.backgroundMusic = new Audio(backgroundMusicPath);
-        this.backgroundMusic.loop = true;
-        this.backgroundMusic.volume = 0.2;
-        this.backgroundMusic.preload = 'auto';
+    constructor(backgroundMusicPath, bossMusicPath = null) {
+        this.backgroundMusic = this.createMusicTrack(backgroundMusicPath, this.backgroundMusicTargetVolume);
+
+        if (bossMusicPath) {
+            this.bossMusic = this.createMusicTrack(bossMusicPath, 0);
+        }
     }
 
     playBackgroundMusic() {
-        if (this.backgroundMusicStarted) {
+        this.clearMusicFade();
+        this.backgroundMusic.volume = this.backgroundMusicTargetVolume;
+        this.playMusicTrack(this.backgroundMusic, 'backgroundMusicStarted');
+    }
+
+    playBossMusic(initialVolume = 0) {
+        if (!this.bossMusic) {
             return;
         }
 
-        let playPromise = this.backgroundMusic.play();
+        this.bossMusic.volume = initialVolume;
+        this.playMusicTrack(this.bossMusic, 'bossMusicStarted');
+    }
+
+    crossfadeToBossMusic(durationMs = 900) {
+        if (!this.bossMusic) {
+            return;
+        }
+
+        this.clearMusicFade();
+        this.playBackgroundMusic();
+        this.playBossMusic(0);
+
+        let stepMs = 50;
+        let totalSteps = Math.max(1, Math.ceil(durationMs / stepMs));
+        let currentStep = 0;
+        let backgroundStartVolume = this.backgroundMusic.volume;
+        let bossStartVolume = this.bossMusic.volume;
+
+        this.musicFadeInterval = window.setInterval(() => {
+            currentStep++;
+
+            let progress = Math.min(1, currentStep / totalSteps);
+            this.backgroundMusic.volume = backgroundStartVolume * (1 - progress);
+            this.bossMusic.volume = bossStartVolume + (this.bossMusicTargetVolume - bossStartVolume) * progress;
+
+            if (progress < 1) {
+                return;
+            }
+
+            this.clearMusicFade();
+            this.pauseTrack(this.backgroundMusic, 'backgroundMusicStarted');
+            this.backgroundMusic.currentTime = 0;
+            this.backgroundMusic.volume = this.backgroundMusicTargetVolume;
+            this.bossMusic.volume = this.bossMusicTargetVolume;
+        }, stepMs);
+    }
+
+    resetMusicBlend() {
+        this.clearMusicFade();
+        this.pauseTrack(this.bossMusic, 'bossMusicStarted');
+        this.pauseTrack(this.backgroundMusic, 'backgroundMusicStarted');
+
+        if (this.bossMusic) {
+            this.bossMusic.currentTime = 0;
+            this.bossMusic.volume = 0;
+        }
+
+        this.backgroundMusic.currentTime = 0;
+        this.backgroundMusic.volume = this.backgroundMusicTargetVolume;
+    }
+
+    stopAllMusic() {
+        this.resetMusicBlend();
+    }
+
+    playMusicTrack(track, startedFlagName) {
+        if (!track || this[startedFlagName]) {
+            return;
+        }
+
+        let playPromise = track.play();
         if (!playPromise || typeof playPromise.then !== 'function') {
-            this.backgroundMusicStarted = true;
+            this[startedFlagName] = true;
             return;
         }
 
         playPromise
             .then(() => {
-                this.backgroundMusicStarted = true;
+                this[startedFlagName] = true;
             })
             .catch(() => {});
     }
 
     pauseBackgroundMusic() {
-        this.backgroundMusic.pause();
-        this.backgroundMusicStarted = false;
+        this.pauseTrack(this.backgroundMusic, 'backgroundMusicStarted');
     }
 
     stopBackgroundMusic() {
@@ -63,6 +135,11 @@ class AudioManager {
 
     setMuted(isMuted) {
         this.backgroundMusic.muted = isMuted;
+
+        if (this.bossMusic) {
+            this.bossMusic.muted = isMuted;
+        }
+
         this.soundEffects.forEach((soundEntry) => {
             soundEntry.sounds.forEach((sound) => {
                 sound.muted = isMuted;
@@ -76,6 +153,11 @@ class AudioManager {
         }
 
         this.backgroundMusic.load();
+
+        if (this.bossMusic) {
+            this.bossMusic.load();
+        }
+
         this.soundEffects.forEach((soundEntry) => {
             soundEntry.sounds.forEach((sound) => {
                 sound.load();
@@ -96,5 +178,31 @@ class AudioManager {
         sound.volume = volume;
         sound.muted = this.backgroundMusic.muted;
         return sound;
+    }
+
+    createMusicTrack(soundPath, volume) {
+        let track = new Audio(soundPath);
+        track.loop = true;
+        track.volume = volume;
+        track.preload = 'auto';
+        return track;
+    }
+
+    pauseTrack(track, startedFlagName) {
+        if (!track) {
+            return;
+        }
+
+        track.pause();
+        this[startedFlagName] = false;
+    }
+
+    clearMusicFade() {
+        if (!this.musicFadeInterval) {
+            return;
+        }
+
+        window.clearInterval(this.musicFadeInterval);
+        this.musicFadeInterval = null;
     }
 }
