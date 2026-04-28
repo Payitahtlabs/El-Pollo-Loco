@@ -105,29 +105,56 @@ class Character extends MovableObject {
     }
 
     update(deltaTime, keyboard, level) {
+        this.prepareFrameState(deltaTime, keyboard);
+
+        if (this.shouldStopMovementUpdate()) {
+            return;
+        }
+
+        this.updateHorizontalMovement(deltaTime, keyboard);
+        this.handleJumpInput(keyboard);
+        this.clampHorizontalPosition(level);
+    }
+
+    prepareFrameState(deltaTime, keyboard) {
         this.isMoving = keyboard.RIGHT || keyboard.LEFT;
         this.didJumpThisFrame = false;
         this.applyGravity(deltaTime);
         this.updateIdleTime(deltaTime);
-        let minX = level.playerMinX ?? 0;
+    }
 
-        if (this.isDead()) {
-            this.isMoving = false;
-            this.jumpKeyPressed = false;
-            return;
+    shouldStopMovementUpdate() {
+        if (!this.isDead()) {
+            return false;
         }
 
+        this.isMoving = false;
+        this.jumpKeyPressed = false;
+        return true;
+    }
+
+    updateHorizontalMovement(deltaTime, keyboard) {
         if (keyboard.RIGHT) {
-            this.otherDirection = false;
-            this.moveRight(deltaTime);
+            this.moveRightWithFacing(deltaTime);
         }
 
         if (keyboard.LEFT) {
-            this.otherDirection = true;
-            this.moveLeft(deltaTime);
+            this.moveLeftWithFacing(deltaTime);
         }
+    }
 
-        this.handleJumpInput(keyboard);
+    moveRightWithFacing(deltaTime) {
+        this.otherDirection = false;
+        this.moveRight(deltaTime);
+    }
+
+    moveLeftWithFacing(deltaTime) {
+        this.otherDirection = true;
+        this.moveLeft(deltaTime);
+    }
+
+    clampHorizontalPosition(level) {
+        let minX = level.playerMinX ?? 0;
 
         if (this.x < minX) {
             this.x = minX;
@@ -178,75 +205,115 @@ class Character extends MovableObject {
 
     hit() {
         let wasDead = this.isDead();
-        let wasHit = super.hit();
 
-        if (!wasHit) {
+        if (!super.hit()) {
             return false;
         }
 
-        if (!wasDead && this.isDead()) {
-            this.currentImage = 0;
-            this.animationCounter = 0;
-            this.deathAnimationFinished = false;
-        }
+        this.resetDeathAnimationIfNeeded(wasDead);
 
         return true;
     }
 
+    resetDeathAnimationIfNeeded(wasDead) {
+        if (wasDead || !this.isDead()) {
+            return;
+        }
+
+        this.currentImage = 0;
+        this.animationCounter = 0;
+        this.deathAnimationFinished = false;
+    }
+
     animate(deltaTime) {
-        if (this.isDead()) {
-            this.wasMoving = false;
-            this.setAnimationState('dead');
-            this.animateDeath(deltaTime);
+        if (this.animatePriorityStates(deltaTime)) {
             return;
         }
 
-        if (this.isHurt()) {
-            this.wasMoving = false;
-            this.setAnimationState('hurt');
+        this.animateWalkState(deltaTime);
+    }
 
-            if (this.isAnimationFrameDue(deltaTime)) {
-                this.playAnimation(this.IMAGES_HURT);
-            }
+    animatePriorityStates(deltaTime) {
+        return this.animateDeathState(deltaTime)
+            || this.animateHurtState(deltaTime)
+            || this.animateJumpState(deltaTime)
+            || this.animateIdleState(deltaTime);
+    }
+
+    animateDeathState(deltaTime) {
+        if (!this.isDead()) {
+            return false;
+        }
+
+        this.wasMoving = false;
+        this.setAnimationState('dead');
+        this.animateDeath(deltaTime);
+        return true;
+    }
+
+    animateHurtState(deltaTime) {
+        if (!this.isHurt()) {
+            return false;
+        }
+
+        this.wasMoving = false;
+        this.setAnimationState('hurt');
+        this.playStateAnimation(deltaTime, this.IMAGES_HURT);
+        return true;
+    }
+
+    animateJumpState(deltaTime) {
+        if (!this.isAboveGround()) {
+            return false;
+        }
+
+        this.wasMoving = false;
+        this.setAnimationState('jump');
+        this.playStateAnimation(deltaTime, this.IMAGES_JUMPING);
+        return true;
+    }
+
+    animateIdleState(deltaTime) {
+        if (this.isMoving) {
+            return false;
+        }
+
+        this.wasMoving = false;
+        this.animateIdleVariant(deltaTime);
+        return true;
+    }
+
+    animateIdleVariant(deltaTime) {
+        if (this.isLongIdleReady()) {
+            this.playIdleAnimationVariant(deltaTime, 'long-idle', this.IMAGES_LONG_IDLE);
             return;
         }
 
-        if (this.isAboveGround()) {
-            this.wasMoving = false;
-            this.setAnimationState('jump');
+        this.playIdleAnimationVariant(deltaTime, 'idle', this.IMAGES_IDLE);
+    }
 
-            if (this.isAnimationFrameDue(deltaTime)) {
-                this.playAnimation(this.IMAGES_JUMPING);
-            }
-            return;
-        }
+    isLongIdleReady() {
+        return this.idleTime >= this.longIdleDelay;
+    }
 
-        if (!this.isMoving) {
-            this.wasMoving = false;
+    playIdleAnimationVariant(deltaTime, state, frames) {
+        this.setAnimationState(state);
+        this.playStateAnimation(deltaTime, frames);
+    }
 
-            if (this.idleTime >= this.longIdleDelay) {
-                this.setAnimationState('long-idle');
-
-                if (this.isAnimationFrameDue(deltaTime)) {
-                    this.playAnimation(this.IMAGES_LONG_IDLE);
-                }
-                return;
-            }
-
-            this.setAnimationState('idle');
-
-            if (this.isAnimationFrameDue(deltaTime)) {
-                this.playAnimation(this.IMAGES_IDLE);
-            }
-            return;
-        }
-
+    animateWalkState(deltaTime) {
         this.setAnimationState('walk');
         this.wasMoving = true;
 
-        if (this.isAnimationFrameDue(deltaTime)) {
-            this.playAnimation(this.IMAGES_WALKING);
+        this.playStateAnimation(deltaTime, this.IMAGES_WALKING);
+    }
+
+    playStateAnimation(deltaTime, frames) {
+        if (!this.isAnimationFrameDue(deltaTime)) {
+            return;
         }
+
+        this.playAnimation(frames);
     }
 
     setAnimationState(state) {
@@ -261,22 +328,46 @@ class Character extends MovableObject {
     }
 
     animateDeath(deltaTime) {
-        if (this.deathAnimationFinished) {
-            this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
+        if (this.isDeathAnimationComplete()) {
+            this.showFinalDeathFrame();
             return;
         }
 
-        if (!this.isAnimationFrameDue(deltaTime)) {
+        if (this.tryAnimateDeathFrame(deltaTime)) {
             return;
         }
 
-        if (this.currentImage < this.IMAGES_DEAD.length) {
-            this.img = this.imageCache[this.IMAGES_DEAD[this.currentImage]];
-            this.currentImage++;
-            return;
+        this.finishDeathAnimation();
+    }
+
+    isDeathAnimationComplete() {
+        return this.deathAnimationFinished;
+    }
+
+    tryAnimateDeathFrame(deltaTime) {
+        if (!this.isAnimationFrameDue(deltaTime) || !this.hasRemainingDeathFrames()) {
+            return false;
         }
 
+        this.showNextDeathFrame();
+        return true;
+    }
+
+    hasRemainingDeathFrames() {
+        return this.currentImage < this.IMAGES_DEAD.length;
+    }
+
+    showNextDeathFrame() {
+        this.img = this.imageCache[this.IMAGES_DEAD[this.currentImage]];
+        this.currentImage++;
+    }
+
+    finishDeathAnimation() {
         this.deathAnimationFinished = true;
+        this.showFinalDeathFrame();
+    }
+
+    showFinalDeathFrame() {
         this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
     }
 }

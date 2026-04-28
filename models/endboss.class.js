@@ -88,43 +88,6 @@ class Endboss extends MovableObject {
         return true;
     }
 
-    update(deltaTime, character, bossFightStarted) {
-        if (!bossFightStarted || this.isDead()) {
-            return;
-        }
-
-        this.updateCombatTimers(deltaTime);
-
-        if (this.isHurt()) {
-            return;
-        }
-
-        if (this.isAttacking()) {
-            this.x += this.getFacingDirection() * this.attackSpeed * deltaTime;
-            return;
-        }
-
-        this.updateFacingDirection(character);
-
-        if (this.isRetreating()) {
-            this.x -= this.getFacingDirection() * this.retreatSpeed * deltaTime;
-            return;
-        }
-
-        if (this.isWindingUp()) {
-            return;
-        }
-
-        if (this.canStartAttack(character)) {
-            this.startWindup();
-            return;
-        }
-
-        if (this.shouldMoveTowardsCharacter(character)) {
-            this.moveTowardsCharacter(deltaTime);
-        }
-    }
-
     isAttacking() {
         return this.combatPhase === 'attack';
     }
@@ -141,57 +104,11 @@ class Endboss extends MovableObject {
         return this.attackCooldownTimer > 0;
     }
 
-    canStartAttack(character) {
-        return !this.isInAttackCooldown() && this.getDistanceToCharacter(character) <= this.attackTriggerRange;
-    }
-
-    shouldMoveTowardsCharacter(character) {
-        return this.getDistanceToCharacter(character) > this.attackTriggerRange;
-    }
-
     startWindup() {
         this.combatPhase = 'windup';
         this.phaseTimer = this.windupDuration;
         this.currentImage = 0;
         this.animationCounter = 0;
-    }
-
-    updateCombatTimers(deltaTime) {
-        if (this.attackCooldownTimer > 0) {
-            this.attackCooldownTimer = Math.max(0, this.attackCooldownTimer - deltaTime);
-        }
-
-        if (this.phaseTimer <= 0) {
-            return;
-        }
-
-        this.phaseTimer = Math.max(0, this.phaseTimer - deltaTime);
-
-        if (this.phaseTimer === 0) {
-            this.advanceCombatPhase();
-        }
-    }
-
-    advanceCombatPhase() {
-        if (this.isWindingUp()) {
-            this.combatPhase = 'attack';
-            this.phaseTimer = this.attackDuration;
-            this.currentImage = 0;
-            this.animationCounter = 0;
-            this.emitAudioEvent('attack');
-            return;
-        }
-
-        if (this.combatPhase === 'attack') {
-            this.combatPhase = 'retreat';
-            this.phaseTimer = this.retreatDuration;
-            return;
-        }
-
-        if (this.isRetreating()) {
-            this.resetCombatPhase();
-            this.attackCooldownTimer = this.attackCooldownDuration;
-        }
     }
 
     resetCombatPhase() {
@@ -229,71 +146,6 @@ class Endboss extends MovableObject {
 
     getFacingDirection() {
         return this.otherDirection ? 1 : -1;
-    }
-
-    getDistanceToCharacter(character) {
-        let characterLeft = character.x + character.offset.left;
-        let characterRight = character.x + character.width - character.offset.right;
-        let bossLeft = this.x + this.offset.left;
-        let bossRight = this.x + this.width - this.offset.right;
-
-        if (characterRight < bossLeft) {
-            return bossLeft - characterRight;
-        }
-
-        if (characterLeft > bossRight) {
-            return characterLeft - bossRight;
-        }
-
-        return 0;
-    }
-
-    animate(deltaTime, bossFightStarted, character) {
-        let nextState = this.resolveState(bossFightStarted, character);
-        if (this.currentState !== nextState) {
-            this.currentState = nextState;
-            this.currentImage = 0;
-            this.animationCounter = 0;
-        }
-
-        if (this.currentState === 'dead') {
-            this.animateDeath(deltaTime);
-            return;
-        }
-
-        if (this.isAnimationFrameDue(deltaTime)) {
-            this.playAnimation(this.getAnimationFramesForState());
-        }
-    }
-
-    resolveState(bossFightStarted, character) {
-        if (this.isDead()) return 'dead';
-        if (this.isHurt()) return 'hurt';
-        if (!bossFightStarted) return 'alert';
-        if (this.isAttacking()) return 'attack';
-        if (this.isRetreating()) return 'walk';
-        if (this.isWindingUp() || this.isInAttackCooldown()) return 'alert';
-        return 'walk';
-    }
-
-    animateDeath(deltaTime) {
-        if (this.deathAnimationFinished) {
-            this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
-            return;
-        }
-
-        if (!this.isAnimationFrameDue(deltaTime)) {
-            return;
-        }
-
-        if (this.currentImage < this.IMAGES_DEAD.length) {
-            this.img = this.imageCache[this.IMAGES_DEAD[this.currentImage]];
-            this.currentImage++;
-            return;
-        }
-
-        this.deathAnimationFinished = true;
-        this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
     }
 
     getAnimationFramesForState() {
