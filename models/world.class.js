@@ -63,14 +63,33 @@ class World {
 
     // ── Game Loop ────────────────────────────────────────
     gameLoop(timestamp) {
+        let deltaTime = this.getFrameDeltaTime(timestamp);
+
+        this.runFrame(deltaTime);
+        this.scheduleNextFrame();
+    }
+
+    getFrameDeltaTime(timestamp) {
         let deltaTime = this.lastFrameTime ? (timestamp - this.lastFrameTime) / 1000 : 0;
         this.lastFrameTime = timestamp;
+        return Math.min(deltaTime, this.maxDeltaTime);
+    }
 
-        if (deltaTime > this.maxDeltaTime) deltaTime = this.maxDeltaTime;
-
+    runFrame(deltaTime) {
         this.update(deltaTime);
         this.draw();
+    }
+
+    scheduleNextFrame() {
         this.animationId = requestAnimationFrame((nextTimestamp) => this.gameLoop(nextTimestamp));
+    }
+
+    resetFrameTiming() {
+        this.lastFrameTime = 0;
+    }
+
+    stopAnimationLoop() {
+        cancelAnimationFrame(this.animationId);
     }
 
     // ── Logik ──────────────────────
@@ -597,17 +616,17 @@ class World {
     // ── Steuerung ────────────────────────────────────────
     pause() {
         this.paused = true;
-        cancelAnimationFrame(this.animationId);
+        this.stopAnimationLoop();
     }
 
     resume() {
         if (!this.paused) return;
         this.paused = false;
-        this.lastFrameTime = 0;
+        this.resetFrameTiming();
         this.gameLoop(0);
     }
 
     gameOver() {
-        cancelAnimationFrame(this.animationId);
+        this.stopAnimationLoop();
     }
 }
