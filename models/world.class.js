@@ -150,23 +150,45 @@ class World {
     }
 
     drawWorldObjects() {
-        this.addObjectsToMap(this.level.backgroundObjects);
-        this.addObjectsToMap(this.level.clouds);
-        this.addObjectsToMap(this.level.coins);
-        this.addObjectsToMap(this.level.bottles);
-        this.addObjectsToMap(this.level.enemies);
-        this.addObjectsToMap(this.throwableObjects);
-        this.addToMap(this.level.endboss);
-        this.addToMap(this.character);
+        this.getWorldRenderGroups().forEach((objects) => this.addObjectsToMap(objects));
+        this.getWorldRenderObjects().forEach((object) => this.addToMap(object));
     }
 
     drawHud() {
-        this.addToMap(this.healthStatusBar);
+        this.getHudObjects().forEach((object) => this.addToMap(object));
+        this.drawHudCounters();
+    }
 
-        if (this.bossFightStarted) {
-            this.addToMap(this.endbossStatusBar);
+    getWorldRenderGroups() {
+        return [
+            this.level.backgroundObjects,
+            this.level.clouds,
+            this.level.coins,
+            this.level.bottles,
+            this.level.enemies,
+            this.throwableObjects,
+        ];
+    }
+
+    getWorldRenderObjects() {
+        return [this.level.endboss, this.character];
+    }
+
+    getHudObjects() {
+        let hudObjects = [this.healthStatusBar];
+
+        if (this.shouldDrawEndbossStatusBar()) {
+            hudObjects.push(this.endbossStatusBar);
         }
 
+        return hudObjects;
+    }
+
+    shouldDrawEndbossStatusBar() {
+        return this.bossFightStarted;
+    }
+
+    drawHudCounters() {
         this.bottleCounter.draw(this.ctx);
         this.coinCounter.draw(this.ctx);
     }
