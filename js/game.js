@@ -125,65 +125,34 @@ function attachHelpOverlayListeners() {
 }
 
 function openHelpOverlay(event) {
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
-
+    preventOverlayEventDefault(event);
     if (!helpOverlay) {
         return;
     }
 
-    if (helpButton) {
-        helpButton.blur();
-    }
-
+    blurHelpButton();
     lastHelpOverlayOpenAt = Date.now();
-    window.clearTimeout(helpOverlayCloseTimeout);
-    helpOverlay.classList.remove('hidden');
-    helpOverlay.classList.remove('is-closing');
-    helpOverlay.setAttribute('aria-hidden', 'false');
+    resetHelpOverlayCloseTimeout();
+    showHelpOverlay();
 
     requestAnimationFrame(() => {
         if (!helpOverlay) {
             return;
         }
 
-        helpOverlay.classList.add('is-visible');
-
-        if (helpCloseButton) {
-            helpCloseButton.focus({ preventScroll: true });
-        }
+        revealHelpOverlay();
     });
 }
 
 function closeHelpOverlay(event) {
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
-
+    preventOverlayEventDefault(event);
     if (!helpOverlay) {
         return;
     }
 
-    if (helpOverlay.contains(document.activeElement)) {
-        document.activeElement.blur();
-    }
-
-    helpOverlay.classList.remove('is-visible');
-    helpOverlay.classList.add('is-closing');
-    helpOverlay.setAttribute('aria-hidden', 'true');
-
-    window.clearTimeout(helpOverlayCloseTimeout);
-    helpOverlayCloseTimeout = window.setTimeout(() => {
-        if (!helpOverlay) {
-            return;
-        }
-
-        helpOverlay.classList.add('hidden');
-        helpOverlay.classList.remove('is-closing');
-    }, HELP_OVERLAY_ANIMATION_DURATION_MS);
+    blurFocusedHelpElement();
+    hideHelpOverlay();
+    scheduleHelpOverlayHide();
 }
 
 function handleHelpOverlayBackdropClick(event) {
@@ -197,11 +166,74 @@ function handleHelpOverlayBackdropClick(event) {
 }
 
 function handleHelpOverlayKeydown(event) {
-    if (event.code !== 'Escape' || !helpOverlay || helpOverlay.classList.contains('hidden')) {
+    if (event.code !== 'Escape' || isHelpOverlayHidden()) {
         return;
     }
 
     closeHelpOverlay();
+}
+
+function preventOverlayEventDefault(event) {
+    if (!event) {
+        return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+}
+
+function blurHelpButton() {
+    if (helpButton) {
+        helpButton.blur();
+    }
+}
+
+function resetHelpOverlayCloseTimeout() {
+    window.clearTimeout(helpOverlayCloseTimeout);
+}
+
+function showHelpOverlay() {
+    helpOverlay.classList.remove('hidden');
+    helpOverlay.classList.remove('is-closing');
+    helpOverlay.setAttribute('aria-hidden', 'false');
+}
+
+function revealHelpOverlay() {
+    helpOverlay.classList.add('is-visible');
+
+    if (helpCloseButton) {
+        helpCloseButton.focus({ preventScroll: true });
+    }
+}
+
+function blurFocusedHelpElement() {
+    if (helpOverlay.contains(document.activeElement)) {
+        document.activeElement.blur();
+    }
+}
+
+function hideHelpOverlay() {
+    helpOverlay.classList.remove('is-visible');
+    helpOverlay.classList.add('is-closing');
+    helpOverlay.setAttribute('aria-hidden', 'true');
+}
+
+function scheduleHelpOverlayHide() {
+    resetHelpOverlayCloseTimeout();
+    helpOverlayCloseTimeout = window.setTimeout(finalizeHelpOverlayHide, HELP_OVERLAY_ANIMATION_DURATION_MS);
+}
+
+function finalizeHelpOverlayHide() {
+    if (!helpOverlay) {
+        return;
+    }
+
+    helpOverlay.classList.add('hidden');
+    helpOverlay.classList.remove('is-closing');
+}
+
+function isHelpOverlayHidden() {
+    return !helpOverlay || helpOverlay.classList.contains('hidden');
 }
 
 function attachResponsiveHintListeners() {
