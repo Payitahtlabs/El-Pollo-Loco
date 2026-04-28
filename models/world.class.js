@@ -238,11 +238,12 @@ class World {
         if (this.bossFightStarted) return;
 
         let triggerX = this.level.endboss.x - 300;
-        let characterFront = this.character.x + this.character.width;
 
-        if (characterFront >= triggerX) {
-            this.startBossFight(triggerX);
+        if (!this.isBossFightTriggerReached(triggerX)) {
+            return;
         }
+
+        this.startBossFight(triggerX);
     }
 
     startBossFight(triggerX = this.level.endboss.x - 300) {
@@ -250,26 +251,43 @@ class World {
             return;
         }
 
+        this.activateBossFight(triggerX);
+        this.playBossFightStartSounds();
+    }
+
+    isBossFightTriggerReached(triggerX) {
+        let characterFront = this.character.x + this.character.width;
+        return characterFront >= triggerX;
+    }
+
+    activateBossFight(triggerX) {
         this.bossFightStarted = true;
         this.bossArenaLeftX = Math.max(0, triggerX - 180);
+    }
+
+    playBossFightStartSounds() {
         this.audioManager?.crossfadeToBossMusic();
         this.audioManager?.playSound('endbossAlert');
     }
 
     playPendingEndbossSounds() {
         this.level.endboss.consumeAudioEvents().forEach((eventName) => {
-            switch (eventName) {
-                case 'attack':
-                    this.audioManager?.playSound('endbossAttack');
-                    break;
-                case 'hurt':
-                    this.audioManager?.playSound('endbossHurt');
-                    break;
-                case 'death':
-                    this.audioManager?.playSound('endbossDeath');
-                    break;
-            }
+            this.playEndbossAudioEvent(eventName);
         });
+    }
+
+    playEndbossAudioEvent(eventName) {
+        switch (eventName) {
+            case 'attack':
+                this.audioManager?.playSound('endbossAttack');
+                break;
+            case 'hurt':
+                this.audioManager?.playSound('endbossHurt');
+                break;
+            case 'death':
+                this.audioManager?.playSound('endbossDeath');
+                break;
+        }
     }
 
     playJumpSoundIfNeeded() {
@@ -488,28 +506,44 @@ class World {
     }
 
     checkLoseCondition() {
-        if (this.gameWon || this.gameLost || !this.character.isDead() || !this.character.deathAnimationFinished) {
+        if (!this.canLoseGame()) {
             return;
         }
 
-        this.gameLost = true;
-        this.showGameOverOverlay();
-
-        if (this.onGameLost) {
-            this.onGameLost();
-        }
+        this.handleGameLost();
     }
 
     checkWinCondition() {
-        if (this.gameWon || this.gameLost || !this.level.endboss.isDead() || !this.level.endboss.deathAnimationFinished) {
+        if (!this.canWinGame()) {
             return;
         }
 
+        this.handleGameWon();
+    }
+
+    canLoseGame() {
+        return !this.gameWon && !this.gameLost && this.character.isDead() && this.character.deathAnimationFinished;
+    }
+
+    canWinGame() {
+        return !this.gameWon && !this.gameLost && this.level.endboss.isDead() && this.level.endboss.deathAnimationFinished;
+    }
+
+    handleGameWon() {
         this.gameWon = true;
         this.showWinOverlay();
 
         if (this.onGameWon) {
             this.onGameWon();
+        }
+    }
+
+    handleGameLost() {
+        this.gameLost = true;
+        this.showGameOverOverlay();
+
+        if (this.onGameLost) {
+            this.onGameLost();
         }
     }
 
