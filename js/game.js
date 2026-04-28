@@ -576,7 +576,7 @@ function toggleOverlayButtonListeners(buttons, eventName, handler, action) {
 }
 
 function attachFullscreenListeners() {
-    if (fullscreenButton && canUseNativeFullscreen()) {
+    if (canAttachFullscreenListener()) {
         fullscreenButton.addEventListener('click', toggleFullscreen);
     }
 
@@ -584,15 +584,21 @@ function attachFullscreenListeners() {
     document.addEventListener('webkitfullscreenchange', updateFullscreenButtonState);
 }
 
+function canAttachFullscreenListener() {
+    return !!fullscreenButton && canUseNativeFullscreen();
+}
+
 function updateFullscreenAvailability() {
     if (!fullscreenButton) {
         return;
     }
 
-    let isAvailable = canUseNativeFullscreen();
+    setButtonAvailability(fullscreenButton, canUseNativeFullscreen());
+}
 
-    fullscreenButton.classList.toggle('hidden', !isAvailable);
-    fullscreenButton.setAttribute('aria-hidden', String(!isAvailable));
+function setButtonAvailability(button, isAvailable) {
+    button.classList.toggle('hidden', !isAvailable);
+    button.setAttribute('aria-hidden', String(!isAvailable));
 }
 
 function canUseNativeFullscreen() {
@@ -646,8 +652,7 @@ function toggleMutedAudio() {
         return;
     }
 
-    let isMuted = audioManager.toggleMuted();
-    persistMutedState(isMuted);
+    persistMutedState(audioManager.toggleMuted());
     updateMuteButtonState();
 }
 
@@ -676,11 +681,11 @@ function persistMutedState(isMuted) {
 }
 
 function toggleFullscreen() {
-    if (!gameShellFrame || !canUseNativeFullscreen()) {
+    if (!canToggleFullscreen()) {
         return;
     }
 
-    if (getFullscreenElement() === gameShellFrame) {
+    if (isGameInFullscreen()) {
         exitFullscreenMode();
         return;
     }
@@ -688,27 +693,43 @@ function toggleFullscreen() {
     enterFullscreenMode();
 }
 
+function canToggleFullscreen() {
+    return !!gameShellFrame && canUseNativeFullscreen();
+}
+
+function isGameInFullscreen() {
+    return getFullscreenElement() === gameShellFrame;
+}
+
 function enterFullscreenMode() {
-    let requestFullscreen = gameShellFrame.requestFullscreen || gameShellFrame.webkitRequestFullscreen;
+    let requestFullscreen = getFullscreenRequestMethod();
 
     if (!requestFullscreen) {
         return;
     }
 
-    let fullscreenResult = requestFullscreen.call(gameShellFrame);
-    if (fullscreenResult && typeof fullscreenResult.catch === 'function') {
-        fullscreenResult.catch(() => {});
-    }
+    handleFullscreenRequestResult(requestFullscreen.call(gameShellFrame));
+}
+
+function getFullscreenRequestMethod() {
+    return gameShellFrame.requestFullscreen || gameShellFrame.webkitRequestFullscreen;
 }
 
 function exitFullscreenMode() {
-    let exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+    let exitFullscreen = getExitFullscreenMethod();
 
     if (!exitFullscreen) {
         return;
     }
 
-    let fullscreenResult = exitFullscreen.call(document);
+    handleFullscreenRequestResult(exitFullscreen.call(document));
+}
+
+function getExitFullscreenMethod() {
+    return document.exitFullscreen || document.webkitExitFullscreen;
+}
+
+function handleFullscreenRequestResult(fullscreenResult) {
     if (fullscreenResult && typeof fullscreenResult.catch === 'function') {
         fullscreenResult.catch(() => {});
     }
@@ -719,31 +740,58 @@ function getFullscreenElement() {
 }
 
 function updateFullscreenButtonState() {
-    if (!fullscreenButton || !fullscreenIcon || !canUseNativeFullscreen()) {
+    if (!canUpdateFullscreenButtonState()) {
         return;
     }
 
-    let isFullscreen = getFullscreenElement() === gameShellFrame;
-    let label = isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen';
+    let isFullscreen = isGameInFullscreen();
+    fullscreenIcon.src = getFullscreenIconPath(isFullscreen);
+    setAccessibleButtonLabel(fullscreenButton, getFullscreenButtonLabel(isFullscreen));
+}
 
-    fullscreenIcon.src = isFullscreen
+function canUpdateFullscreenButtonState() {
+    return !!fullscreenButton && !!fullscreenIcon && canUseNativeFullscreen();
+}
+
+function getFullscreenButtonLabel(isFullscreen) {
+    return isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen';
+}
+
+function getFullscreenIconPath(isFullscreen) {
+    return isFullscreen
         ? 'img/icons/toolbar-fullscreen-exit.svg'
         : 'img/icons/toolbar-fullscreen.svg';
-    fullscreenButton.setAttribute('aria-label', label);
-    fullscreenButton.setAttribute('title', label);
 }
 
 function updateMuteButtonState() {
-    if (!audioManager || !muteButton || !muteIcon) {
+    if (!canUpdateMuteButtonState()) {
         return;
     }
 
-    let isMuted = audioManager.backgroundMusic.muted;
-    let label = isMuted ? 'Unmute audio' : 'Mute audio';
+    let isMuted = isAudioMuted();
+    muteIcon.src = getMuteIconPath(isMuted);
+    setAccessibleButtonLabel(muteButton, getMuteButtonLabel(isMuted));
+}
 
-    muteIcon.src = isMuted
+function canUpdateMuteButtonState() {
+    return !!audioManager && !!muteButton && !!muteIcon;
+}
+
+function isAudioMuted() {
+    return audioManager.backgroundMusic.muted;
+}
+
+function getMuteButtonLabel(isMuted) {
+    return isMuted ? 'Unmute audio' : 'Mute audio';
+}
+
+function getMuteIconPath(isMuted) {
+    return isMuted
         ? 'img/icons/toolbar-volume-mute.svg'
         : 'img/icons/toolbar-volume.svg';
-    muteButton.setAttribute('aria-label', label);
-    muteButton.setAttribute('title', label);
+}
+
+function setAccessibleButtonLabel(button, label) {
+    button.setAttribute('aria-label', label);
+    button.setAttribute('title', label);
 }
