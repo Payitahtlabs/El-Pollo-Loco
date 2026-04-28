@@ -79,17 +79,36 @@ class World {
             return;
         }
 
+        this.updateWorldState(deltaTime);
+        this.updateDisplayState();
+        this.updateThrowableObjects(deltaTime);
+        this.updateLevelObjects(deltaTime);
+        this.updateEndboss(deltaTime);
+        this.checkCollisions();
+        this.playPendingEndbossSounds();
+        this.checkLoseCondition();
+        this.checkWinCondition();
+        this.updateCamera();
+    }
+
+    updateWorldState(deltaTime) {
         this.level.playerMinX = this.bossFightStarted ? this.bossArenaLeftX : 0;
         this.level.clouds.forEach((cloud) => cloud.update(deltaTime, this.level.levelEndX));
         this.character.update(deltaTime, this.keyboard, this.level);
         this.character.animate(deltaTime);
         this.playJumpSoundIfNeeded();
+        this.handleBottleThrow();
+        this.updateEndbossFightState();
+    }
+
+    updateDisplayState() {
         this.healthStatusBar.setPercentage(this.character.energy);
         this.bottleCounter.setValue(this.character.collectedBottles);
         this.coinCounter.setValue(this.character.collectedCoins);
-        this.handleBottleThrow();
-        this.updateEndbossFightState();
         this.endbossStatusBar.setPercentage(this.level.endboss.energy);
+    }
+
+    updateThrowableObjects(deltaTime) {
         this.throwableObjects = this.throwableObjects.filter((bottle) => {
             let wasSplashing = bottle.isSplashing;
             bottle.update(deltaTime);
@@ -100,6 +119,9 @@ class World {
 
             return !bottle.shouldRemove();
         });
+    }
+
+    updateLevelObjects(deltaTime) {
         this.level.bottles.forEach((bottle) => {
             if (bottle.update) {
                 bottle.update(deltaTime);
@@ -110,13 +132,11 @@ class World {
             enemy.update(deltaTime, this.level.levelEndX);
             enemy.animate(deltaTime);
         });
+    }
+
+    updateEndboss(deltaTime) {
         this.level.endboss.update(deltaTime, this.character, this.bossFightStarted);
         this.level.endboss.animate(deltaTime, this.bossFightStarted, this.character);
-        this.checkCollisions();
-        this.playPendingEndbossSounds();
-        this.checkLoseCondition();
-        this.checkWinCondition();
-        this.updateCamera();
     }
 
     // ── Rendering ────────────────────────────────────────
@@ -124,7 +144,12 @@ class World {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.save();
         this.ctx.translate(Math.round(this.camera_x), 0);
+        this.drawWorldObjects();
+        this.ctx.restore();
+        this.drawHud();
+    }
 
+    drawWorldObjects() {
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
         this.addObjectsToMap(this.level.coins);
@@ -133,12 +158,15 @@ class World {
         this.addObjectsToMap(this.throwableObjects);
         this.addToMap(this.level.endboss);
         this.addToMap(this.character);
+    }
 
-        this.ctx.restore();
+    drawHud() {
         this.addToMap(this.healthStatusBar);
+
         if (this.bossFightStarted) {
             this.addToMap(this.endbossStatusBar);
         }
+
         this.bottleCounter.draw(this.ctx);
         this.coinCounter.draw(this.ctx);
     }
@@ -282,27 +310,43 @@ class World {
 
     checkEnemyCollisions() {
         this.level.enemies = this.level.enemies.filter((enemy) => {
-            if (enemy.shouldRemove && enemy.shouldRemove()) {
+            if (!this.shouldKeepEnemy(enemy)) {
                 return false;
             }
 
-            if (enemy.isDefeated || !this.character.isColliding(enemy)) {
-                return true;
-            }
-
-            if (this.isStompCollision(enemy)) {
-                enemy.stomp();
-                this.playChickenStompSound(enemy);
-                this.maybeDropBottle(enemy);
-                this.character.bounce();
-                return true;
-            }
-
-            if (this.character.hit()) {
-                this.audioManager?.playSound('characterHurt');
-            }
+            this.handleEnemyCollision(enemy);
             return true;
         });
+    }
+
+    shouldKeepEnemy(enemy) {
+        return !(enemy.shouldRemove && enemy.shouldRemove());
+    }
+
+    handleEnemyCollision(enemy) {
+        if (enemy.isDefeated || !this.character.isColliding(enemy)) {
+            return;
+        }
+
+        if (this.isStompCollision(enemy)) {
+            this.handleEnemyStomp(enemy);
+            return;
+        }
+
+        this.handleEnemyTouchDamage();
+    }
+
+    handleEnemyStomp(enemy) {
+        enemy.stomp();
+        this.playChickenStompSound(enemy);
+        this.maybeDropBottle(enemy);
+        this.character.bounce();
+    }
+
+    handleEnemyTouchDamage() {
+        if (this.character.hit()) {
+            this.audioManager?.playSound('characterHurt');
+        }
     }
 
     isStompCollision(enemy) {
@@ -345,25 +389,29 @@ class World {
     }
 
     checkCoinCollisions() {
-        this.level.coins = this.level.coins.filter((coin) => {
-            if (!this.character.isColliding(coin)) {
-                return true;
-            }
-
-            this.character.collectCoin();
-            this.audioManager?.playSound('coinCollect');
-            return false;
-        });
+        this.level.coins = this.collectLevelItems(
+            this.level.coins,
+            () => this.character.collectCoin(),
+            'coinCollect'
+        );
     }
 
     checkBottleCollisions() {
-        this.level.bottles = this.level.bottles.filter((bottle) => {
-            if (!this.character.isColliding(bottle)) {
+        this.level.bottles = this.collectLevelItems(
+            this.level.bottles,
+            () => this.character.collectBottle(),
+            'bottleCollect'
+        );
+    }
+
+    collectLevelItems(items, collectItem, soundName) {
+        return items.filter((item) => {
+            if (!this.character.isColliding(item)) {
                 return true;
             }
 
-            this.character.collectBottle();
-            this.audioManager?.playSound('bottleCollect');
+            collectItem();
+            this.audioManager?.playSound(soundName);
             return false;
         });
     }
@@ -374,21 +422,35 @@ class World {
                 return;
             }
 
-            let hitEnemy = this.level.enemies.find((enemy) => !enemy.isDefeated && bottle.isColliding(enemy));
-
-            if (hitEnemy) {
-                hitEnemy.stomp();
-                this.playChickenBottleHitSound(hitEnemy);
-                bottle.startSplash();
+            if (this.handleThrowableEnemyCollision(bottle)) {
                 return;
             }
 
-            if (!this.level.endboss.isDead() && bottle.isColliding(this.level.endboss)) {
-                this.startBossFight();
-                this.level.endboss.hit();
-                bottle.startSplash();
-            }
+            this.handleThrowableEndbossCollision(bottle);
         });
+    }
+
+    handleThrowableEnemyCollision(bottle) {
+        let hitEnemy = this.level.enemies.find((enemy) => !enemy.isDefeated && bottle.isColliding(enemy));
+
+        if (!hitEnemy) {
+            return false;
+        }
+
+        hitEnemy.stomp();
+        this.playChickenBottleHitSound(hitEnemy);
+        bottle.startSplash();
+        return true;
+    }
+
+    handleThrowableEndbossCollision(bottle) {
+        if (this.level.endboss.isDead() || !bottle.isColliding(this.level.endboss)) {
+            return;
+        }
+
+        this.startBossFight();
+        this.level.endboss.hit();
+        bottle.startSplash();
     }
 
     maybeDropBottle(enemy) {
@@ -403,15 +465,25 @@ class World {
     }
 
     checkEndbossCollisions() {
-        if (this.level.endboss.isDead() || !this.bossFightStarted || !this.level.endboss.isAttacking()) {
+        if (!this.canEndbossDamageCharacter()) {
             return;
         }
 
-        if (this.character.isColliding(this.level.endboss)) {
-            if (this.character.hit()) {
-                this.audioManager?.playSound('endbossImpact');
-                this.audioManager?.playSound('characterHurt');
-            }
+        if (!this.character.isColliding(this.level.endboss)) {
+            return;
+        }
+
+        this.handleEndbossCharacterHit();
+    }
+
+    canEndbossDamageCharacter() {
+        return !this.level.endboss.isDead() && this.bossFightStarted && this.level.endboss.isAttacking();
+    }
+
+    handleEndbossCharacterHit() {
+        if (this.character.hit()) {
+            this.audioManager?.playSound('endbossImpact');
+            this.audioManager?.playSound('characterHurt');
         }
     }
 
@@ -442,39 +514,28 @@ class World {
     }
 
     showWinOverlay() {
-        if (!this.winScreenOverlay) {
-            return;
-        }
-
-        this.winScreenOverlay.classList.remove('hidden');
-        this.winScreenOverlay.setAttribute('aria-hidden', 'false');
+        this.setOverlayVisibility(this.winScreenOverlay, true);
     }
 
     hideWinOverlay() {
-        if (!this.winScreenOverlay) {
-            return;
-        }
-
-        this.winScreenOverlay.classList.add('hidden');
-        this.winScreenOverlay.setAttribute('aria-hidden', 'true');
+        this.setOverlayVisibility(this.winScreenOverlay, false);
     }
 
     showGameOverOverlay() {
-        if (!this.gameOverScreenOverlay) {
-            return;
-        }
-
-        this.gameOverScreenOverlay.classList.remove('hidden');
-        this.gameOverScreenOverlay.setAttribute('aria-hidden', 'false');
+        this.setOverlayVisibility(this.gameOverScreenOverlay, true);
     }
 
     hideGameOverOverlay() {
-        if (!this.gameOverScreenOverlay) {
+        this.setOverlayVisibility(this.gameOverScreenOverlay, false);
+    }
+
+    setOverlayVisibility(overlay, isVisible) {
+        if (!overlay) {
             return;
         }
 
-        this.gameOverScreenOverlay.classList.add('hidden');
-        this.gameOverScreenOverlay.setAttribute('aria-hidden', 'true');
+        overlay.classList.toggle('hidden', !isVisible);
+        overlay.setAttribute('aria-hidden', String(!isVisible));
     }
 
     // ── Steuerung ────────────────────────────────────────
