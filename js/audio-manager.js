@@ -38,32 +38,53 @@ class AudioManager {
         }
 
         this.clearMusicFade();
+        this.prepareBossMusicCrossfade();
+
+        let fadeState = this.createCrossfadeState(durationMs);
+        this.musicFadeInterval = window.setInterval(() => {
+            this.advanceBossMusicCrossfade(fadeState);
+        }, fadeState.stepMs);
+    }
+
+    prepareBossMusicCrossfade() {
         this.playBackgroundMusic();
         this.playBossMusic(0);
+    }
 
+    createCrossfadeState(durationMs) {
         let stepMs = 50;
-        let totalSteps = Math.max(1, Math.ceil(durationMs / stepMs));
-        let currentStep = 0;
-        let backgroundStartVolume = this.backgroundMusic.volume;
-        let bossStartVolume = this.bossMusic.volume;
 
-        this.musicFadeInterval = window.setInterval(() => {
-            currentStep++;
+        return {
+            stepMs,
+            totalSteps: Math.max(1, Math.ceil(durationMs / stepMs)),
+            currentStep: 0,
+            backgroundStartVolume: this.backgroundMusic.volume,
+            bossStartVolume: this.bossMusic.volume,
+        };
+    }
 
-            let progress = Math.min(1, currentStep / totalSteps);
-            this.backgroundMusic.volume = backgroundStartVolume * (1 - progress);
-            this.bossMusic.volume = bossStartVolume + (this.bossMusicTargetVolume - bossStartVolume) * progress;
+    advanceBossMusicCrossfade(fadeState) {
+        fadeState.currentStep++;
 
-            if (progress < 1) {
-                return;
-            }
+        let progress = Math.min(1, fadeState.currentStep / fadeState.totalSteps);
+        this.applyCrossfadeProgress(progress, fadeState);
 
-            this.clearMusicFade();
-            this.pauseTrack(this.backgroundMusic, 'backgroundMusicStarted');
-            this.backgroundMusic.currentTime = 0;
-            this.backgroundMusic.volume = this.backgroundMusicTargetVolume;
-            this.bossMusic.volume = this.bossMusicTargetVolume;
-        }, stepMs);
+        if (progress >= 1) {
+            this.finishBossMusicCrossfade();
+        }
+    }
+
+    applyCrossfadeProgress(progress, fadeState) {
+        this.backgroundMusic.volume = fadeState.backgroundStartVolume * (1 - progress);
+        this.bossMusic.volume = fadeState.bossStartVolume + (this.bossMusicTargetVolume - fadeState.bossStartVolume) * progress;
+    }
+
+    finishBossMusicCrossfade() {
+        this.clearMusicFade();
+        this.pauseTrack(this.backgroundMusic, 'backgroundMusicStarted');
+        this.backgroundMusic.currentTime = 0;
+        this.backgroundMusic.volume = this.backgroundMusicTargetVolume;
+        this.bossMusic.volume = this.bossMusicTargetVolume;
     }
 
     resetMusicBlend() {
@@ -90,16 +111,28 @@ class AudioManager {
         }
 
         let playPromise = track.play();
-        if (!playPromise || typeof playPromise.then !== 'function') {
-            this[startedFlagName] = true;
+        if (!this.isPromiseLike(playPromise)) {
+            this.markTrackStarted(startedFlagName);
             return;
         }
 
+        this.attachTrackStartHandler(playPromise, startedFlagName);
+    }
+
+    attachTrackStartHandler(playPromise, startedFlagName) {
         playPromise
             .then(() => {
-                this[startedFlagName] = true;
+                this.markTrackStarted(startedFlagName);
             })
             .catch(() => {});
+    }
+
+    isPromiseLike(value) {
+        return !!value && typeof value.then === 'function';
+    }
+
+    markTrackStarted(startedFlagName) {
+        this[startedFlagName] = true;
     }
 
     pauseBackgroundMusic() {
@@ -152,19 +185,25 @@ class AudioManager {
             return;
         }
 
+        this.loadMusicTracks();
+        this.loadSoundEffects();
+        this.audioUnlocked = true;
+    }
+
+    loadMusicTracks() {
         this.backgroundMusic.load();
 
         if (this.bossMusic) {
             this.bossMusic.load();
         }
+    }
 
+    loadSoundEffects() {
         this.soundEffects.forEach((soundEntry) => {
             soundEntry.sounds.forEach((sound) => {
                 sound.load();
             });
         });
-
-        this.audioUnlocked = true;
     }
 
     toggleMuted() {
