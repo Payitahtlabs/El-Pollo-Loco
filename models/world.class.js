@@ -498,7 +498,7 @@ class World {
 
         hitEnemy.stomp();
         this.playChickenBottleHitSound(hitEnemy);
-        bottle.startSplash();
+        this.triggerBottleSplash(bottle);
         return true;
     }
 
@@ -509,7 +509,15 @@ class World {
 
         this.startBossFight();
         this.level.endboss.hit();
-        bottle.startSplash();
+        this.triggerBottleSplash(bottle);
+    }
+
+    triggerBottleSplash(bottle) {
+        if (!bottle.startSplash()) {
+            return;
+        }
+
+        this.audioManager?.playSound('bottleSplash');
     }
 
     maybeDropBottle(enemy) {
