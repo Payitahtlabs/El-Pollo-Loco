@@ -90,6 +90,16 @@ a:hover {
     border: 1px solid rgba(255, 246, 204, 0.18);
     border-radius: 999px;
     background: linear-gradient(180deg, rgba(54, 28, 10, 0.88), rgba(24, 12, 5, 0.92));
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+    transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease, border-color 140ms ease;
+}
+
+.back-link:hover {
+    text-decoration: none;
+    transform: translateY(-1px);
+    filter: brightness(1.06);
+    border-color: rgba(255, 246, 204, 0.3);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.24);
 }
 
 @media (max-width: 600px) {

@@ -131,8 +131,8 @@ h1,
     transform: translateY(1px);
 }
 
-.toolbar-button:focus-visible,
-.fullscreen-button:focus-visible {
+body.using-keyboard-navigation .toolbar-button:focus-visible,
+body.using-keyboard-navigation .fullscreen-button:focus-visible {
     outline: 2px solid rgba(255, 246, 204, 0.9);
     outline-offset: 2px;
 }
@@ -266,7 +266,7 @@ canvas {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
 
-.overlay-action-button:focus-visible {
+body.using-keyboard-navigation .overlay-action-button:focus-visible {
     outline: 2px solid rgba(255, 246, 204, 0.92);
     outline-offset: 2px;
 }
@@ -364,8 +364,8 @@ canvas {
     transition: transform 140ms ease, filter 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
 }
 
-.help-button:focus-visible,
-.help-close-button:focus-visible {
+body.using-keyboard-navigation .help-button:focus-visible,
+body.using-keyboard-navigation .help-close-button:focus-visible {
     outline: 2px solid rgba(255, 246, 204, 0.92);
     outline-offset: 2px;
 }
@@ -469,12 +469,11 @@ canvas {
     letter-spacing: 0.03em;
     color: rgba(255, 246, 204, 0.82);
     text-decoration: none;
-    border-bottom: 1px solid rgba(255, 246, 204, 0.24);
 }
 
 .help-imprint-link:hover {
     color: #fff6cc;
-    border-bottom-color: rgba(255, 246, 204, 0.5);
+    text-decoration: none;
 }
 
 .start-screen-content {

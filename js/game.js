@@ -65,8 +65,10 @@ function init() {
     helpCloseButton = document.getElementById('help-close-button');
     attachTouchControlListeners();
     attachGameSurfaceInteractionGuards();
+    attachButtonFocusResets();
     attachStartListeners();
     attachAudioControlListeners();
+    attachInputModalityListeners();
     updateFullscreenAvailability();
     attachFullscreenListeners();
     attachHelpOverlayListeners();
@@ -74,6 +76,11 @@ function init() {
     updateInteractionHints();
     updateMuteButtonState();
     updateFullscreenButtonState();
+}
+
+function attachButtonFocusResets() {
+    [muteButton, fullscreenButton, helpButton, helpCloseButton, ...restartButtons, ...homeButtons]
+        .forEach((button) => attachPointerFocusReset(button));
 }
 
 function attachHelpOverlayListeners() {
@@ -507,6 +514,31 @@ function attachAudioControlListeners() {
     }
 
     muteButton.addEventListener('click', toggleMutedAudio);
+}
+
+function attachPointerFocusReset(button) {
+    if (!button) {
+        return;
+    }
+
+    button.addEventListener('pointerup', () => button.blur());
+}
+
+function attachInputModalityListeners() {
+    document.addEventListener('keydown', handleInputModalityKeydown);
+    document.addEventListener('pointerdown', handlePointerInputMode);
+}
+
+function handleInputModalityKeydown(event) {
+    if (event.key !== 'Tab') {
+        return;
+    }
+
+    document.body.classList.add('using-keyboard-navigation');
+}
+
+function handlePointerInputMode() {
+    document.body.classList.remove('using-keyboard-navigation');
 }
 
 function toggleMutedAudio() {
