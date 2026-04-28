@@ -27,13 +27,59 @@ const HELP_OVERLAY_ANIMATION_DURATION_MS = 180;
 const HELP_OVERLAY_INTERACTION_GUARD_MS = 400;
 
 function init() {
+    collectDomReferences();
+    setupAudioManager();
+    attachUiListeners();
+    initializeUiState();
+}
+
+function collectDomReferences() {
     canvas = document.getElementById('canvas');
     startScreen = document.getElementById('start-screen');
     winScreen = document.getElementById('win-screen');
     gameOverScreen = document.getElementById('game-over-screen');
     touchControls = document.getElementById('touch-controls');
     touchButtons = Array.from(document.querySelectorAll('.touch-button'));
+    gameShellFrame = document.getElementById('game-shell-frame');
+    muteButton = document.getElementById('mute-button');
+    muteIcon = document.getElementById('mute-icon');
+    fullscreenButton = document.getElementById('fullscreen-button');
+    fullscreenIcon = document.getElementById('fullscreen-icon');
+    restartButtons = Array.from(document.querySelectorAll('[id$="restart-button"]'));
+    homeButtons = Array.from(document.querySelectorAll('[id$="home-button"]'));
+    startHintText = document.getElementById('start-hint-text');
+    helpButton = document.getElementById('help-button');
+    helpOverlay = document.getElementById('help-overlay');
+    helpCloseButton = document.getElementById('help-close-button');
+}
+
+function setupAudioManager() {
     audioManager = new AudioManager('audio/music/background-music.mp3', 'audio/music/endboss-battle-music.mp3');
+    registerItemSounds();
+    registerEndbossSounds();
+    applyStoredAudioState();
+}
+
+function attachUiListeners() {
+    attachTouchControlListeners();
+    attachGameSurfaceInteractionGuards();
+    attachButtonFocusResets();
+    attachStartListeners();
+    attachAudioControlListeners();
+    attachInputModalityListeners();
+    attachFullscreenListeners();
+    attachHelpOverlayListeners();
+    attachResponsiveHintListeners();
+}
+
+function initializeUiState() {
+    updateFullscreenAvailability();
+    updateInteractionHints();
+    updateMuteButtonState();
+    updateFullscreenButtonState();
+}
+
+function registerItemSounds() {
     audioManager.registerSound('characterHurt', 'audio/sfx/items/character-hurt.wav', 0.32);
     audioManager.registerSound('chickenHit', 'audio/sfx/items/chicken-hit.wav', 0.18);
     audioManager.registerSound('chickenHurt', 'audio/sfx/items/chicken-hurt.wav', 0.34);
@@ -46,36 +92,14 @@ function init() {
     audioManager.registerSound('bottleThrow', 'audio/sfx/items/bottle-throw.wav', 0.3);
     audioManager.registerSound('bottleSplash', 'audio/sfx/items/bottle-splash.wav', 0.34);
     audioManager.registerSound('jump', 'audio/sfx/items/jump.wav', 0.26);
+}
+
+function registerEndbossSounds() {
     audioManager.registerSound('endbossAlert', 'audio/sfx/endboss/endboss-alert.wav', 0.4);
     audioManager.registerSound('endbossAttack', 'audio/sfx/endboss/endboss-attack.wav', 0.36);
     audioManager.registerSound('endbossHurt', 'audio/sfx/endboss/endboss-hurt.wav', 0.42);
     audioManager.registerSound('endbossDeath', 'audio/sfx/endboss/endboss-death.wav', 0.46);
     audioManager.registerSound('endbossImpact', 'audio/sfx/endboss/endboss-impact.wav', 0.34);
-    applyStoredAudioState();
-    gameShellFrame = document.getElementById('game-shell-frame');
-    muteButton = document.getElementById('mute-button');
-    muteIcon = document.getElementById('mute-icon');
-    fullscreenButton = document.getElementById('fullscreen-button');
-    fullscreenIcon = document.getElementById('fullscreen-icon');
-    restartButtons = Array.from(document.querySelectorAll('[id$="restart-button"]'));
-    homeButtons = Array.from(document.querySelectorAll('[id$="home-button"]'));
-    startHintText = document.getElementById('start-hint-text');
-    helpButton = document.getElementById('help-button');
-    helpOverlay = document.getElementById('help-overlay');
-    helpCloseButton = document.getElementById('help-close-button');
-    attachTouchControlListeners();
-    attachGameSurfaceInteractionGuards();
-    attachButtonFocusResets();
-    attachStartListeners();
-    attachAudioControlListeners();
-    attachInputModalityListeners();
-    updateFullscreenAvailability();
-    attachFullscreenListeners();
-    attachHelpOverlayListeners();
-    attachResponsiveHintListeners();
-    updateInteractionHints();
-    updateMuteButtonState();
-    updateFullscreenButtonState();
 }
 
 function attachButtonFocusResets() {
@@ -224,14 +248,16 @@ function startGame() {
         return;
     }
 
+    prepareGameStart();
+    initializeGame();
+}
+
+function prepareGameStart() {
     hideStartScreen();
-    canvas.classList.remove('hidden');
+    showGameCanvas();
     detachStartListeners();
     showTouchControls();
-    audioManager.unlockAudio();
-    audioManager.resetMusicBlend();
-    audioManager.playBackgroundMusic();
-    initializeGame();
+    prepareRunAudio();
 }
 
 function hideStartScreen() {
@@ -270,9 +296,7 @@ function restartGame() {
     teardownCurrentGame();
     detachRestartListeners();
     showTouchControls();
-    audioManager.unlockAudio();
-    audioManager.resetMusicBlend();
-    audioManager.playBackgroundMusic();
+    prepareRunAudio();
     initializeGame();
 }
 
@@ -280,11 +304,26 @@ function returnToHome() {
     teardownCurrentGame();
     detachRestartListeners();
     hideTouchControls();
+    stopGameAudio();
+    hideGameEndScreens();
+    hideGameCanvas();
+    showStartScreen();
+    attachStartListeners();
+}
 
+function prepareRunAudio() {
+    audioManager.unlockAudio();
+    audioManager.resetMusicBlend();
+    audioManager.playBackgroundMusic();
+}
+
+function stopGameAudio() {
     if (audioManager) {
         audioManager.stopAllMusic();
     }
+}
 
+function hideGameEndScreens() {
     if (winScreen) {
         winScreen.classList.add('hidden');
         winScreen.setAttribute('aria-hidden', 'true');
@@ -294,13 +333,18 @@ function returnToHome() {
         gameOverScreen.classList.add('hidden');
         gameOverScreen.setAttribute('aria-hidden', 'true');
     }
+}
 
+function showGameCanvas() {
+    if (canvas) {
+        canvas.classList.remove('hidden');
+    }
+}
+
+function hideGameCanvas() {
     if (canvas) {
         canvas.classList.add('hidden');
     }
-
-    showStartScreen();
-    attachStartListeners();
 }
 
 function teardownCurrentGame() {
@@ -318,7 +362,7 @@ function teardownCurrentGame() {
 }
 
 function handleStartKeydown(event) {
-    if (event.code !== 'Enter' && event.code !== 'Space') {
+    if (!isPrimaryActionKey(event)) {
         return;
     }
 
@@ -327,12 +371,16 @@ function handleStartKeydown(event) {
 }
 
 function handleRestartKeydown(event) {
-    if (event.code !== 'Enter' && event.code !== 'Space') {
+    if (!isPrimaryActionKey(event)) {
         return;
     }
 
     event.preventDefault();
     restartGame();
+}
+
+function isPrimaryActionKey(event) {
+    return event.code === 'Enter' || event.code === 'Space';
 }
 
 function enableRestart() {
@@ -364,11 +412,11 @@ function handleTouchControlPress(event) {
     let button = event.currentTarget;
     let action = button.dataset.action;
 
-    if (!action || !(action in keyboard)) {
+    if (!isKeyboardAction(action)) {
         return;
     }
 
-    keyboard[action] = true;
+    setKeyboardActionState(action, true);
     button.classList.add('is-pressed');
 }
 
@@ -376,11 +424,19 @@ function handleTouchControlRelease(event) {
     let button = event.currentTarget;
     let action = button.dataset.action;
 
-    if (action && keyboard && action in keyboard) {
-        keyboard[action] = false;
+    if (keyboard && isKeyboardAction(action)) {
+        setKeyboardActionState(action, false);
     }
 
     button.classList.remove('is-pressed');
+}
+
+function isKeyboardAction(action) {
+    return !!action && keyboard && action in keyboard;
+}
+
+function setKeyboardActionState(action, isPressed) {
+    keyboard[action] = isPressed;
 }
 
 function resetTouchInputState() {
@@ -423,9 +479,7 @@ function attachStartListeners() {
     }
 
     window.addEventListener('keydown', handleStartKeydown);
-    if (startScreen) {
-        startScreen.addEventListener('click', handleStartScreenClick);
-    }
+    toggleStartScreenClickListener('add');
     startListenersAttached = true;
 }
 
@@ -435,22 +489,32 @@ function detachStartListeners() {
     }
 
     window.removeEventListener('keydown', handleStartKeydown);
-    if (startScreen) {
-        startScreen.removeEventListener('click', handleStartScreenClick);
-    }
+    toggleStartScreenClickListener('remove');
     startListenersAttached = false;
 }
 
-function handleStartScreenClick(event) {
-    if (Date.now() - lastHelpOverlayOpenAt < HELP_OVERLAY_INTERACTION_GUARD_MS) {
+function toggleStartScreenClickListener(action) {
+    if (!startScreen) {
         return;
     }
 
-    if (event.target.closest('button, a, [role="dialog"]')) {
+    startScreen[`${action}EventListener`]('click', handleStartScreenClick);
+}
+
+function handleStartScreenClick(event) {
+    if (shouldIgnoreStartScreenClick(event)) {
         return;
     }
 
     startGame();
+}
+
+function shouldIgnoreStartScreenClick(event) {
+    return wasHelpOverlayJustOpened() || !!event.target.closest('button, a, [role="dialog"]');
+}
+
+function wasHelpOverlayJustOpened() {
+    return Date.now() - lastHelpOverlayOpenAt < HELP_OVERLAY_INTERACTION_GUARD_MS;
 }
 
 function attachRestartListeners() {
@@ -459,8 +523,8 @@ function attachRestartListeners() {
     }
 
     window.addEventListener('keydown', handleRestartKeydown);
-    restartButtons.forEach((button) => button.addEventListener('click', restartGame));
-    homeButtons.forEach((button) => button.addEventListener('click', returnToHome));
+    toggleOverlayButtonListeners(restartButtons, 'click', restartGame, 'add');
+    toggleOverlayButtonListeners(homeButtons, 'click', returnToHome, 'add');
     restartListenersAttached = true;
 }
 
@@ -470,9 +534,13 @@ function detachRestartListeners() {
     }
 
     window.removeEventListener('keydown', handleRestartKeydown);
-    restartButtons.forEach((button) => button.removeEventListener('click', restartGame));
-    homeButtons.forEach((button) => button.removeEventListener('click', returnToHome));
+    toggleOverlayButtonListeners(restartButtons, 'click', restartGame, 'remove');
+    toggleOverlayButtonListeners(homeButtons, 'click', returnToHome, 'remove');
     restartListenersAttached = false;
+}
+
+function toggleOverlayButtonListeners(buttons, eventName, handler, action) {
+    buttons.forEach((button) => button[`${action}EventListener`](eventName, handler));
 }
 
 function attachFullscreenListeners() {
