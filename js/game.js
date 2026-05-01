@@ -77,6 +77,7 @@ function initializeUiState() {
 
 function registerItemSounds() {
     audioManager.registerSound('characterHurt', 'audio/sfx/items/character-hurt.wav', 0.32);
+    audioManager.registerLoopingSound('characterLongIdleSnore', 'audio/sfx/player/character-long-idle-snore.wav', 0.22);
     audioManager.registerSound('chickenHit', 'audio/sfx/items/chicken-hit.wav', 0.18);
     audioManager.registerSound('chickenHurt', 'audio/sfx/items/chicken-hurt.wav', 0.34);
     audioManager.registerSound('chickenStompAccent', 'audio/sfx/items/chicken-hurt.wav', 0.26);

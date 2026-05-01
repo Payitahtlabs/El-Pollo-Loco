@@ -120,8 +120,22 @@ class World {
         this.character.update(deltaTime, this.keyboard, this.level);
         this.character.animate(deltaTime);
         this.playJumpSoundIfNeeded();
+        this.updateCharacterAudioState();
         this.handleBottleThrow();
         this.updateEndbossFightState();
+    }
+
+    updateCharacterAudioState() {
+        if (this.character.isLongIdleActive()) {
+            this.audioManager?.startLoopingSound('characterLongIdleSnore');
+            return;
+        }
+
+        this.stopCharacterLongIdleSound();
+    }
+
+    stopCharacterLongIdleSound() {
+        this.audioManager?.stopLoopingSound('characterLongIdleSnore');
     }
 
     updateDisplayState() {
@@ -279,6 +293,7 @@ class World {
 
     handleGameWon() {
         this.gameWon = true;
+        this.stopCharacterLongIdleSound();
         this.showWinOverlay();
 
         if (this.onGameWon) {
@@ -288,6 +303,7 @@ class World {
 
     handleGameLost() {
         this.gameLost = true;
+        this.stopCharacterLongIdleSound();
         this.showGameOverOverlay();
 
         if (this.onGameLost) {
@@ -334,6 +350,7 @@ class World {
     }
 
     gameOver() {
+        this.stopCharacterLongIdleSound();
         this.stopAnimationLoop();
     }
 }

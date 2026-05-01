@@ -7,6 +7,7 @@ class AudioManager {
     bossMusicTargetVolume = 0.24;
     musicFadeInterval = null;
     soundEffects = new Map();
+    loopingSoundEffects = new Map();
     audioUnlocked = false;
 
     constructor(backgroundMusicPath, bossMusicPath = null) {
@@ -153,6 +154,12 @@ class AudioManager {
         });
     }
 
+    registerLoopingSound(name, soundPath, volume = 1) {
+        let sound = this.createSoundElement(soundPath, volume);
+        sound.loop = true;
+        this.loopingSoundEffects.set(name, sound);
+    }
+
     playSound(name) {
         let soundEntry = this.soundEffects.get(name);
         if (!soundEntry || soundEntry.sounds.length === 0) {
@@ -166,6 +173,31 @@ class AudioManager {
         sound.play().catch(() => {});
     }
 
+    startLoopingSound(name) {
+        let sound = this.loopingSoundEffects.get(name);
+        if (!sound || !sound.paused) {
+            return;
+        }
+
+        sound.play().catch(() => {});
+    }
+
+    stopLoopingSound(name) {
+        let sound = this.loopingSoundEffects.get(name);
+        if (!sound) {
+            return;
+        }
+
+        sound.pause();
+        sound.currentTime = 0;
+    }
+
+    stopAllLoopingSounds() {
+        this.loopingSoundEffects.forEach((sound, name) => {
+            this.stopLoopingSound(name);
+        });
+    }
+
     setMuted(isMuted) {
         this.backgroundMusic.muted = isMuted;
 
@@ -173,10 +205,21 @@ class AudioManager {
             this.bossMusic.muted = isMuted;
         }
 
+        this.setMutedOnSoundEffects(isMuted);
+        this.setMutedOnLoopingSoundEffects(isMuted);
+    }
+
+    setMutedOnSoundEffects(isMuted) {
         this.soundEffects.forEach((soundEntry) => {
             soundEntry.sounds.forEach((sound) => {
                 sound.muted = isMuted;
             });
+        });
+    }
+
+    setMutedOnLoopingSoundEffects(isMuted) {
+        this.loopingSoundEffects.forEach((sound) => {
+            sound.muted = isMuted;
         });
     }
 
@@ -187,6 +230,7 @@ class AudioManager {
 
         this.loadMusicTracks();
         this.loadSoundEffects();
+        this.loadLoopingSoundEffects();
         this.audioUnlocked = true;
     }
 
@@ -203,6 +247,12 @@ class AudioManager {
             soundEntry.sounds.forEach((sound) => {
                 sound.load();
             });
+        });
+    }
+
+    loadLoopingSoundEffects() {
+        this.loopingSoundEffects.forEach((sound) => {
+            sound.load();
         });
     }
 

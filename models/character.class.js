@@ -296,6 +296,10 @@ class Character extends MovableObject {
         return this.idleTime >= this.longIdleDelay;
     }
 
+    isLongIdleActive() {
+        return this.currentAnimationState === 'long-idle';
+    }
+
     playIdleAnimationVariant(deltaTime, state, frames) {
         this.setAnimationState(state);
         this.playStateAnimation(deltaTime, frames);
