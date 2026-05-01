@@ -1,5 +1,10 @@
 const MUTE_STORAGE_KEY = 'el-pollo-loco-audio-muted';
 
+/**
+ * Attaches fullscreen listeners and keeps the toolbar icon state in sync.
+ *
+ * @returns {void}
+ */
 function attachFullscreenListeners() {
     if (canAttachFullscreenListener()) {
         fullscreenButton.addEventListener('click', toggleFullscreen);
@@ -39,6 +44,11 @@ function isStandaloneMode() {
     return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }
 
+/**
+ * Attaches the mute button click handler.
+ *
+ * @returns {void}
+ */
 function attachAudioControlListeners() {
     if (!muteButton) {
         return;
@@ -72,6 +82,11 @@ function handlePointerInputMode() {
     document.body.classList.remove('using-keyboard-navigation');
 }
 
+/**
+ * Toggles the global audio mute state and persists the updated preference.
+ *
+ * @returns {void}
+ */
 function toggleMutedAudio() {
     if (!audioManager) {
         return;
@@ -81,6 +96,11 @@ function toggleMutedAudio() {
     updateMuteButtonState();
 }
 
+/**
+ * Applies the stored mute preference to the shared audio manager.
+ *
+ * @returns {void}
+ */
 function applyStoredAudioState() {
     if (!audioManager) {
         return;
@@ -105,6 +125,11 @@ function persistMutedState(isMuted) {
     }
 }
 
+/**
+ * Toggles native fullscreen mode for the game shell when supported.
+ *
+ * @returns {void}
+ */
 function toggleFullscreen() {
     if (!canToggleFullscreen()) {
         return;
@@ -164,6 +189,11 @@ function getFullscreenElement() {
     return document.fullscreenElement || document.webkitFullscreenElement || null;
 }
 
+/**
+ * Refreshes the toolbar icon and accessible label for the fullscreen button.
+ *
+ * @returns {void}
+ */
 function updateFullscreenButtonState() {
     if (!canUpdateFullscreenButtonState()) {
         return;
@@ -188,6 +218,11 @@ function getFullscreenIconPath(isFullscreen) {
         : 'img/icons/toolbar-fullscreen.svg';
 }
 
+/**
+ * Refreshes the toolbar icon and accessible label for the mute button.
+ *
+ * @returns {void}
+ */
 function updateMuteButtonState() {
     if (!canUpdateMuteButtonState()) {
         return;

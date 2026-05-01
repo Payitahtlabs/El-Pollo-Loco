@@ -1,3 +1,6 @@
+/**
+ * Represents a drifting cloud that respawns ahead of the camera once it leaves the screen.
+ */
 class Cloud extends MovableObject {
     height = 250;
     width = 500;
@@ -8,6 +11,13 @@ class Cloud extends MovableObject {
         'img/background/layers/4_clouds/2.png',
     ];
 
+    /**
+     * Creates a cloud with an optional position and movement speed.
+     *
+     * @param {number} [x=0] Horizontal world position.
+     * @param {number} [y=20] Vertical world position.
+     * @param {number} [speed=12] Horizontal drift speed.
+     */
     constructor(x = 0, y = 20, speed = 12) {
         super();
         this.loadImage(this.getRandomImage());
@@ -16,6 +26,13 @@ class Cloud extends MovableObject {
         this.speed = speed;
     }
 
+    /**
+     * Advances the cloud and respawns it beyond the level end when it leaves the screen.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @param {number} levelEndX Horizontal end of the level.
+     * @returns {void}
+     */
     update(deltaTime, levelEndX) {
         this.moveLeft(deltaTime);
 
@@ -27,6 +44,11 @@ class Cloud extends MovableObject {
         }
     }
 
+    /**
+     * Chooses one of the available cloud sprites at random.
+     *
+     * @returns {string} Cloud image path.
+     */
     getRandomImage() {
         let randomIndex = Math.floor(Math.random() * this.images.length);
         return this.images[randomIndex];

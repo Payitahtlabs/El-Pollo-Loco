@@ -1,3 +1,6 @@
+/**
+ * Represents a thrown bottle that flies, splashes on impact, and removes itself afterwards.
+ */
 class ThrowableBottle extends MovableObject {
     width = 80;
     height = 80;
@@ -30,6 +33,13 @@ class ThrowableBottle extends MovableObject {
         'img/salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png',
     ];
 
+    /**
+     * Creates a new thrown bottle instance.
+     *
+     * @param {number} x Horizontal spawn position.
+     * @param {number} y Vertical spawn position.
+     * @param {boolean} [throwToLeft=false] Whether the bottle travels to the left.
+     */
     constructor(x, y, throwToLeft = false) {
         super();
         this.x = x;
@@ -41,6 +51,12 @@ class ThrowableBottle extends MovableObject {
         this.speedY = -900;
     }
 
+    /**
+     * Updates flight or splash behavior for the current frame.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     update(deltaTime) {
         if (this.isSplashing) {
             this.animateSplash(deltaTime);
@@ -80,6 +96,11 @@ class ThrowableBottle extends MovableObject {
         }
     }
 
+    /**
+     * Starts the splash animation after an impact.
+     *
+     * @returns {boolean} True when the splash state was started.
+     */
     startSplash() {
         if (this.isSplashing) {
             return false;
@@ -93,6 +114,11 @@ class ThrowableBottle extends MovableObject {
         return true;
     }
 
+    /**
+     * Determines when the thrown bottle can be removed from the world.
+     *
+     * @returns {boolean} True once the splash finished or the bottle left the valid bounds.
+     */
     shouldRemove() {
         if (this.isSplashing) {
             return (Date.now() - this.splashStartedAt) / 1000 >= this.splashDuration;

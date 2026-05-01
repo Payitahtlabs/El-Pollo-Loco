@@ -1,3 +1,6 @@
+/**
+ * Represents a collectible salsa bottle lying on the ground or popping into place after a drop.
+ */
 class SalsaBottle extends MovableObject {
     width = 80;
     height = 100;
@@ -17,6 +20,12 @@ class SalsaBottle extends MovableObject {
         'img/salsa_bottle/2_salsa_bottle_on_ground.png',
     ];
 
+    /**
+     * Creates a ground bottle at the given world position.
+     *
+     * @param {number} x Horizontal world position.
+     * @param {number} [y=330] Vertical world position.
+     */
     constructor(x, y = 330) {
         super();
         this.x = x;
@@ -29,6 +38,11 @@ class SalsaBottle extends MovableObject {
         return this.groundImages[randomIndex];
     }
 
+    /**
+     * Starts the short pop-in motion used when a bottle drops from a defeated enemy.
+     *
+     * @returns {void}
+     */
     startDropEffect() {
         this.y = this.groundY;
         this.speedY = -this.dropPopStrength;
@@ -36,6 +50,12 @@ class SalsaBottle extends MovableObject {
         this.isDropping = true;
     }
 
+    /**
+     * Updates the temporary drop motion until the bottle settles on the ground again.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     update(deltaTime) {
         if (!this.isDropping) {
             return;

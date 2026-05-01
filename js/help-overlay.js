@@ -3,6 +3,11 @@ let lastHelpOverlayOpenAt = 0;
 const HELP_OVERLAY_ANIMATION_DURATION_MS = 180;
 const HELP_OVERLAY_INTERACTION_GUARD_MS = 400;
 
+/**
+ * Attaches all help overlay open, close, backdrop, and keyboard listeners.
+ *
+ * @returns {void}
+ */
 function attachHelpOverlayListeners() {
     if (helpButton) {
         helpButton.addEventListener('pointerup', openHelpOverlay);
@@ -20,6 +25,12 @@ function attachHelpOverlayListeners() {
     window.addEventListener('keydown', handleHelpOverlayKeydown);
 }
 
+/**
+ * Opens the help overlay and reveals the dialog after the next animation frame.
+ *
+ * @param {Event} [event] Triggering browser event.
+ * @returns {void}
+ */
 function openHelpOverlay(event) {
     preventOverlayEventDefault(event);
     if (!helpOverlay) {
@@ -40,6 +51,12 @@ function openHelpOverlay(event) {
     });
 }
 
+/**
+ * Starts closing the help overlay and schedules the final hide step.
+ *
+ * @param {Event} [event] Triggering browser event.
+ * @returns {void}
+ */
 function closeHelpOverlay(event) {
     preventOverlayEventDefault(event);
     if (!helpOverlay) {
@@ -51,6 +68,12 @@ function closeHelpOverlay(event) {
     scheduleHelpOverlayHide();
 }
 
+/**
+ * Closes the help overlay when the semi-transparent backdrop itself is clicked.
+ *
+ * @param {MouseEvent} event Click event on the overlay container.
+ * @returns {void}
+ */
 function handleHelpOverlayBackdropClick(event) {
     event.stopPropagation();
 
@@ -61,6 +84,12 @@ function handleHelpOverlayBackdropClick(event) {
     closeHelpOverlay();
 }
 
+/**
+ * Closes the help overlay when Escape is pressed.
+ *
+ * @param {KeyboardEvent} event Browser keyboard event.
+ * @returns {void}
+ */
 function handleHelpOverlayKeydown(event) {
     if (event.code !== 'Escape' || isHelpOverlayHidden()) {
         return;
@@ -132,6 +161,11 @@ function isHelpOverlayHidden() {
     return !helpOverlay || helpOverlay.classList.contains('hidden');
 }
 
+/**
+ * Indicates whether the help overlay was opened recently enough to ignore follow-up interactions.
+ *
+ * @returns {boolean} True while the short interaction guard window is active.
+ */
 function wasHelpOverlayJustOpened() {
     return Date.now() - lastHelpOverlayOpenAt < HELP_OVERLAY_INTERACTION_GUARD_MS;
 }

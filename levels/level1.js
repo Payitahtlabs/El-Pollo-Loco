@@ -1,5 +1,10 @@
 let level1;
 
+/**
+ * Creates the full object layout for the first playable level.
+ *
+ * @returns {void}
+ */
 function initLevel() {
     level1 = new Level(
         [

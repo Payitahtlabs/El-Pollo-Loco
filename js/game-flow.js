@@ -1,3 +1,8 @@
+/**
+ * Starts a new run from the home screen if no world is currently active.
+ *
+ * @returns {void}
+ */
 function startGame() {
     if (world) {
         return;
@@ -7,6 +12,11 @@ function startGame() {
     initializeGame();
 }
 
+/**
+ * Prepares the visible shell and audio state for a new run.
+ *
+ * @returns {void}
+ */
 function prepareGameStart() {
     hideStartScreen();
     showGameCanvas();
@@ -33,6 +43,11 @@ function showStartScreen() {
     startScreen.setAttribute('aria-hidden', 'false');
 }
 
+/**
+ * Initializes level state, keyboard input, and the active world instance.
+ *
+ * @returns {void}
+ */
 function initializeGame() {
     initLevel();
     keyboard = new Keyboard();
@@ -43,6 +58,11 @@ function initializeGame() {
     });
 }
 
+/**
+ * Restarts the active run without reloading the page.
+ *
+ * @returns {void}
+ */
 function restartGame() {
     if (!world) {
         return;
@@ -55,6 +75,11 @@ function restartGame() {
     initializeGame();
 }
 
+/**
+ * Tears down the active run and returns the shell to the home screen.
+ *
+ * @returns {void}
+ */
 function returnToHome() {
     teardownCurrentGame();
     detachRestartListeners();
@@ -66,12 +91,22 @@ function returnToHome() {
     attachStartListeners();
 }
 
+/**
+ * Resets and starts the gameplay music for a new run.
+ *
+ * @returns {void}
+ */
 function prepareRunAudio() {
     audioManager.unlockAudio();
     audioManager.resetMusicBlend();
     audioManager.playBackgroundMusic();
 }
 
+/**
+ * Stops the active game music tracks.
+ *
+ * @returns {void}
+ */
 function stopGameAudio() {
     if (audioManager) {
         audioManager.stopAllMusic();
@@ -102,6 +137,11 @@ function hideGameCanvas() {
     }
 }
 
+/**
+ * Tears down the active world and input handlers for the current run.
+ *
+ * @returns {void}
+ */
 function teardownCurrentGame() {
     resetTouchInputState();
 

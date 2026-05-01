@@ -1,3 +1,6 @@
+/**
+ * Represents the smaller, faster chicken enemy variant.
+ */
 class SmallChicken extends MovableObject {
     y = 380;
     height = 50;
@@ -15,6 +18,11 @@ class SmallChicken extends MovableObject {
 
     deadImage = 'img/enemies_chicken/chicken_small/2_dead/dead.png';
 
+    /**
+     * Creates a small chicken enemy with an optional starting x position.
+     *
+     * @param {number} [x=200 + Math.random() * 800] Horizontal spawn position.
+     */
     constructor(x = 200 + Math.random() * 800) {
         super();
         this.loadImage(this.walkingImages[0]);
@@ -28,6 +36,13 @@ class SmallChicken extends MovableObject {
         this.speed = 70 + Math.random() * 70;
     }
 
+    /**
+     * Moves the small chicken and respawns it beyond the level end when needed.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @param {number} levelEndX Horizontal end of the level.
+     * @returns {void}
+     */
     update(deltaTime, levelEndX) {
         if (this.isDefeated) return;
 
@@ -39,6 +54,12 @@ class SmallChicken extends MovableObject {
         }
     }
 
+    /**
+     * Updates the visible sprite for the current small chicken state.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     animate(deltaTime) {
         if (this.isDefeated) {
             this.img = this.imageCache[this.deadImage];
@@ -50,6 +71,11 @@ class SmallChicken extends MovableObject {
         }
     }
 
+    /**
+     * Marks the small chicken as defeated and swaps to its dead sprite.
+     *
+     * @returns {void}
+     */
     stomp() {
         if (this.isDefeated) return;
 
@@ -59,6 +85,11 @@ class SmallChicken extends MovableObject {
         this.img = this.imageCache[this.deadImage];
     }
 
+    /**
+     * Determines when a defeated small chicken can be removed from the level.
+     *
+     * @returns {boolean} True once the defeat display duration has elapsed.
+     */
     shouldRemove() {
         return this.isDefeated && (Date.now() - this.defeatedAt) / 1000 >= this.defeatDuration;
     }

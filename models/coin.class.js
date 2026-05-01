@@ -1,3 +1,6 @@
+/**
+ * Represents an animated collectible coin.
+ */
 class Coin extends MovableObject {
     width = 120;
     height = 120;
@@ -14,6 +17,12 @@ class Coin extends MovableObject {
         'img/coin/coin_2.png',
     ];
 
+    /**
+     * Creates a coin at the given world position.
+     *
+     * @param {number} x Horizontal world position.
+     * @param {number} y Vertical world position.
+     */
     constructor(x, y) {
         super();
         this.x = x;
@@ -22,6 +31,12 @@ class Coin extends MovableObject {
         this.loadImages(this.images);
     }
 
+    /**
+     * Advances the coin animation for the current frame.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     animate(deltaTime) {
         if (this.isAnimationFrameDue(deltaTime)) {
             this.playAnimation(this.images);
