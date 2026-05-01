@@ -1,3 +1,6 @@
+/**
+ * Tracks the current pressed state of gameplay-relevant keyboard inputs.
+ */
 class Keyboard {
     left = false;
     right = false;
@@ -9,6 +12,9 @@ class Keyboard {
     keydownHandler;
     keyupHandler;
 
+    /**
+     * Registers global key listeners and keeps the tracked key states up to date.
+     */
     constructor() {
         this.keydownHandler = (event) => this.handleKeyChange(event, true);
         this.keyupHandler = (event) => this.handleKeyChange(event, false);
@@ -17,6 +23,13 @@ class Keyboard {
         window.addEventListener('keyup', this.keyupHandler);
     }
 
+    /**
+     * Applies a key state change when the pressed key is relevant for gameplay.
+     *
+     * @param {KeyboardEvent} event Browser keyboard event.
+     * @param {boolean} isPressed Whether the key is currently pressed.
+     * @returns {void}
+     */
     handleKeyChange(event, isPressed) {
         let keyName = this.getTrackedKeyName(event.code);
         if (!keyName) {
@@ -40,6 +53,11 @@ class Keyboard {
         return keyMap[code];
     }
 
+    /**
+     * Removes the global keyboard listeners when the input handler is disposed.
+     *
+     * @returns {void}
+     */
     destroy() {
         window.removeEventListener('keydown', this.keydownHandler);
         window.removeEventListener('keyup', this.keyupHandler);

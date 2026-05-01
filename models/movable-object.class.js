@@ -1,3 +1,6 @@
+/**
+ * Extends drawable objects with movement, gravity, collision, and damage helpers.
+ */
 class MovableObject extends DrawableObject {
     groundY = 280;
     animationCounter = 0;
@@ -33,6 +36,12 @@ class MovableObject extends DrawableObject {
         this.x -= this.speed * deltaTime;
     }
 
+    /**
+     * Applies gravity and keeps the object aligned with the ground plane when needed.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     applyGravity(deltaTime) {
         if (this.shouldStayOnGround()) {
             this.landOnGround();
@@ -80,6 +89,12 @@ class MovableObject extends DrawableObject {
         this.speedY = -strength;
     }
 
+    /**
+     * Checks axis-aligned collision against another movable object using offsets.
+     *
+     * @param {MovableObject} otherObject Other object to test against.
+     * @returns {boolean} True when both adjusted hitboxes overlap.
+     */
     isColliding(otherObject) {
         return this.x + this.width - this.offset.right > otherObject.x + otherObject.offset.left &&
             this.y + this.height - this.offset.bottom > otherObject.y + otherObject.offset.top &&
@@ -87,6 +102,11 @@ class MovableObject extends DrawableObject {
             this.y + this.offset.top < otherObject.y + otherObject.height - otherObject.offset.bottom;
     }
 
+    /**
+     * Applies standard damage unless the object is still inside its hurt window.
+     *
+     * @returns {boolean} True when damage was applied.
+     */
     hit() {
         if (this.isHurt()) return false;
 
@@ -99,6 +119,11 @@ class MovableObject extends DrawableObject {
         return true;
     }
 
+    /**
+     * Indicates whether the object is still inside the post-hit hurt window.
+     *
+     * @returns {boolean} True while the hurt timer is active.
+     */
     isHurt() {
         return (Date.now() - this.lastHit) / 1000 < 0.75;
     }
