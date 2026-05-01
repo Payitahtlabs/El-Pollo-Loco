@@ -1,0 +1,299 @@
+.touch-controls {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 2;
+    display: none;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    pointer-events: none;
+}
+
+.touch-controls-group {
+    display: flex;
+    gap: clamp(8px, 1.8vw, 12px);
+    pointer-events: auto;
+}
+
+.touch-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(70, 33, 8, 0.26);
+    border-radius: 999px;
+    padding: 0;
+    color: #2f1202;
+    background: linear-gradient(180deg, rgba(255, 199, 91, 0.68) 0%, rgba(242, 164, 44, 0.68) 100%);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.14);
+    backdrop-filter: blur(2px);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.touch-button-icon {
+    display: block;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+}
+
+.touch-button-bottle {
+    object-fit: contain;
+}
+
+.touch-button:active,
+.touch-button.is-pressed {
+    background: linear-gradient(180deg, rgba(255, 199, 91, 0.9) 0%, rgba(242, 164, 44, 0.9) 100%);
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
+.rotate-device-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: linear-gradient(180deg, rgba(44, 20, 4, 0.96) 0%, rgba(18, 9, 3, 0.98) 100%);
+}
+
+.rotate-device-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-width: 280px;
+    text-align: center;
+}
+
+.rotate-device-icon {
+    position: relative;
+    width: 92px;
+    height: 92px;
+}
+
+.rotate-device-icon-phone {
+    position: absolute;
+    top: 16px;
+    left: 30px;
+    width: 32px;
+    height: 56px;
+    border: 3px solid rgba(255, 246, 204, 0.92);
+    border-radius: 10px;
+    box-sizing: border-box;
+    animation: rotate-device-phone 1.8s ease-in-out infinite;
+}
+
+.rotate-device-icon-phone::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 5px;
+    width: 10px;
+    height: 3px;
+    background: rgba(255, 246, 204, 0.92);
+    border-radius: 999px;
+    transform: translateX(-50%);
+}
+
+.rotate-device-icon-arrow {
+    position: absolute;
+    top: 18px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border-top: 3px solid rgba(255, 246, 204, 0.92);
+    border-right: 3px solid rgba(255, 246, 204, 0.92);
+    border-radius: 0 8px 0 0;
+    transform: rotate(45deg);
+}
+
+.rotate-device-title,
+.rotate-device-text {
+    margin: 0;
+    font-family: 'Boogaloo', cursive;
+    color: #fff6cc;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+}
+
+.rotate-device-title {
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    letter-spacing: 0.04em;
+}
+
+.rotate-device-text {
+    font-size: clamp(1rem, 3.6vw, 1.25rem);
+    opacity: 0.92;
+}
+
+@keyframes rotate-device-phone {
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    40%,
+    60% {
+        transform: rotate(90deg);
+    }
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: landscape) {
+    .touch-controls {
+        display: flex;
+        padding: 0 max(8px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+    }
+
+    .touch-controls-group {
+        gap: clamp(6px, 1.4vw, 10px);
+    }
+
+    .touch-button {
+        min-width: clamp(40px, 9dvh, 52px);
+        min-height: clamp(40px, 9dvh, 52px);
+    }
+
+    .touch-button-icon {
+        width: clamp(17px, 3.3vw, 21px);
+        height: clamp(17px, 3.3vw, 21px);
+    }
+
+    .touch-button-bottle {
+        width: clamp(15px, 2.9vw, 19px);
+        height: clamp(15px, 2.9vw, 19px);
+    }
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: landscape) and (min-width: 900px) {
+    .touch-controls {
+        padding: 0 max(8px, env(safe-area-inset-right)) 6px max(8px, env(safe-area-inset-left));
+    }
+
+    .game-shell-frame:fullscreen .touch-button,
+    .game-shell-frame:-webkit-full-screen .touch-button {
+        min-width: clamp(46px, 10.2dvh, 60px);
+        min-height: clamp(46px, 10.2dvh, 60px);
+    }
+
+    .game-shell-frame:fullscreen .touch-button-icon,
+    .game-shell-frame:-webkit-full-screen .touch-button-icon {
+        width: clamp(19px, 3.8vw, 24px);
+        height: clamp(19px, 3.8vw, 24px);
+    }
+
+    .game-shell-frame:fullscreen .touch-button-bottle,
+    .game-shell-frame:-webkit-full-screen .touch-button-bottle {
+        width: clamp(17px, 3.4vw, 21px);
+        height: clamp(17px, 3.4vw, 21px);
+    }
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: portrait) {
+    body {
+        justify-content: center;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    h1,
+    .game-shell-frame {
+        display: none;
+    }
+
+    .rotate-device-overlay {
+        display: flex;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: landscape) and (max-height: 600px) {
+    body {
+        justify-content: center;
+        padding: 4px;
+        min-height: 100dvh;
+        overflow: hidden;
+    }
+
+    .game-shell-frame {
+        gap: 6px;
+    }
+
+    h1 {
+        display: none;
+    }
+
+    .game-shell {
+        width: min(720px, calc((100dvh - 8px) * 1.5));
+        max-height: calc(100dvh - 8px);
+    }
+
+    .start-screen-content {
+        margin-bottom: 4px;
+    }
+
+    .help-card {
+        width: min(480px, calc(100% - 12px));
+        gap: 12px;
+        padding: 18px 16px 16px;
+    }
+
+    .help-objective {
+        max-width: 380px;
+        font-size: clamp(0.82rem, 1.9vw, 0.94rem);
+    }
+
+    .help-info-panel {
+        gap: 10px 16px;
+    }
+
+    .help-button {
+        right: 10px;
+        bottom: 10px;
+        width: 34px;
+        height: 34px;
+        font-size: 0.96rem;
+    }
+
+    .game-toolbar {
+        min-height: 24px;
+    }
+
+    .touch-controls {
+        padding: 0 max(6px, env(safe-area-inset-right)) max(2px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
+    }
+
+    .touch-button {
+        min-width: 38px;
+        min-height: 38px;
+        border-width: 1.5px;
+    }
+
+    .touch-button-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    .touch-button-bottle {
+        width: 14px;
+        height: 14px;
+    }
+
+    .toolbar-button,
+    .fullscreen-button {
+        width: 28px;
+        height: 28px;
+    }
+
+    .toolbar-button img,
+    .fullscreen-button img {
+        width: 18px;
+        height: 18px;
+    }
+}

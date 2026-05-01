@@ -1,0 +1,121 @@
+.game-shell-frame {
+    width: min(720px, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    box-sizing: border-box;
+}
+
+.game-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    width: 100%;
+    min-height: 28px;
+    box-sizing: border-box;
+}
+
+.game-shell {
+    position: relative;
+    width: min(720px, 100%);
+    aspect-ratio: 720 / 480;
+    background-color: black;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.toolbar-button,
+.fullscreen-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    cursor: pointer;
+    opacity: 0.88;
+}
+
+.toolbar-button img,
+.fullscreen-button img {
+    width: 20px;
+    height: 20px;
+    display: block;
+    filter: brightness(0) invert(1) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.75));
+}
+
+@media (hover: hover) {
+    .help-button:hover,
+    .help-close-button:hover {
+        filter: brightness(1.08);
+    }
+
+    .help-button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 246, 204, 0.28);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 246, 204, 0.1);
+    }
+
+    .toolbar-button:hover,
+    .fullscreen-button:hover {
+        transform: translateY(-1px);
+        opacity: 1;
+    }
+}
+
+.toolbar-button:active,
+.fullscreen-button:active {
+    transform: translateY(0);
+    opacity: 0.76;
+}
+
+.help-button:active,
+.help-close-button:active {
+    transform: translateY(1px);
+}
+
+body.using-keyboard-navigation .toolbar-button:focus-visible,
+body.using-keyboard-navigation .fullscreen-button:focus-visible {
+    outline: 2px solid rgba(255, 246, 204, 0.9);
+    outline-offset: 2px;
+}
+
+.game-shell-frame:fullscreen,
+.game-shell-frame:-webkit-full-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100vw;
+    height: 100dvh;
+    padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+    background: #000;
+    border-radius: 0;
+    box-shadow: none;
+    box-sizing: border-box;
+}
+
+.game-shell-frame:fullscreen .game-toolbar,
+.game-shell-frame:-webkit-full-screen .game-toolbar {
+    width: min(calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right) - 16px), calc((100dvh - 44px - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px) * 1.5));
+}
+
+.game-shell-frame:fullscreen .game-shell,
+.game-shell-frame:-webkit-full-screen .game-shell {
+    width: min(calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right) - 16px), calc((100dvh - 44px - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px) * 1.5));
+    max-width: none;
+    max-height: calc(100dvh - 44px - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px);
+    border-radius: 0;
+}
+
+.game-shell-frame:fullscreen canvas,
+.game-shell-frame:-webkit-full-screen canvas {
+    border-radius: 0;
+}
