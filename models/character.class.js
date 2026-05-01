@@ -11,6 +11,8 @@ class Character extends MovableObject {
     didJumpThisFrame = false;
     idleTime = 0;
     longIdleDelay = 10;
+    hurtAnimationDuration = 0.24;
+    hurtMovementLockDuration = 0.18;
     currentAnimationState = 'walk';
     animationSpeeds = {
         walk: 10,
@@ -124,13 +126,29 @@ class Character extends MovableObject {
     }
 
     shouldStopMovementUpdate() {
-        if (!this.isDead()) {
+        if (!this.isMovementBlocked()) {
             return false;
         }
 
+        this.stopActiveMovementInputs();
+        return true;
+    }
+
+    isMovementBlocked() {
+        return this.isDead() || this.isHurtMovementLocked();
+    }
+
+    isHurtMovementLocked() {
+        return this.isHurtAnimationActive();
+    }
+
+    getTimeSinceLastHit() {
+        return (Date.now() - this.lastHit) / 1000;
+    }
+
+    stopActiveMovementInputs() {
         this.isMoving = false;
         this.jumpKeyPressed = false;
-        return true;
     }
 
     updateHorizontalMovement(deltaTime, keyboard) {
@@ -246,20 +264,28 @@ class Character extends MovableObject {
         }
 
         this.wasMoving = false;
-        this.setAnimationState('dead');
+        this.setAnimationState('dead', this.deadImages);
         this.animateDeath(deltaTime);
         return true;
     }
 
     animateHurtState(deltaTime) {
-        if (!this.isHurt()) {
+        if (!this.isHurtAnimationActive()) {
             return false;
         }
 
         this.wasMoving = false;
-        this.setAnimationState('hurt');
+        this.setAnimationState('hurt', this.hurtImages);
         this.playStateAnimation(deltaTime, this.hurtImages);
         return true;
+    }
+
+    isHurtAnimationActive() {
+        if (!this.isHurt()) {
+            return false;
+        }
+
+        return this.getTimeSinceLastHit() < this.hurtAnimationDuration;
     }
 
     animateJumpState(deltaTime) {
@@ -268,7 +294,7 @@ class Character extends MovableObject {
         }
 
         this.wasMoving = false;
-        this.setAnimationState('jump');
+        this.setAnimationState('jump', this.jumpingImages);
         this.playStateAnimation(deltaTime, this.jumpingImages);
         return true;
     }
@@ -301,12 +327,12 @@ class Character extends MovableObject {
     }
 
     playIdleAnimationVariant(deltaTime, state, frames) {
-        this.setAnimationState(state);
+        this.setAnimationState(state, frames);
         this.playStateAnimation(deltaTime, frames);
     }
 
     animateWalkState(deltaTime) {
-        this.setAnimationState('walk');
+        this.setAnimationState('walk', this.walkingImages);
         this.wasMoving = true;
 
         this.playStateAnimation(deltaTime, this.walkingImages);
@@ -320,7 +346,7 @@ class Character extends MovableObject {
         this.playAnimation(frames);
     }
 
-    setAnimationState(state) {
+    setAnimationState(state, frames = null) {
         if (this.currentAnimationState === state) {
             return;
         }
@@ -329,6 +355,11 @@ class Character extends MovableObject {
         this.animationFps = this.animationSpeeds[state] || 10;
         this.currentImage = 0;
         this.animationCounter = 0;
+
+        if (frames) {
+            this.img = this.imageCache[frames[0]];
+            this.currentImage = 1;
+        }
     }
 
     animateDeath(deltaTime) {
