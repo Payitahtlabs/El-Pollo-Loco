@@ -1,3 +1,7 @@
+/**
+ * Represents Pepe as the player-controlled character.
+ * Handles movement, state transitions, item collection, and animation flow.
+ */
 class Character extends MovableObject {
 
     x = 220;
@@ -95,6 +99,9 @@ class Character extends MovableObject {
         'img/character_pepe/5_dead/D-57.png',
     ];
 
+    /**
+     * Preloads all animation assets for the playable character.
+     */
     constructor() {
         super();
         this.loadImage(this.idleImages[0]);
@@ -106,6 +113,14 @@ class Character extends MovableObject {
         this.loadImages(this.deadImages);
     }
 
+    /**
+     * Updates movement and input-driven state for the current frame.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @param {Keyboard} keyboard Current keyboard input state.
+     * @param {Level} level Active level data used for movement bounds.
+     * @returns {void}
+     */
     update(deltaTime, keyboard, level) {
         this.prepareFrameState(deltaTime, keyboard);
 
@@ -221,6 +236,11 @@ class Character extends MovableObject {
         return true;
     }
 
+    /**
+     * Applies incoming damage and resets the death animation when the hit becomes fatal.
+     *
+     * @returns {boolean} True when the hit was applied.
+     */
     hit() {
         let wasDead = this.isDead();
 
@@ -243,6 +263,12 @@ class Character extends MovableObject {
         this.deathAnimationFinished = false;
     }
 
+    /**
+     * Resolves the visible animation for the current frame.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     animate(deltaTime) {
         if (this.animatePriorityStates(deltaTime)) {
             return;

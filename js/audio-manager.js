@@ -1,3 +1,6 @@
+/**
+ * Centralizes background music and sound-effect playback for the game.
+ */
 class AudioManager {
     backgroundMusic;
     bossMusic;
@@ -10,6 +13,12 @@ class AudioManager {
     loopingSoundEffects = new Map();
     audioUnlocked = false;
 
+    /**
+     * Creates the shared audio manager with the configured music tracks.
+     *
+     * @param {string} backgroundMusicPath File path for the standard background music.
+     * @param {?string} [bossMusicPath=null] Optional file path for the boss music track.
+     */
     constructor(backgroundMusicPath, bossMusicPath = null) {
         this.backgroundMusic = this.createMusicTrack(backgroundMusicPath, this.backgroundMusicTargetVolume);
 
@@ -33,6 +42,12 @@ class AudioManager {
         this.playMusicTrack(this.bossMusic, 'bossMusicStarted');
     }
 
+    /**
+     * Crossfades from the background track into the boss track.
+     *
+     * @param {number} [durationMs=900] Fade duration in milliseconds.
+     * @returns {void}
+     */
     crossfadeToBossMusic(durationMs = 900) {
         if (!this.bossMusic) {
             return;
@@ -145,6 +160,15 @@ class AudioManager {
         this.backgroundMusic.currentTime = 0;
     }
 
+    /**
+     * Registers a pooled one-shot sound effect.
+     *
+     * @param {string} name Lookup key for later playback.
+     * @param {string} soundPath File path to the sound asset.
+     * @param {number} [volume=1] Initial playback volume.
+     * @param {number} [poolSize=4] Number of reusable audio elements in the pool.
+     * @returns {void}
+     */
     registerSound(name, soundPath, volume = 1, poolSize = 4) {
         let sounds = Array.from({ length: poolSize }, () => this.createSoundElement(soundPath, volume));
 
@@ -154,6 +178,14 @@ class AudioManager {
         });
     }
 
+    /**
+     * Registers a looping sound effect that can be started and stopped by name.
+     *
+     * @param {string} name Lookup key for later playback.
+     * @param {string} soundPath File path to the sound asset.
+     * @param {number} [volume=1] Initial playback volume.
+     * @returns {void}
+     */
     registerLoopingSound(name, soundPath, volume = 1) {
         let sound = this.createSoundElement(soundPath, volume);
         sound.loop = true;
@@ -198,6 +230,12 @@ class AudioManager {
         });
     }
 
+    /**
+     * Applies the mute state to all managed music and sound-effect channels.
+     *
+     * @param {boolean} isMuted Whether all audio should be muted.
+     * @returns {void}
+     */
     setMuted(isMuted) {
         this.backgroundMusic.muted = isMuted;
 
@@ -223,6 +261,11 @@ class AudioManager {
         });
     }
 
+    /**
+     * Preloads audio assets after the first user interaction unlocks playback.
+     *
+     * @returns {void}
+     */
     unlockAudio() {
         if (this.audioUnlocked) {
             return;
@@ -256,6 +299,11 @@ class AudioManager {
         });
     }
 
+    /**
+     * Toggles the current mute state and returns the new muted flag.
+     *
+     * @returns {boolean} The updated mute state.
+     */
     toggleMuted() {
         this.setMuted(!this.backgroundMusic.muted);
         return this.backgroundMusic.muted;

@@ -1,3 +1,6 @@
+/**
+ * Coordinates the running game world, including frame updates, rendering, collisions, and UI overlays.
+ */
 class World {
     // ── Spielobjekte ─────────────────────────────────────
     character = new Character();
@@ -46,6 +49,13 @@ class World {
     maxDeltaTime = 0.1;
     paused = false;
 
+    /**
+     * Creates the world and starts the main animation loop immediately.
+     *
+     * @param {HTMLCanvasElement} canvas Canvas used for game rendering.
+     * @param {Keyboard} keyboard Shared keyboard state object.
+     * @param {{audioManager?: AudioManager, onGameWon?: Function, onGameLost?: Function}} [gameEvents={}] Optional world callbacks and shared services.
+     */
     constructor(canvas, keyboard, gameEvents = {}) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
@@ -62,6 +72,12 @@ class World {
     }
 
     // ── Game Loop ────────────────────────────────────────
+    /**
+     * Runs one frame of the main game loop and schedules the next frame.
+     *
+     * @param {number} timestamp Browser-provided animation frame timestamp.
+     * @returns {void}
+     */
     gameLoop(timestamp) {
         let deltaTime = this.getFrameDeltaTime(timestamp);
 
@@ -93,6 +109,12 @@ class World {
     }
 
     // ── Logik ──────────────────────
+    /**
+     * Updates the active world state while the game is still running.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     update(deltaTime) {
         if (this.gameWon || this.gameLost) {
             return;
@@ -114,6 +136,12 @@ class World {
         this.checkWinCondition();
     }
 
+    /**
+     * Advances the player, ambient objects, and encounter triggers for the current frame.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     updateWorldState(deltaTime) {
         this.level.playerMinX = this.bossFightStarted ? this.bossArenaLeftX : 0;
         this.level.clouds.forEach((cloud) => cloud.update(deltaTime, this.level.levelEndX));
@@ -195,6 +223,12 @@ class World {
         this.startBossFight(triggerX);
     }
 
+    /**
+     * Starts the boss encounter once the player reaches the trigger zone.
+     *
+     * @param {number} [triggerX=this.level.endboss.x - 300] Left boundary of the boss arena trigger.
+     * @returns {void}
+     */
     startBossFight(triggerX = this.level.endboss.x - 300) {
         if (this.bossFightStarted) {
             return;
