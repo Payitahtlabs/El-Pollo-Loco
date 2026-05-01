@@ -85,19 +85,19 @@ function initializeUiState() {
  * Registers character, item, and ambient gameplay sounds.
  */
 function registerItemSounds() {
-    audioManager.registerSound('characterHurt', 'audio/sfx/items/character-hurt.wav', 0.32);
+    audioManager.registerSound('characterHurt', 'audio/sfx/player/character-hurt.wav', 0.32);
     audioManager.registerLoopingSound('characterLongIdleSnore', 'audio/sfx/player/character-long-idle-snore.wav', 0.22);
-    audioManager.registerSound('chickenHit', 'audio/sfx/items/chicken-hit.wav', 0.18);
-    audioManager.registerSound('chickenHurt', 'audio/sfx/items/chicken-hurt.wav', 0.34);
-    audioManager.registerSound('chickenStompAccent', 'audio/sfx/items/chicken-hurt.wav', 0.26);
-    audioManager.registerSound('chickenSmallHurt', 'audio/sfx/items/chicken-small-hurt.wav', 0.2);
-    audioManager.registerSound('chickenStomp', 'audio/sfx/items/chicken-stomp.wav', 0.28);
-    audioManager.registerSound('chickenSmallStompAccent', 'audio/sfx/items/chicken-small-hurt.wav', 0.12);
+    audioManager.registerSound('chickenHit', 'audio/sfx/enemies/chicken-hit.wav', 0.18);
+    audioManager.registerSound('chickenHurt', 'audio/sfx/enemies/chicken-hurt.wav', 0.34);
+    audioManager.registerSound('chickenStompAccent', 'audio/sfx/enemies/chicken-hurt.wav', 0.26);
+    audioManager.registerSound('chickenSmallHurt', 'audio/sfx/enemies/chicken-small-hurt.wav', 0.2);
+    audioManager.registerSound('chickenStomp', 'audio/sfx/enemies/chicken-stomp.wav', 0.28);
+    audioManager.registerSound('chickenSmallStompAccent', 'audio/sfx/enemies/chicken-small-hurt.wav', 0.12);
     audioManager.registerSound('coinCollect', 'audio/sfx/items/coin-collect.mp3', 0.35);
     audioManager.registerSound('bottleCollect', 'audio/sfx/items/bottle-collect.wav', 0.3);
     audioManager.registerSound('bottleThrow', 'audio/sfx/items/bottle-throw.wav', 0.3);
     audioManager.registerSound('bottleSplash', 'audio/sfx/items/bottle-splash.wav', 0.34);
-    audioManager.registerSound('jump', 'audio/sfx/items/jump.wav', 0.26);
+    audioManager.registerSound('jump', 'audio/sfx/player/jump.wav', 0.26);
 }
 
 /**
