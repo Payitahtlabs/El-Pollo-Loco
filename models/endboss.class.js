@@ -1,3 +1,6 @@
+/**
+ * Represents the endboss with combat state, facing decisions, and queued audio events.
+ */
 class Endboss extends MovableObject {
     x = 2500;
     y = 55;
@@ -72,6 +75,9 @@ class Endboss extends MovableObject {
         'img/endboss_chicken/5_dead/G26.png',
     ];
 
+    /**
+     * Preloads all animation assets required by the endboss.
+     */
     constructor() {
         super();
         this.loadImage(this.alertImages[0]);
@@ -82,6 +88,11 @@ class Endboss extends MovableObject {
         this.loadImages(this.deadImages);
     }
 
+    /**
+     * Applies damage, resets the current combat phase, and queues the matching boss audio event.
+     *
+     * @returns {boolean} True when the hit was applied.
+     */
     hit() {
         if (this.isHurt()) return false;
 
@@ -125,12 +136,24 @@ class Endboss extends MovableObject {
         this.pendingAudioEvents.push(eventName);
     }
 
+    /**
+     * Returns and clears all queued boss audio events for the current frame.
+     *
+     * @returns {string[]} Pending audio event names.
+     */
     consumeAudioEvents() {
         let events = [...this.pendingAudioEvents];
         this.pendingAudioEvents.length = 0;
         return events;
     }
 
+    /**
+     * Updates the boss facing direction with a small delayed turn decision.
+     *
+     * @param {Character} character Active player character.
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     updateFacingDirection(character, deltaTime) {
         let targetDirection = this.getTargetFacingDirection(character);
 
@@ -215,6 +238,11 @@ class Endboss extends MovableObject {
         return this.otherDirection ? 1 : -1;
     }
 
+    /**
+     * Resolves the image list for the current boss animation state.
+     *
+     * @returns {string[]} Animation frame paths for the active state.
+     */
     getAnimationFramesForState() {
         switch (this.currentState) {
             case 'dead':

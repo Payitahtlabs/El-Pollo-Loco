@@ -22,6 +22,9 @@ let startListenersAttached = false;
 let restartListenersAttached = false;
 let restartPrimaryActionArmed = true;
 
+/**
+ * Initializes DOM references, audio setup, and all UI listeners for the game shell.
+ */
 function init() {
     collectDomReferences();
     setupAudioManager();
@@ -49,6 +52,9 @@ function collectDomReferences() {
     helpCloseButton = document.getElementById('help-close-button');
 }
 
+/**
+ * Creates the shared audio manager and registers all stable sound groups.
+ */
 function setupAudioManager() {
     audioManager = new AudioManager('audio/music/background-music.mp3', 'audio/music/endboss-battle-music.mp3');
     registerItemSounds();
@@ -75,6 +81,9 @@ function initializeUiState() {
     updateFullscreenButtonState();
 }
 
+/**
+ * Registers character, item, and ambient gameplay sounds.
+ */
 function registerItemSounds() {
     audioManager.registerSound('characterHurt', 'audio/sfx/items/character-hurt.wav', 0.32);
     audioManager.registerLoopingSound('characterLongIdleSnore', 'audio/sfx/player/character-long-idle-snore.wav', 0.22);
@@ -91,6 +100,9 @@ function registerItemSounds() {
     audioManager.registerSound('jump', 'audio/sfx/items/jump.wav', 0.26);
 }
 
+/**
+ * Registers the endboss-specific sound effects.
+ */
 function registerEndbossSounds() {
     audioManager.registerSound('endbossAlert', 'audio/sfx/endboss/endboss-alert.wav', 0.4);
     audioManager.registerSound('endbossAttack', 'audio/sfx/endboss/endboss-attack.wav', 0.36);
@@ -143,6 +155,12 @@ function attachGameSurfaceInteractionGuards() {
     });
 }
 
+/**
+ * Handles the primary action keys on the start screen.
+ *
+ * @param {KeyboardEvent} event Browser keyboard event.
+ * @returns {void}
+ */
 function handleStartKeydown(event) {
     if (!isPrimaryActionKey(event)) {
         return;
@@ -152,6 +170,12 @@ function handleStartKeydown(event) {
     startGame();
 }
 
+/**
+ * Handles restart hotkeys while preventing immediate restarts from a held action key.
+ *
+ * @param {KeyboardEvent} event Browser keyboard event.
+ * @returns {void}
+ */
 function handleRestartKeydown(event) {
     if (!isPrimaryActionKey(event)) {
         return;
@@ -166,6 +190,12 @@ function handleRestartKeydown(event) {
     restartGame();
 }
 
+/**
+ * Rearms the restart hotkey after the primary action key is released.
+ *
+ * @param {KeyboardEvent} event Browser keyboard event.
+ * @returns {void}
+ */
 function handleRestartKeyup(event) {
     if (!isPrimaryActionKey(event)) {
         return;

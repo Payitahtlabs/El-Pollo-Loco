@@ -1,3 +1,11 @@
+/**
+ * Updates the active endboss combat logic for the current frame.
+ *
+ * @param {number} deltaTime Time since the previous frame in seconds.
+ * @param {Character} character Active player character.
+ * @param {boolean} bossFightStarted Whether the boss encounter is active.
+ * @returns {void}
+ */
 Endboss.prototype.update = function (deltaTime, character, bossFightStarted) {
     if (!this.shouldUpdateBehavior(bossFightStarted)) {
         return;
@@ -26,6 +34,13 @@ Endboss.prototype.updateActiveCombatBehavior = function (deltaTime, character) {
     this.continueCombatAfterTurn(character, deltaTime);
 };
 
+/**
+ * Continues the boss combat logic after turn decisions have been resolved.
+ *
+ * @param {Character} character Active player character.
+ * @param {number} deltaTime Time since the previous frame in seconds.
+ * @returns {void}
+ */
 Endboss.prototype.continueCombatAfterTurn = function (character, deltaTime) {
     if (this.hasPendingTurnDecision()) {
         return;
@@ -106,6 +121,12 @@ Endboss.prototype.moveTowardsCharacterIfNeeded = function (deltaTime, character)
     this.moveTowardsCharacter(deltaTime);
 };
 
+/**
+ * Advances boss combat timers and phase transitions.
+ *
+ * @param {number} deltaTime Time since the previous frame in seconds.
+ * @returns {void}
+ */
 Endboss.prototype.updateCombatTimers = function (deltaTime) {
     this.updateAttackCooldown(deltaTime);
 
@@ -207,6 +228,14 @@ Endboss.prototype.getCharacterDistanceBounds = function (character) {
     };
 };
 
+/**
+ * Resolves the current animation state and renders the next boss animation frame.
+ *
+ * @param {number} deltaTime Time since the previous frame in seconds.
+ * @param {boolean} bossFightStarted Whether the boss encounter is active.
+ * @param {Character} character Active player character.
+ * @returns {void}
+ */
 Endboss.prototype.animate = function (deltaTime, bossFightStarted, character) {
     this.updateAnimationState(bossFightStarted, character);
 
@@ -238,6 +267,13 @@ Endboss.prototype.animateCurrentState = function (deltaTime) {
     this.playAnimation(this.getAnimationFramesForState());
 };
 
+/**
+ * Resolves the visible boss state from combat flags and encounter progress.
+ *
+ * @param {boolean} bossFightStarted Whether the boss encounter is active.
+ * @param {Character} character Active player character.
+ * @returns {string} Animation state name to display.
+ */
 Endboss.prototype.resolveState = function (bossFightStarted, character) {
     if (this.isDead()) return 'dead';
     if (this.isHurt()) return 'hurt';
@@ -249,6 +285,12 @@ Endboss.prototype.resolveState = function (bossFightStarted, character) {
     return 'walk';
 };
 
+/**
+ * Plays the boss death animation until the final frame is reached.
+ *
+ * @param {number} deltaTime Time since the previous frame in seconds.
+ * @returns {void}
+ */
 Endboss.prototype.animateDeath = function (deltaTime) {
     if (this.isDeathAnimationFinished()) {
         this.showFinalDeathFrame();
