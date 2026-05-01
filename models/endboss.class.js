@@ -26,7 +26,7 @@ class Endboss extends MovableObject {
         left: 20,
     };
 
-    IMAGES_ALERT = [
+    alertImages = [
         'img/endboss_chicken/2_alert/G5.png',
         'img/endboss_chicken/2_alert/G6.png',
         'img/endboss_chicken/2_alert/G7.png',
@@ -37,14 +37,14 @@ class Endboss extends MovableObject {
         'img/endboss_chicken/2_alert/G12.png',
     ];
 
-    IMAGES_WALKING = [
+    walkingImages = [
         'img/endboss_chicken/1_walk/G1.png',
         'img/endboss_chicken/1_walk/G2.png',
         'img/endboss_chicken/1_walk/G3.png',
         'img/endboss_chicken/1_walk/G4.png',
     ];
 
-    IMAGES_ATTACK = [
+    attackImages = [
         'img/endboss_chicken/3_attack/G13.png',
         'img/endboss_chicken/3_attack/G14.png',
         'img/endboss_chicken/3_attack/G15.png',
@@ -55,13 +55,13 @@ class Endboss extends MovableObject {
         'img/endboss_chicken/3_attack/G20.png',
     ];
 
-    IMAGES_HURT = [
+    hurtImages = [
         'img/endboss_chicken/4_hurt/G21.png',
         'img/endboss_chicken/4_hurt/G22.png',
         'img/endboss_chicken/4_hurt/G23.png',
     ];
 
-    IMAGES_DEAD = [
+    deadImages = [
         'img/endboss_chicken/5_dead/G24.png',
         'img/endboss_chicken/5_dead/G25.png',
         'img/endboss_chicken/5_dead/G26.png',
@@ -69,12 +69,12 @@ class Endboss extends MovableObject {
 
     constructor() {
         super();
-        this.loadImage(this.IMAGES_ALERT[0]);
-        this.loadImages(this.IMAGES_ALERT);
-        this.loadImages(this.IMAGES_WALKING);
-        this.loadImages(this.IMAGES_ATTACK);
-        this.loadImages(this.IMAGES_HURT);
-        this.loadImages(this.IMAGES_DEAD);
+        this.loadImage(this.alertImages[0]);
+        this.loadImages(this.alertImages);
+        this.loadImages(this.walkingImages);
+        this.loadImages(this.attackImages);
+        this.loadImages(this.hurtImages);
+        this.loadImages(this.deadImages);
     }
 
     hit() {
@@ -151,15 +151,15 @@ class Endboss extends MovableObject {
     getAnimationFramesForState() {
         switch (this.currentState) {
             case 'dead':
-                return this.IMAGES_DEAD;
+                return this.deadImages;
             case 'hurt':
-                return this.IMAGES_HURT;
+                return this.hurtImages;
             case 'attack':
-                return this.IMAGES_ATTACK;
+                return this.attackImages;
             case 'walk':
-                return this.IMAGES_WALKING;
+                return this.walkingImages;
             default:
-                return this.IMAGES_ALERT;
+                return this.alertImages;
         }
     }
 }

@@ -250,11 +250,11 @@ Endboss.prototype.isDeathAnimationFinished = function () {
 };
 
 Endboss.prototype.hasRemainingDeathFrames = function () {
-    return this.currentImage < this.IMAGES_DEAD.length;
+    return this.currentImage < this.deadImages.length;
 };
 
 Endboss.prototype.showNextDeathFrame = function () {
-    this.img = this.imageCache[this.IMAGES_DEAD[this.currentImage]];
+    this.img = this.imageCache[this.deadImages[this.currentImage]];
     this.currentImage++;
 };
 
@@ -264,5 +264,5 @@ Endboss.prototype.finishDeathAnimation = function () {
 };
 
 Endboss.prototype.showFinalDeathFrame = function () {
-    this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
+    this.img = this.imageCache[this.deadImages[this.deadImages.length - 1]];
 };

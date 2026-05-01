@@ -30,7 +30,7 @@ class Character extends MovableObject {
         left: 20,
     };
 
-    IMAGES_WALKING = [
+    walkingImages = [
         'img/character_pepe/2_walk/W-21.png',
         'img/character_pepe/2_walk/W-22.png',
         'img/character_pepe/2_walk/W-23.png',
@@ -39,7 +39,7 @@ class Character extends MovableObject {
         'img/character_pepe/2_walk/W-26.png',
     ];
 
-    IMAGES_IDLE = [
+    idleImages = [
         'img/character_pepe/1_idle/idle/I-1.png',
         'img/character_pepe/1_idle/idle/I-2.png',
         'img/character_pepe/1_idle/idle/I-3.png',
@@ -52,7 +52,7 @@ class Character extends MovableObject {
         'img/character_pepe/1_idle/idle/I-10.png',
     ];
 
-    IMAGES_LONG_IDLE = [
+    longIdleImages = [
         'img/character_pepe/1_idle/long_idle/I-11.png',
         'img/character_pepe/1_idle/long_idle/I-12.png',
         'img/character_pepe/1_idle/long_idle/I-13.png',
@@ -65,7 +65,7 @@ class Character extends MovableObject {
         'img/character_pepe/1_idle/long_idle/I-20.png',
     ];
 
-    IMAGES_JUMPING = [
+    jumpingImages = [
         'img/character_pepe/3_jump/J-31.png',
         'img/character_pepe/3_jump/J-32.png',
         'img/character_pepe/3_jump/J-33.png',
@@ -77,13 +77,13 @@ class Character extends MovableObject {
         'img/character_pepe/3_jump/J-39.png',
     ];
 
-    IMAGES_HURT = [
+    hurtImages = [
         'img/character_pepe/4_hurt/H-41.png',
         'img/character_pepe/4_hurt/H-42.png',
         'img/character_pepe/4_hurt/H-43.png',
     ];
 
-    IMAGES_DEAD = [
+    deadImages = [
         'img/character_pepe/5_dead/D-51.png',
         'img/character_pepe/5_dead/D-52.png',
         'img/character_pepe/5_dead/D-53.png',
@@ -95,13 +95,13 @@ class Character extends MovableObject {
 
     constructor() {
         super();
-        this.loadImage(this.IMAGES_IDLE[0]);
-        this.loadImages(this.IMAGES_IDLE);
-        this.loadImages(this.IMAGES_LONG_IDLE);
-        this.loadImages(this.IMAGES_WALKING);
-        this.loadImages(this.IMAGES_JUMPING);
-        this.loadImages(this.IMAGES_HURT);
-        this.loadImages(this.IMAGES_DEAD);
+        this.loadImage(this.idleImages[0]);
+        this.loadImages(this.idleImages);
+        this.loadImages(this.longIdleImages);
+        this.loadImages(this.walkingImages);
+        this.loadImages(this.jumpingImages);
+        this.loadImages(this.hurtImages);
+        this.loadImages(this.deadImages);
     }
 
     update(deltaTime, keyboard, level) {
@@ -258,7 +258,7 @@ class Character extends MovableObject {
 
         this.wasMoving = false;
         this.setAnimationState('hurt');
-        this.playStateAnimation(deltaTime, this.IMAGES_HURT);
+        this.playStateAnimation(deltaTime, this.hurtImages);
         return true;
     }
 
@@ -269,7 +269,7 @@ class Character extends MovableObject {
 
         this.wasMoving = false;
         this.setAnimationState('jump');
-        this.playStateAnimation(deltaTime, this.IMAGES_JUMPING);
+        this.playStateAnimation(deltaTime, this.jumpingImages);
         return true;
     }
 
@@ -285,11 +285,11 @@ class Character extends MovableObject {
 
     animateIdleVariant(deltaTime) {
         if (this.isLongIdleReady()) {
-            this.playIdleAnimationVariant(deltaTime, 'long-idle', this.IMAGES_LONG_IDLE);
+            this.playIdleAnimationVariant(deltaTime, 'long-idle', this.longIdleImages);
             return;
         }
 
-        this.playIdleAnimationVariant(deltaTime, 'idle', this.IMAGES_IDLE);
+        this.playIdleAnimationVariant(deltaTime, 'idle', this.idleImages);
     }
 
     isLongIdleReady() {
@@ -305,7 +305,7 @@ class Character extends MovableObject {
         this.setAnimationState('walk');
         this.wasMoving = true;
 
-        this.playStateAnimation(deltaTime, this.IMAGES_WALKING);
+        this.playStateAnimation(deltaTime, this.walkingImages);
     }
 
     playStateAnimation(deltaTime, frames) {
@@ -354,11 +354,11 @@ class Character extends MovableObject {
     }
 
     hasRemainingDeathFrames() {
-        return this.currentImage < this.IMAGES_DEAD.length;
+        return this.currentImage < this.deadImages.length;
     }
 
     showNextDeathFrame() {
-        this.img = this.imageCache[this.IMAGES_DEAD[this.currentImage]];
+        this.img = this.imageCache[this.deadImages[this.currentImage]];
         this.currentImage++;
     }
 
@@ -368,6 +368,6 @@ class Character extends MovableObject {
     }
 
     showFinalDeathFrame() {
-        this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
+        this.img = this.imageCache[this.deadImages[this.deadImages.length - 1]];
     }
 }

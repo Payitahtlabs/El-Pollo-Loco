@@ -6,21 +6,21 @@ class Chicken extends MovableObject {
 	defeatDuration = 0.35;
 	defeatedAt = 0;
 
-	IMAGES_WALKING = [
+	walkingImages = [
 		'img/enemies_chicken/chicken_normal/1_walk/1_w.png',
 		'img/enemies_chicken/chicken_normal/1_walk/2_w.png',
 		'img/enemies_chicken/chicken_normal/1_walk/3_w.png',
 	];
 
-	IMAGE_DEAD = 'img/enemies_chicken/chicken_normal/2_dead/dead.png';
+	deadImage = 'img/enemies_chicken/chicken_normal/2_dead/dead.png';
 
 	animationFps = 12;
 
 	constructor(x = 200 + Math.random() * 800) {
 		super();
-		this.loadImage(this.IMAGES_WALKING[0]);
-		this.loadImages(this.IMAGES_WALKING);
-		this.loadImages([this.IMAGE_DEAD]);
+		this.loadImage(this.walkingImages[0]);
+		this.loadImages(this.walkingImages);
+		this.loadImages([this.deadImage]);
 		this.x = x;
 		this.setRandomSpeed();
 	}
@@ -42,12 +42,12 @@ class Chicken extends MovableObject {
 
 	animate(deltaTime) {
 		if (this.isDefeated) {
-			this.img = this.imageCache[this.IMAGE_DEAD];
+			this.img = this.imageCache[this.deadImage];
 			return;
 		}
 
 		if (this.isAnimationFrameDue(deltaTime)) {
-			this.playAnimation(this.IMAGES_WALKING);
+			this.playAnimation(this.walkingImages);
 		}
 	}
 
@@ -57,7 +57,7 @@ class Chicken extends MovableObject {
 		this.isDefeated = true;
 		this.defeatedAt = Date.now();
 		this.speed = 0;
-		this.img = this.imageCache[this.IMAGE_DEAD];
+		this.img = this.imageCache[this.deadImage];
 	}
 
 	shouldRemove() {
