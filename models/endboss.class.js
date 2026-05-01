@@ -17,6 +17,11 @@ class Endboss extends MovableObject {
     combatPhase = 'idle';
     phaseTimer = 0;
     attackCooldownTimer = 0;
+    frontalTurnDelay = 0.12;
+    overtakeTurnDelay = 0.3;
+    turnOvertakeDistance = 140;
+    turnDecisionTimer = 0;
+    pendingDirection = null;
     pendingAudioEvents = [];
     deathAnimationFinished = false;
     offset = {
@@ -126,18 +131,80 @@ class Endboss extends MovableObject {
         return events;
     }
 
-    updateFacingDirection(character) {
+    updateFacingDirection(character, deltaTime) {
+        let targetDirection = this.getTargetFacingDirection(character);
+
+        if (this.shouldResetTurnDecision(targetDirection)) {
+            this.resetTurnDecision();
+            return;
+        }
+
+        this.progressTurnDecision(targetDirection, character, deltaTime);
+    }
+
+    shouldResetTurnDecision(targetDirection) {
+        return targetDirection === null || targetDirection === this.otherDirection;
+    }
+
+    getTargetFacingDirection(character) {
         let characterCenter = character.x + character.width / 2;
         let bossCenter = this.x + this.width / 2;
 
         if (characterCenter > bossCenter + this.turnThreshold) {
-            this.otherDirection = true;
-            return;
+            return true;
         }
 
         if (characterCenter < bossCenter - this.turnThreshold) {
-            this.otherDirection = false;
+            return false;
         }
+
+        return null;
+    }
+
+    progressTurnDecision(targetDirection, character, deltaTime) {
+        this.startTurnDecision(targetDirection);
+        this.turnDecisionTimer += deltaTime;
+
+        if (this.turnDecisionTimer < this.getTurnDelay(character)) {
+            return;
+        }
+
+        this.applyTurnDecision(targetDirection);
+    }
+
+    startTurnDecision(targetDirection) {
+        if (this.pendingDirection === targetDirection) {
+            return;
+        }
+
+        this.pendingDirection = targetDirection;
+        this.turnDecisionTimer = 0;
+    }
+
+    getTurnDelay(character) {
+        if (this.isCharacterOvertaking(character)) {
+            return this.overtakeTurnDelay;
+        }
+
+        return this.frontalTurnDelay;
+    }
+
+    isCharacterOvertaking(character) {
+        return this.getDistanceToCharacter(character) <= this.turnOvertakeDistance;
+    }
+
+    applyTurnDecision(targetDirection) {
+        this.otherDirection = targetDirection;
+        this.resetTurnDecision();
+    }
+
+    resetTurnDecision() {
+        this.pendingDirection = null;
+        this.turnDecisionTimer = 0;
+    }
+
+    hasPendingTurnDecision() {
+        return this.pendingDirection !== null;
     }
 
     moveTowardsCharacter(deltaTime) {

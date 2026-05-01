@@ -17,9 +17,17 @@ Endboss.prototype.shouldUpdateBehavior = function (bossFightStarted) {
 };
 
 Endboss.prototype.updateActiveCombatBehavior = function (deltaTime, character) {
-    this.updateFacingDirection(character);
+    this.updateFacingDirectionIfNeeded(character, deltaTime);
 
-    if (this.handleCombatMovement(deltaTime) || this.isWindingUp()) {
+    if (this.shouldPauseCombatAction(deltaTime)) {
+        return;
+    }
+
+    this.continueCombatAfterTurn(character, deltaTime);
+};
+
+Endboss.prototype.continueCombatAfterTurn = function (character, deltaTime) {
+    if (this.hasPendingTurnDecision()) {
         return;
     }
 
@@ -30,8 +38,25 @@ Endboss.prototype.updateActiveCombatBehavior = function (deltaTime, character) {
     this.moveTowardsCharacterIfNeeded(deltaTime, character);
 };
 
+Endboss.prototype.shouldPauseCombatAction = function (deltaTime) {
+    return this.handleCombatMovement(deltaTime) || this.isWindingUp();
+};
+
 Endboss.prototype.shouldStopBehaviorUpdate = function () {
     return this.isHurt();
+};
+
+Endboss.prototype.updateFacingDirectionIfNeeded = function (character, deltaTime) {
+    if (this.shouldFreezeFacingDirection()) {
+        this.resetTurnDecision();
+        return;
+    }
+
+    this.updateFacingDirection(character, deltaTime);
+};
+
+Endboss.prototype.shouldFreezeFacingDirection = function () {
+    return this.isHurt() || this.isWindingUp();
 };
 
 Endboss.prototype.handleCombatMovement = function (deltaTime) {
@@ -219,6 +244,7 @@ Endboss.prototype.resolveState = function (bossFightStarted, character) {
     if (!bossFightStarted) return 'alert';
     if (this.isAttacking()) return 'attack';
     if (this.isRetreating()) return 'walk';
+    if (this.hasPendingTurnDecision()) return 'alert';
     if (this.isWindingUp() || this.isInAttackCooldown()) return 'alert';
     return 'walk';
 };

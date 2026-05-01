@@ -20,6 +20,7 @@ let helpOverlay;
 let helpCloseButton;
 let startListenersAttached = false;
 let restartListenersAttached = false;
+let restartPrimaryActionArmed = true;
 
 function init() {
     collectDomReferences();
@@ -156,15 +157,38 @@ function handleRestartKeydown(event) {
     }
 
     event.preventDefault();
+
+    if (!canHandleRestartPrimaryAction(event)) {
+        return;
+    }
+
     restartGame();
+}
+
+function handleRestartKeyup(event) {
+    if (!isPrimaryActionKey(event)) {
+        return;
+    }
+
+    restartPrimaryActionArmed = true;
 }
 
 function isPrimaryActionKey(event) {
     return event.code === 'Enter' || event.code === 'Space';
 }
 
+function canHandleRestartPrimaryAction(event) {
+    if (!restartPrimaryActionArmed || event.repeat) {
+        return false;
+    }
+
+    restartPrimaryActionArmed = false;
+    return true;
+}
+
 function enableRestart() {
     hideTouchControls();
+    restartPrimaryActionArmed = false;
     attachRestartListeners();
 }
 
@@ -299,6 +323,7 @@ function attachRestartListeners() {
     }
 
     window.addEventListener('keydown', handleRestartKeydown);
+    window.addEventListener('keyup', handleRestartKeyup);
     toggleOverlayButtonListeners(restartButtons, 'click', restartGame, 'add');
     toggleOverlayButtonListeners(homeButtons, 'click', returnToHome, 'add');
     restartListenersAttached = true;
@@ -310,9 +335,11 @@ function detachRestartListeners() {
     }
 
     window.removeEventListener('keydown', handleRestartKeydown);
+    window.removeEventListener('keyup', handleRestartKeyup);
     toggleOverlayButtonListeners(restartButtons, 'click', restartGame, 'remove');
     toggleOverlayButtonListeners(homeButtons, 'click', returnToHome, 'remove');
     restartListenersAttached = false;
+    restartPrimaryActionArmed = true;
 }
 
 function toggleOverlayButtonListeners(buttons, eventName, handler, action) {
