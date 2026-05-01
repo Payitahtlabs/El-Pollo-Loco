@@ -1,3 +1,8 @@
+/**
+ * Runs all collision checks for the current frame.
+ *
+ * @returns {void}
+ */
 World.prototype.checkCollisions = function () {
     this.checkEnemyCollisions();
     this.checkCoinCollisions();
@@ -6,6 +11,11 @@ World.prototype.checkCollisions = function () {
     this.checkEndbossCollisions();
 };
 
+/**
+ * Resolves collisions between the character and standard level enemies.
+ *
+ * @returns {void}
+ */
 World.prototype.checkEnemyCollisions = function () {
     this.level.enemies = this.level.enemies.filter((enemy) => {
         if (!this.shouldKeepEnemy(enemy)) {
@@ -21,6 +31,12 @@ World.prototype.shouldKeepEnemy = function (enemy) {
     return !(enemy.shouldRemove && enemy.shouldRemove());
 };
 
+/**
+ * Handles a single enemy contact either as a stomp or as touch damage.
+ *
+ * @param {MovableObject} enemy Enemy currently being evaluated.
+ * @returns {void}
+ */
 World.prototype.handleEnemyCollision = function (enemy) {
     if (enemy.isDefeated || !this.character.isColliding(enemy)) {
         return;
@@ -47,6 +63,12 @@ World.prototype.handleEnemyTouchDamage = function () {
     }
 };
 
+/**
+ * Determines whether the current enemy collision counts as a stomp from above.
+ *
+ * @param {MovableObject} enemy Enemy currently colliding with the character.
+ * @returns {boolean} True when the character hits the enemy from above while falling.
+ */
 World.prototype.isStompCollision = function (enemy) {
     let characterBottom = this.character.y + this.character.height - this.character.offset.bottom;
     let enemyTop = enemy.y + enemy.offset.top;
@@ -102,6 +124,15 @@ World.prototype.checkBottleCollisions = function () {
     );
 };
 
+/**
+ * Collects overlapping coins or bottles and removes them from the level.
+ *
+ * @template T
+ * @param {T[]} items Collectible items to evaluate.
+ * @param {Function} collectItem Callback that updates the character inventory.
+ * @param {string} soundName Registered sound effect to play on collection.
+ * @returns {T[]} Remaining items that were not collected.
+ */
 World.prototype.collectLevelItems = function (items, collectItem, soundName) {
     return items.filter((item) => {
         if (!this.character.isColliding(item)) {
@@ -114,6 +145,11 @@ World.prototype.collectLevelItems = function (items, collectItem, soundName) {
     });
 };
 
+/**
+ * Resolves bottle impacts against enemies and the endboss.
+ *
+ * @returns {void}
+ */
 World.prototype.checkThrowableCollisions = function () {
     this.throwableObjects.forEach((bottle) => {
         if (bottle.isSplashing) {
@@ -170,6 +206,11 @@ World.prototype.maybeDropBottle = function (enemy) {
     this.level.bottles.push(droppedBottle);
 };
 
+/**
+ * Applies direct damage from an attacking endboss to the character.
+ *
+ * @returns {void}
+ */
 World.prototype.checkEndbossCollisions = function () {
     if (!this.canEndbossDamageCharacter()) {
         return;
