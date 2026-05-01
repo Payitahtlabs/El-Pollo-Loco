@@ -245,7 +245,7 @@ function handleTouchControlPress(event) {
 
     event.preventDefault();
     let button = event.currentTarget;
-    let action = button.dataset.action;
+    let action = getTouchControlAction(button.dataset.action);
 
     if (!isKeyboardAction(action)) {
         return;
@@ -257,7 +257,7 @@ function handleTouchControlPress(event) {
 
 function handleTouchControlRelease(event) {
     let button = event.currentTarget;
-    let action = button.dataset.action;
+    let action = getTouchControlAction(button.dataset.action);
 
     if (keyboard && isKeyboardAction(action)) {
         setKeyboardActionState(action, false);
@@ -268,6 +268,19 @@ function handleTouchControlRelease(event) {
 
 function isKeyboardAction(action) {
     return !!action && keyboard && action in keyboard;
+}
+
+function getTouchControlAction(action) {
+    let actionMap = {
+        LEFT: 'left',
+        RIGHT: 'right',
+        UP: 'up',
+        DOWN: 'down',
+        SPACE: 'space',
+        D: 'throwKey',
+    };
+
+    return actionMap[action] || action;
 }
 
 function setKeyboardActionState(action, isPressed) {
