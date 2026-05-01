@@ -18,30 +18,26 @@ class Keyboard {
     }
 
     handleKeyChange(event, isPressed) {
-        switch (event.code) {
-            case 'ArrowLeft':
-                this.LEFT = isPressed;
-                break;
-            case 'ArrowRight':
-                this.RIGHT = isPressed;
-                break;
-            case 'ArrowUp':
-                this.UP = isPressed;
-                break;
-            case 'ArrowDown':
-                this.DOWN = isPressed;
-                break;
-            case 'Space':
-                this.SPACE = isPressed;
-                break;
-            case 'KeyD':
-                this.D = isPressed;
-                break;
-            default:
-                return;
+        let keyName = this.getTrackedKeyName(event.code);
+        if (!keyName) {
+            return;
         }
 
+        this[keyName] = isPressed;
         event.preventDefault();
+    }
+
+    getTrackedKeyName(code) {
+        let keyMap = {
+            ArrowLeft: 'LEFT',
+            ArrowRight: 'RIGHT',
+            ArrowUp: 'UP',
+            ArrowDown: 'DOWN',
+            Space: 'SPACE',
+            KeyD: 'D',
+        };
+
+        return keyMap[code];
     }
 
     destroy() {

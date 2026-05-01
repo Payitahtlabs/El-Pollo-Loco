@@ -34,18 +34,32 @@ class MovableObject extends DrawableObject {
     }
 
     applyGravity(deltaTime) {
-        if (!this.isAboveGround() && this.speedY >= 0) {
-            this.y = this.groundY;
-            this.speedY = 0;
+        if (this.shouldStayOnGround()) {
+            this.landOnGround();
             return;
         }
 
+        this.updateVerticalPosition(deltaTime);
+        this.ensureGroundContact();
+    }
+
+    shouldStayOnGround() {
+        return !this.isAboveGround() && this.speedY >= 0;
+    }
+
+    landOnGround() {
+        this.y = this.groundY;
+        this.speedY = 0;
+    }
+
+    updateVerticalPosition(deltaTime) {
         this.y += this.speedY * deltaTime;
         this.speedY += this.gravity * deltaTime;
+    }
 
+    ensureGroundContact() {
         if (this.y > this.groundY) {
-            this.y = this.groundY;
-            this.speedY = 0;
+            this.landOnGround();
         }
     }
 

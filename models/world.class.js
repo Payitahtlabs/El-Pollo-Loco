@@ -99,6 +99,11 @@ class World {
         }
 
         this.updateWorldState(deltaTime);
+        this.updateCollisionAndAudioState(deltaTime);
+        this.updateCamera();
+    }
+
+    updateCollisionAndAudioState(deltaTime) {
         this.updateDisplayState();
         this.updateThrowableObjects(deltaTime);
         this.updateLevelObjects(deltaTime);
@@ -107,7 +112,6 @@ class World {
         this.playPendingEndbossSounds();
         this.checkLoseCondition();
         this.checkWinCondition();
-        this.updateCamera();
     }
 
     updateWorldState(deltaTime) {

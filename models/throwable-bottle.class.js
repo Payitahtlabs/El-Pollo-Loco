@@ -47,6 +47,12 @@ class ThrowableBottle extends MovableObject {
             return;
         }
 
+        this.updateFlightMovement(deltaTime);
+        this.updateFlightAnimation(deltaTime);
+        this.checkGroundImpact();
+    }
+
+    updateFlightMovement(deltaTime) {
         if (this.throwToLeft) {
             this.moveLeft(deltaTime);
         } else {
@@ -54,11 +60,15 @@ class ThrowableBottle extends MovableObject {
         }
 
         this.applyGravity(deltaTime);
+    }
 
+    updateFlightAnimation(deltaTime) {
         if (this.isAnimationFrameDue(deltaTime)) {
             this.playAnimation(this.IMAGES_ROTATION);
         }
+    }
 
+    checkGroundImpact() {
         if ((!this.isAboveGround() || this.y >= this.groundY) && this.speedY >= 0) {
             this.startSplash();
         }
