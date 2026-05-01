@@ -232,11 +232,11 @@ class World {
     }
 
     handleBottleThrow() {
-        if (this.keyboard.D && !this.throwKeyPressed && !this.character.isDead()) {
+        if (this.keyboard.throwKey && !this.throwKeyPressed && !this.character.isDead()) {
             this.throwBottle();
         }
 
-        this.throwKeyPressed = this.keyboard.D;
+        this.throwKeyPressed = this.keyboard.throwKey;
     }
 
     throwBottle() {

@@ -14,14 +14,14 @@ class ThrowableBottle extends MovableObject {
         left: 18,
     };
 
-    IMAGES_ROTATION = [
+    rotationImages = [
         'img/salsa_bottle/bottle_rotation/1_bottle_rotation.png',
         'img/salsa_bottle/bottle_rotation/2_bottle_rotation.png',
         'img/salsa_bottle/bottle_rotation/3_bottle_rotation.png',
         'img/salsa_bottle/bottle_rotation/4_bottle_rotation.png',
     ];
 
-    IMAGES_SPLASH = [
+    splashImages = [
         'img/salsa_bottle/bottle_rotation/bottle_splash/1_bottle_splash.png',
         'img/salsa_bottle/bottle_rotation/bottle_splash/2_bottle_splash.png',
         'img/salsa_bottle/bottle_rotation/bottle_splash/3_bottle_splash.png',
@@ -35,9 +35,9 @@ class ThrowableBottle extends MovableObject {
         this.x = x;
         this.y = y;
         this.throwToLeft = throwToLeft;
-        this.loadImage(this.IMAGES_ROTATION[0]);
-        this.loadImages(this.IMAGES_ROTATION);
-        this.loadImages(this.IMAGES_SPLASH);
+        this.loadImage(this.rotationImages[0]);
+        this.loadImages(this.rotationImages);
+        this.loadImages(this.splashImages);
         this.speedY = -900;
     }
 
@@ -64,7 +64,7 @@ class ThrowableBottle extends MovableObject {
 
     updateFlightAnimation(deltaTime) {
         if (this.isAnimationFrameDue(deltaTime)) {
-            this.playAnimation(this.IMAGES_ROTATION);
+            this.playAnimation(this.rotationImages);
         }
     }
 
@@ -76,7 +76,7 @@ class ThrowableBottle extends MovableObject {
 
     animateSplash(deltaTime) {
         if (this.isAnimationFrameDue(deltaTime)) {
-            this.playAnimation(this.IMAGES_SPLASH);
+            this.playAnimation(this.splashImages);
         }
     }
 
@@ -89,7 +89,7 @@ class ThrowableBottle extends MovableObject {
         this.splashStartedAt = Date.now();
         this.currentImage = 0;
         this.animationCounter = 0;
-        this.img = this.imageCache[this.IMAGES_SPLASH[0]];
+        this.img = this.imageCache[this.splashImages[0]];
         return true;
     }
 

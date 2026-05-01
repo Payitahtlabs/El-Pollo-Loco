@@ -1,10 +1,10 @@
 class Keyboard {
-    LEFT = false;
-    RIGHT = false;
-    UP = false;
-    DOWN = false;
-    SPACE = false;
-    D = false;
+    left = false;
+    right = false;
+    up = false;
+    down = false;
+    space = false;
+    throwKey = false;
 
     keydownHandler;
     keyupHandler;
@@ -29,12 +29,12 @@ class Keyboard {
 
     getTrackedKeyName(code) {
         let keyMap = {
-            ArrowLeft: 'LEFT',
-            ArrowRight: 'RIGHT',
-            ArrowUp: 'UP',
-            ArrowDown: 'DOWN',
-            Space: 'SPACE',
-            KeyD: 'D',
+            ArrowLeft: 'left',
+            ArrowRight: 'right',
+            ArrowUp: 'up',
+            ArrowDown: 'down',
+            Space: 'space',
+            KeyD: 'throwKey',
         };
 
         return keyMap[code];

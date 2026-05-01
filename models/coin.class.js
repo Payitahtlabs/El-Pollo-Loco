@@ -9,7 +9,7 @@ class Coin extends MovableObject {
         left: 35,
     };
 
-    IMAGES = [
+    images = [
         'img/coin/coin_1.png',
         'img/coin/coin_2.png',
     ];
@@ -18,13 +18,13 @@ class Coin extends MovableObject {
         super();
         this.x = x;
         this.y = y;
-        this.loadImage(this.IMAGES[0]);
-        this.loadImages(this.IMAGES);
+        this.loadImage(this.images[0]);
+        this.loadImages(this.images);
     }
 
     animate(deltaTime) {
         if (this.isAnimationFrameDue(deltaTime)) {
-            this.playAnimation(this.IMAGES);
+            this.playAnimation(this.images);
         }
     }
 }

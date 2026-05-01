@@ -117,7 +117,7 @@ class Character extends MovableObject {
     }
 
     prepareFrameState(deltaTime, keyboard) {
-        this.isMoving = keyboard.RIGHT || keyboard.LEFT;
+        this.isMoving = keyboard.right || keyboard.left;
         this.didJumpThisFrame = false;
         this.applyGravity(deltaTime);
         this.updateIdleTime(deltaTime);
@@ -134,11 +134,11 @@ class Character extends MovableObject {
     }
 
     updateHorizontalMovement(deltaTime, keyboard) {
-        if (keyboard.RIGHT) {
+        if (keyboard.right) {
             this.moveRightWithFacing(deltaTime);
         }
 
-        if (keyboard.LEFT) {
+        if (keyboard.left) {
             this.moveLeftWithFacing(deltaTime);
         }
     }
@@ -166,7 +166,7 @@ class Character extends MovableObject {
     }
 
     handleJumpInput(keyboard) {
-        let jumpKeyActive = keyboard.UP || keyboard.SPACE;
+        let jumpKeyActive = keyboard.up || keyboard.space;
 
         if (jumpKeyActive && !this.jumpKeyPressed && this.jump()) {
             this.didJumpThisFrame = true;

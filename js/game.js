@@ -226,12 +226,12 @@ function resetTouchInputState() {
         return;
     }
 
-    keyboard.LEFT = false;
-    keyboard.RIGHT = false;
-    keyboard.UP = false;
-    keyboard.DOWN = false;
-    keyboard.SPACE = false;
-    keyboard.D = false;
+    keyboard.left = false;
+    keyboard.right = false;
+    keyboard.up = false;
+    keyboard.down = false;
+    keyboard.space = false;
+    keyboard.throwKey = false;
 }
 
 function showTouchControls() {

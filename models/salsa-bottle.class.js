@@ -12,7 +12,7 @@ class SalsaBottle extends MovableObject {
         left: 20,
     };
 
-    IMAGES_GROUND = [
+    groundImages = [
         'img/salsa_bottle/1_salsa_bottle_on_ground.png',
         'img/salsa_bottle/2_salsa_bottle_on_ground.png',
     ];
@@ -25,8 +25,8 @@ class SalsaBottle extends MovableObject {
     }
 
     getRandomGroundImage() {
-        let randomIndex = Math.floor(Math.random() * this.IMAGES_GROUND.length);
-        return this.IMAGES_GROUND[randomIndex];
+        let randomIndex = Math.floor(Math.random() * this.groundImages.length);
+        return this.groundImages[randomIndex];
     }
 
     startDropEffect() {

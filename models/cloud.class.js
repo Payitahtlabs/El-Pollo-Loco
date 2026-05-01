@@ -3,7 +3,7 @@ class Cloud extends MovableObject {
     width = 500;
     speed = 12;
 
-    IMAGES = [
+    images = [
         'img/background/layers/4_clouds/1.png',
         'img/background/layers/4_clouds/2.png',
     ];
@@ -28,7 +28,7 @@ class Cloud extends MovableObject {
     }
 
     getRandomImage() {
-        let randomIndex = Math.floor(Math.random() * this.IMAGES.length);
-        return this.IMAGES[randomIndex];
+        let randomIndex = Math.floor(Math.random() * this.images.length);
+        return this.images[randomIndex];
     }
 }
