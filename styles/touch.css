@@ -230,8 +230,8 @@
     }
 
     .game-shell {
-        width: min(720px, calc((100dvh - 8px) * 1.5));
-        max-height: calc(100dvh - 8px);
+        width: min(720px, calc((100dvh - 38px) * 1.5));
+        max-height: calc(100dvh - 38px);
     }
 
     .start-screen-content {
