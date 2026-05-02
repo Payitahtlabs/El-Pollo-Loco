@@ -104,22 +104,47 @@ class Endboss extends MovableObject {
         return true;
     }
 
+    /**
+     * Checks whether the boss is currently in the attack phase.
+     *
+     * @returns {boolean} True when the boss is attacking.
+     */
     isAttacking() {
         return this.combatPhase === 'attack';
     }
 
+    /**
+     * Checks whether the boss is currently winding up an attack.
+     *
+     * @returns {boolean} True when the boss is in windup.
+     */
     isWindingUp() {
         return this.combatPhase === 'windup';
     }
 
+    /**
+     * Checks whether the boss is currently retreating after an attack.
+     *
+     * @returns {boolean} True when the boss is retreating.
+     */
     isRetreating() {
         return this.combatPhase === 'retreat';
     }
 
+    /**
+     * Checks whether the attack cooldown timer is still active.
+     *
+     * @returns {boolean} True while the attack cooldown is active.
+     */
     isInAttackCooldown() {
         return this.attackCooldownTimer > 0;
     }
 
+    /**
+     * Starts the boss attack windup phase.
+     *
+     * @returns {void}
+     */
     startWindup() {
         this.combatPhase = 'windup';
         this.phaseTimer = this.windupDuration;
@@ -127,11 +152,22 @@ class Endboss extends MovableObject {
         this.animationCounter = 0;
     }
 
+    /**
+     * Resets the active combat phase and its timer.
+     *
+     * @returns {void}
+     */
     resetCombatPhase() {
         this.combatPhase = 'idle';
         this.phaseTimer = 0;
     }
 
+    /**
+     * Queues an endboss audio event for later playback.
+     *
+     * @param {string} eventName Boss audio event name.
+     * @returns {void}
+     */
     emitAudioEvent(eventName) {
         this.pendingAudioEvents.push(eventName);
     }
@@ -165,10 +201,22 @@ class Endboss extends MovableObject {
         this.progressTurnDecision(targetDirection, character, deltaTime);
     }
 
+    /**
+     * Checks whether a pending turn decision should be discarded.
+     *
+     * @param {?boolean} targetDirection Desired facing direction.
+     * @returns {boolean} True when no turn is needed.
+     */
     shouldResetTurnDecision(targetDirection) {
         return targetDirection === null || targetDirection === this.otherDirection;
     }
 
+    /**
+     * Resolves the desired facing direction relative to the character.
+     *
+     * @param {Character} character Active player character.
+     * @returns {?boolean} Target direction or null when no turn is needed.
+     */
     getTargetFacingDirection(character) {
         let characterCenter = character.x + character.width / 2;
         let bossCenter = this.x + this.width / 2;
@@ -184,6 +232,14 @@ class Endboss extends MovableObject {
         return null;
     }
 
+    /**
+     * Advances the delayed turn decision timer and applies it when ready.
+     *
+     * @param {boolean} targetDirection Desired facing direction.
+     * @param {Character} character Active player character.
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     progressTurnDecision(targetDirection, character, deltaTime) {
         this.startTurnDecision(targetDirection);
         this.turnDecisionTimer += deltaTime;
@@ -195,6 +251,12 @@ class Endboss extends MovableObject {
         this.applyTurnDecision(targetDirection);
     }
 
+    /**
+     * Starts or refreshes a pending turn decision.
+     *
+     * @param {boolean} targetDirection Desired facing direction.
+     * @returns {void}
+     */
     startTurnDecision(targetDirection) {
         if (this.pendingDirection === targetDirection) {
             return;
@@ -204,6 +266,12 @@ class Endboss extends MovableObject {
         this.turnDecisionTimer = 0;
     }
 
+    /**
+     * Resolves the turn delay for the current character approach.
+     *
+     * @param {Character} character Active player character.
+     * @returns {number} Delay in seconds before the boss turns.
+     */
     getTurnDelay(character) {
         if (this.isCharacterOvertaking(character)) {
             return this.overtakeTurnDelay;
@@ -212,28 +280,61 @@ class Endboss extends MovableObject {
         return this.frontalTurnDelay;
     }
 
+    /**
+     * Checks whether the character is close enough to count as overtaking.
+     *
+     * @param {Character} character Active player character.
+     * @returns {boolean} True when the character is overtaking the boss.
+     */
     isCharacterOvertaking(character) {
         return this.getDistanceToCharacter(character) <= this.turnOvertakeDistance;
     }
 
+    /**
+     * Applies the resolved facing direction and clears pending turn state.
+     *
+     * @param {boolean} targetDirection Desired facing direction.
+     * @returns {void}
+     */
     applyTurnDecision(targetDirection) {
         this.otherDirection = targetDirection;
         this.resetTurnDecision();
     }
 
+    /**
+     * Clears the pending turn decision state.
+     *
+     * @returns {void}
+     */
     resetTurnDecision() {
         this.pendingDirection = null;
         this.turnDecisionTimer = 0;
     }
 
+    /**
+     * Checks whether a delayed turn decision is currently pending.
+     *
+     * @returns {boolean} True when a turn decision is pending.
+     */
     hasPendingTurnDecision() {
         return this.pendingDirection !== null;
     }
 
+    /**
+     * Moves the boss toward the character using its current facing direction.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     moveTowardsCharacter(deltaTime) {
         this.x += this.getFacingDirection() * this.speed * deltaTime;
     }
 
+    /**
+     * Resolves the signed horizontal direction the boss is facing.
+     *
+     * @returns {number} `1` for right-facing, `-1` for left-facing.
+     */
     getFacingDirection() {
         return this.otherDirection ? 1 : -1;
     }

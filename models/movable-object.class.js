@@ -19,6 +19,12 @@ class MovableObject extends DrawableObject {
         left: 0,
     };
 
+    /**
+     * Checks whether enough time has passed to advance the current animation.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {boolean} True when the next animation frame is due.
+     */
     isAnimationFrameDue(deltaTime) {
         this.animationCounter += deltaTime;
         if (this.animationCounter >= 1 / this.animationFps) {
@@ -28,10 +34,22 @@ class MovableObject extends DrawableObject {
         return false;
     }
 
+    /**
+     * Moves the object to the right.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     moveRight(deltaTime) {
         this.x += this.speed * deltaTime;
     }
 
+    /**
+     * Moves the object to the left.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     moveLeft(deltaTime) {
         this.x -= this.speed * deltaTime;
     }
@@ -52,30 +70,61 @@ class MovableObject extends DrawableObject {
         this.ensureGroundContact();
     }
 
+    /**
+     * Checks whether gravity should keep the object on the ground.
+     *
+     * @returns {boolean} True when the object should stay grounded.
+     */
     shouldStayOnGround() {
         return !this.isAboveGround() && this.speedY >= 0;
     }
 
+    /**
+     * Snaps the object onto the ground plane.
+     *
+     * @returns {void}
+     */
     landOnGround() {
         this.y = this.groundY;
         this.speedY = 0;
     }
 
+    /**
+     * Advances the vertical position using the current speed and gravity.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     updateVerticalPosition(deltaTime) {
         this.y += this.speedY * deltaTime;
         this.speedY += this.gravity * deltaTime;
     }
 
+    /**
+     * Ensures the object does not fall below its ground position.
+     *
+     * @returns {void}
+     */
     ensureGroundContact() {
         if (this.y > this.groundY) {
             this.landOnGround();
         }
     }
 
+    /**
+     * Indicates whether the object is currently above the ground.
+     *
+     * @returns {boolean} True when the object is airborne.
+     */
     isAboveGround() {
         return this.y < this.groundY;
     }
 
+    /**
+     * Starts a jump if the object is currently grounded.
+     *
+     * @returns {boolean} True when the jump was started.
+     */
     jump() {
         if (this.isAboveGround()) {
             return false;
@@ -85,6 +134,12 @@ class MovableObject extends DrawableObject {
         return true;
     }
 
+    /**
+     * Applies an upward bounce impulse.
+     *
+     * @param {number} [strength=600] Upward bounce strength.
+     * @returns {void}
+     */
     bounce(strength = 600) {
         this.speedY = -strength;
     }
@@ -128,6 +183,11 @@ class MovableObject extends DrawableObject {
         return (Date.now() - this.lastHit) / 1000 < 0.75;
     }
 
+    /**
+     * Indicates whether the object's energy is depleted.
+     *
+     * @returns {boolean} True when the object is dead.
+     */
     isDead() {
         return this.energy <= 0;
     }

@@ -27,6 +27,12 @@ World.prototype.checkEnemyCollisions = function () {
     });
 };
 
+/**
+ * Checks whether an enemy should remain in the level.
+ *
+ * @param {MovableObject} enemy Enemy instance being evaluated.
+ * @returns {boolean} True when the enemy should stay active.
+ */
 World.prototype.shouldKeepEnemy = function (enemy) {
     return !(enemy.shouldRemove && enemy.shouldRemove());
 };
@@ -50,6 +56,12 @@ World.prototype.handleEnemyCollision = function (enemy) {
     this.handleEnemyTouchDamage();
 };
 
+/**
+ * Resolves a stomped enemy, its sounds, and a possible bottle drop.
+ *
+ * @param {MovableObject} enemy Enemy that was stomped.
+ * @returns {void}
+ */
 World.prototype.handleEnemyStomp = function (enemy) {
     enemy.stomp();
     this.playChickenStompSound(enemy);
@@ -57,6 +69,11 @@ World.prototype.handleEnemyStomp = function (enemy) {
     this.character.bounce();
 };
 
+/**
+ * Applies touch damage from an enemy to the character.
+ *
+ * @returns {void}
+ */
 World.prototype.handleEnemyTouchDamage = function () {
     if (this.character.hit()) {
         this.audioManager?.playSound('characterHurt');
@@ -76,14 +93,32 @@ World.prototype.isStompCollision = function (enemy) {
     return this.character.speedY > 0 && characterBottom <= enemyTop + 35;
 };
 
+/**
+ * Checks whether an enemy belongs to the chicken family.
+ *
+ * @param {MovableObject} enemy Enemy instance being evaluated.
+ * @returns {boolean} True when the enemy is a chicken variant.
+ */
 World.prototype.isChickenEnemy = function (enemy) {
     return enemy instanceof Chicken || enemy instanceof SmallChicken;
 };
 
+/**
+ * Checks whether an enemy is the small chicken variant.
+ *
+ * @param {MovableObject} enemy Enemy instance being evaluated.
+ * @returns {boolean} True when the enemy is a small chicken.
+ */
 World.prototype.isSmallChicken = function (enemy) {
     return enemy instanceof SmallChicken;
 };
 
+/**
+ * Plays the stomp sound sequence for a chicken enemy.
+ *
+ * @param {MovableObject} enemy Stomped enemy instance.
+ * @returns {void}
+ */
 World.prototype.playChickenStompSound = function (enemy) {
     if (!this.isChickenEnemy(enemy)) {
         return;
@@ -99,6 +134,12 @@ World.prototype.playChickenStompSound = function (enemy) {
     this.audioManager?.playSound('chickenStompAccent');
 };
 
+/**
+ * Plays the bottle-hit sound sequence for a chicken enemy.
+ *
+ * @param {MovableObject} enemy Hit enemy instance.
+ * @returns {void}
+ */
 World.prototype.playChickenBottleHitSound = function (enemy) {
     if (!this.isChickenEnemy(enemy)) {
         return;
@@ -108,6 +149,11 @@ World.prototype.playChickenBottleHitSound = function (enemy) {
     this.audioManager?.playSound(this.isSmallChicken(enemy) ? 'chickenSmallHurt' : 'chickenHurt');
 };
 
+/**
+ * Resolves coin pickups for the current frame.
+ *
+ * @returns {void}
+ */
 World.prototype.checkCoinCollisions = function () {
     this.level.coins = this.collectLevelItems(
         this.level.coins,
@@ -116,6 +162,11 @@ World.prototype.checkCoinCollisions = function () {
     );
 };
 
+/**
+ * Resolves bottle pickups for the current frame.
+ *
+ * @returns {void}
+ */
 World.prototype.checkBottleCollisions = function () {
     this.level.bottles = this.collectLevelItems(
         this.level.bottles,
@@ -164,6 +215,12 @@ World.prototype.checkThrowableCollisions = function () {
     });
 };
 
+/**
+ * Resolves a thrown bottle hitting a regular enemy.
+ *
+ * @param {ThrowableBottle} bottle Active thrown bottle.
+ * @returns {boolean} True when an enemy collision was handled.
+ */
 World.prototype.handleThrowableEnemyCollision = function (bottle) {
     let hitEnemy = this.level.enemies.find((enemy) => !enemy.isDefeated && bottle.isColliding(enemy));
 
@@ -177,6 +234,12 @@ World.prototype.handleThrowableEnemyCollision = function (bottle) {
     return true;
 };
 
+/**
+ * Resolves a thrown bottle hitting the endboss.
+ *
+ * @param {ThrowableBottle} bottle Active thrown bottle.
+ * @returns {void}
+ */
 World.prototype.handleThrowableEndbossCollision = function (bottle) {
     if (this.level.endboss.isDead() || !bottle.isColliding(this.level.endboss)) {
         return;
@@ -187,6 +250,12 @@ World.prototype.handleThrowableEndbossCollision = function (bottle) {
     this.triggerBottleSplash(bottle);
 };
 
+/**
+ * Starts the bottle splash state and its sound effect.
+ *
+ * @param {ThrowableBottle} bottle Active thrown bottle.
+ * @returns {void}
+ */
 World.prototype.triggerBottleSplash = function (bottle) {
     if (!bottle.startSplash()) {
         return;
@@ -195,6 +264,12 @@ World.prototype.triggerBottleSplash = function (bottle) {
     this.audioManager?.playSound('bottleSplash');
 };
 
+/**
+ * Drops a collectible bottle from a defeated regular chicken with a random chance.
+ *
+ * @param {MovableObject} enemy Defeated enemy instance.
+ * @returns {void}
+ */
 World.prototype.maybeDropBottle = function (enemy) {
     if (!(enemy instanceof Chicken) || Math.random() >= this.bottleDropChance) {
         return;
@@ -223,10 +298,20 @@ World.prototype.checkEndbossCollisions = function () {
     this.handleEndbossCharacterHit();
 };
 
+/**
+ * Checks whether the endboss may currently damage the character.
+ *
+ * @returns {boolean} True when direct endboss damage is possible.
+ */
 World.prototype.canEndbossDamageCharacter = function () {
     return !this.level.endboss.isDead() && this.bossFightStarted && this.level.endboss.isAttacking();
 };
 
+/**
+ * Applies damage from an attacking endboss to the character.
+ *
+ * @returns {void}
+ */
 World.prototype.handleEndbossCharacterHit = function () {
     if (this.character.hit()) {
         this.audioManager?.playSound('endbossImpact');

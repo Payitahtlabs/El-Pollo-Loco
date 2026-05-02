@@ -133,6 +133,13 @@ class Character extends MovableObject {
         this.clampHorizontalPosition(level);
     }
 
+    /**
+     * Resets frame-specific state before movement handling.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @param {Keyboard} keyboard Current keyboard input state.
+     * @returns {void}
+     */
     prepareFrameState(deltaTime, keyboard) {
         this.isMoving = keyboard.right || keyboard.left;
         this.didJumpThisFrame = false;
@@ -140,6 +147,11 @@ class Character extends MovableObject {
         this.updateIdleTime(deltaTime);
     }
 
+    /**
+     * Determines whether movement handling should stop for the current frame.
+     *
+     * @returns {boolean} True when movement updates should be skipped.
+     */
     shouldStopMovementUpdate() {
         if (!this.isMovementBlocked()) {
             return false;
@@ -149,23 +161,50 @@ class Character extends MovableObject {
         return true;
     }
 
+    /**
+     * Checks whether the character is currently prevented from moving.
+     *
+     * @returns {boolean} True when movement is blocked.
+     */
     isMovementBlocked() {
         return this.isDead() || this.isHurtMovementLocked();
     }
 
+    /**
+     * Checks whether the hurt animation still locks movement.
+     *
+     * @returns {boolean} True while hurt movement lock is active.
+     */
     isHurtMovementLocked() {
         return this.isHurtAnimationActive();
     }
 
+    /**
+     * Returns the elapsed time since the last hit.
+     *
+     * @returns {number} Seconds since the last registered hit.
+     */
     getTimeSinceLastHit() {
         return (Date.now() - this.lastHit) / 1000;
     }
 
+    /**
+     * Clears currently active movement-related input state.
+     *
+     * @returns {void}
+     */
     stopActiveMovementInputs() {
         this.isMoving = false;
         this.jumpKeyPressed = false;
     }
 
+    /**
+     * Updates horizontal movement based on active keyboard input.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @param {Keyboard} keyboard Current keyboard input state.
+     * @returns {void}
+     */
     updateHorizontalMovement(deltaTime, keyboard) {
         if (keyboard.right) {
             this.moveRightWithFacing(deltaTime);
@@ -176,16 +215,34 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Moves the character right and updates the facing direction.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     moveRightWithFacing(deltaTime) {
         this.otherDirection = false;
         this.moveRight(deltaTime);
     }
 
+    /**
+     * Moves the character left and updates the facing direction.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     moveLeftWithFacing(deltaTime) {
         this.otherDirection = true;
         this.moveLeft(deltaTime);
     }
 
+    /**
+     * Keeps the character within the level's horizontal bounds.
+     *
+     * @param {Level} level Active level data.
+     * @returns {void}
+     */
     clampHorizontalPosition(level) {
         let minX = level.playerMinX ?? 0;
 
@@ -198,6 +255,12 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Starts a jump once per key press while the character is grounded.
+     *
+     * @param {Keyboard} keyboard Current keyboard input state.
+     * @returns {void}
+     */
     handleJumpInput(keyboard) {
         let jumpKeyActive = keyboard.up || keyboard.space;
 
@@ -208,6 +271,12 @@ class Character extends MovableObject {
         this.jumpKeyPressed = jumpKeyActive;
     }
 
+    /**
+     * Tracks how long the character has been idle on the ground.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     updateIdleTime(deltaTime) {
         if (this.isMoving || this.isAboveGround() || this.isHurt() || this.isDead()) {
             this.idleTime = 0;
@@ -217,18 +286,38 @@ class Character extends MovableObject {
         this.idleTime += deltaTime;
     }
 
+    /**
+     * Increases the collected coin count by one.
+     *
+     * @returns {void}
+     */
     collectCoin() {
         this.collectedCoins++;
     }
 
+    /**
+     * Increases the collected bottle count by one.
+     *
+     * @returns {void}
+     */
     collectBottle() {
         this.collectedBottles++;
     }
 
+    /**
+     * Checks whether the character currently carries a throwable bottle.
+     *
+     * @returns {boolean} True when at least one bottle is available.
+     */
     hasBottle() {
         return this.collectedBottles > 0;
     }
 
+    /**
+     * Consumes one carried bottle for a throw action.
+     *
+     * @returns {boolean} True when a bottle was consumed.
+     */
     throwBottle() {
         if (!this.hasBottle()) return false;
 
@@ -253,6 +342,12 @@ class Character extends MovableObject {
         return true;
     }
 
+    /**
+     * Resets the death animation state when the character dies from the latest hit.
+     *
+     * @param {boolean} wasDead Whether the character was already dead before the hit.
+     * @returns {void}
+     */
     resetDeathAnimationIfNeeded(wasDead) {
         if (wasDead || !this.isDead()) {
             return;
@@ -277,6 +372,12 @@ class Character extends MovableObject {
         this.animateWalkState(deltaTime);
     }
 
+    /**
+     * Runs all higher-priority animation states before walking.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {boolean} True when a priority animation handled the frame.
+     */
     animatePriorityStates(deltaTime) {
         return this.animateDeathState(deltaTime)
             || this.animateHurtState(deltaTime)
@@ -284,6 +385,12 @@ class Character extends MovableObject {
             || this.animateIdleState(deltaTime);
     }
 
+    /**
+     * Resolves and plays the death animation when the character is dead.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {boolean} True when the death state is active.
+     */
     animateDeathState(deltaTime) {
         if (!this.isDead()) {
             return false;
@@ -295,6 +402,12 @@ class Character extends MovableObject {
         return true;
     }
 
+    /**
+     * Resolves and plays the hurt animation when the hurt window is active.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {boolean} True when the hurt state is active.
+     */
     animateHurtState(deltaTime) {
         if (!this.isHurtAnimationActive()) {
             return false;
@@ -306,6 +419,11 @@ class Character extends MovableObject {
         return true;
     }
 
+    /**
+     * Checks whether the short hurt animation should still be shown.
+     *
+     * @returns {boolean} True while the hurt animation is active.
+     */
     isHurtAnimationActive() {
         if (!this.isHurt()) {
             return false;
@@ -314,6 +432,12 @@ class Character extends MovableObject {
         return this.getTimeSinceLastHit() < this.hurtAnimationDuration;
     }
 
+    /**
+     * Resolves and plays the jump animation while airborne.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {boolean} True when the jump state is active.
+     */
     animateJumpState(deltaTime) {
         if (!this.isAboveGround()) {
             return false;
@@ -325,6 +449,12 @@ class Character extends MovableObject {
         return true;
     }
 
+    /**
+     * Resolves and plays idle animations when the character stands still.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {boolean} True when an idle state is active.
+     */
     animateIdleState(deltaTime) {
         if (this.isMoving) {
             return false;
@@ -335,6 +465,12 @@ class Character extends MovableObject {
         return true;
     }
 
+    /**
+     * Chooses between regular idle and long-idle animation variants.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     animateIdleVariant(deltaTime) {
         if (this.isLongIdleReady()) {
             this.playIdleAnimationVariant(deltaTime, 'long-idle', this.longIdleImages);
@@ -344,19 +480,43 @@ class Character extends MovableObject {
         this.playIdleAnimationVariant(deltaTime, 'idle', this.idleImages);
     }
 
+    /**
+     * Checks whether the long-idle delay has elapsed.
+     *
+     * @returns {boolean} True when long-idle animation may start.
+     */
     isLongIdleReady() {
         return this.idleTime >= this.longIdleDelay;
     }
 
+    /**
+     * Checks whether the current animation state is long-idle.
+     *
+     * @returns {boolean} True when the long-idle animation is active.
+     */
     isLongIdleActive() {
         return this.currentAnimationState === 'long-idle';
     }
 
+    /**
+     * Plays the requested idle animation variant.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @param {string} state Animation state name.
+     * @param {string[]} frames Animation frames for the state.
+     * @returns {void}
+     */
     playIdleAnimationVariant(deltaTime, state, frames) {
         this.setAnimationState(state, frames);
         this.playStateAnimation(deltaTime, frames);
     }
 
+    /**
+     * Resolves and plays the walking animation.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     animateWalkState(deltaTime) {
         this.setAnimationState('walk', this.walkingImages);
         this.wasMoving = true;
@@ -364,6 +524,13 @@ class Character extends MovableObject {
         this.playStateAnimation(deltaTime, this.walkingImages);
     }
 
+    /**
+     * Advances the current animation frames when their timing is due.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @param {string[]} frames Animation frames to play.
+     * @returns {void}
+     */
     playStateAnimation(deltaTime, frames) {
         if (!this.isAnimationFrameDue(deltaTime)) {
             return;
@@ -372,6 +539,13 @@ class Character extends MovableObject {
         this.playAnimation(frames);
     }
 
+    /**
+     * Switches the active animation state and resets frame counters.
+     *
+     * @param {string} state Animation state name.
+     * @param {?string[]} [frames=null] Optional frames used to prime the first image.
+     * @returns {void}
+     */
     setAnimationState(state, frames = null) {
         if (this.currentAnimationState === state) {
             return;
@@ -388,6 +562,12 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Advances the death animation until the final frame remains visible.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     animateDeath(deltaTime) {
         if (this.isDeathAnimationComplete()) {
             this.showFinalDeathFrame();
@@ -401,10 +581,21 @@ class Character extends MovableObject {
         this.finishDeathAnimation();
     }
 
+    /**
+     * Checks whether the death animation already finished.
+     *
+     * @returns {boolean} True when the final death frame should persist.
+     */
     isDeathAnimationComplete() {
         return this.deathAnimationFinished;
     }
 
+    /**
+     * Advances to the next death frame when animation timing allows it.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {boolean} True when a death frame was advanced.
+     */
     tryAnimateDeathFrame(deltaTime) {
         if (!this.isAnimationFrameDue(deltaTime) || !this.hasRemainingDeathFrames()) {
             return false;
@@ -414,20 +605,40 @@ class Character extends MovableObject {
         return true;
     }
 
+    /**
+     * Checks whether more death frames remain to be displayed.
+     *
+     * @returns {boolean} True when more death frames are available.
+     */
     hasRemainingDeathFrames() {
         return this.currentImage < this.deadImages.length;
     }
 
+    /**
+     * Shows the next frame in the death animation sequence.
+     *
+     * @returns {void}
+     */
     showNextDeathFrame() {
         this.img = this.imageCache[this.deadImages[this.currentImage]];
         this.currentImage++;
     }
 
+    /**
+     * Marks the death animation as finished and keeps the last frame visible.
+     *
+     * @returns {void}
+     */
     finishDeathAnimation() {
         this.deathAnimationFinished = true;
         this.showFinalDeathFrame();
     }
 
+    /**
+     * Shows the final death frame.
+     *
+     * @returns {void}
+     */
     showFinalDeathFrame() {
         this.img = this.imageCache[this.deadImages[this.deadImages.length - 1]];
     }

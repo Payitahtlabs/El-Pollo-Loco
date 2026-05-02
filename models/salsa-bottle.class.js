@@ -33,6 +33,11 @@ class SalsaBottle extends MovableObject {
         this.loadImage(this.getRandomGroundImage());
     }
 
+    /**
+     * Chooses one of the bottle ground sprites at random.
+     *
+     * @returns {string} Bottle image path.
+     */
     getRandomGroundImage() {
         let randomIndex = Math.floor(Math.random() * this.groundImages.length);
         return this.groundImages[randomIndex];

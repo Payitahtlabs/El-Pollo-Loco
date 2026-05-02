@@ -32,6 +32,11 @@ function init() {
     initializeUiState();
 }
 
+/**
+ * Caches all required DOM references for the game shell.
+ *
+ * @returns {void}
+ */
 function collectDomReferences() {
     canvas = document.getElementById('canvas');
     startScreen = document.getElementById('start-screen');
@@ -62,6 +67,11 @@ function setupAudioManager() {
     applyStoredAudioState();
 }
 
+/**
+ * Attaches all UI event listeners for the game shell.
+ *
+ * @returns {void}
+ */
 function attachUiListeners() {
     attachTouchControlListeners();
     attachGameSurfaceInteractionGuards();
@@ -74,6 +84,11 @@ function attachUiListeners() {
     attachResponsiveHintListeners();
 }
 
+/**
+ * Initializes toolbar and interaction hints for the shell.
+ *
+ * @returns {void}
+ */
 function initializeUiState() {
     updateFullscreenAvailability();
     updateInteractionHints();
@@ -111,16 +126,31 @@ function registerEndbossSounds() {
     audioManager.registerSound('endbossImpact', 'audio/sfx/endboss/endboss-impact.wav', 0.34);
 }
 
+/**
+ * Attaches blur-on-pointer-release behavior to interactive shell buttons.
+ *
+ * @returns {void}
+ */
 function attachButtonFocusResets() {
     [muteButton, fullscreenButton, helpButton, helpCloseButton, ...restartButtons, ...homeButtons]
         .forEach((button) => attachPointerFocusReset(button));
 }
 
+/**
+ * Attaches listeners that refresh the responsive interaction hint text.
+ *
+ * @returns {void}
+ */
 function attachResponsiveHintListeners() {
     window.addEventListener('resize', updateInteractionHints);
     window.addEventListener('orientationchange', updateInteractionHints);
 }
 
+/**
+ * Updates the start hint text based on the primary input mode.
+ *
+ * @returns {void}
+ */
 function updateInteractionHints() {
     let usesTouchPrimary = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
@@ -129,6 +159,11 @@ function updateInteractionHints() {
     }
 }
 
+/**
+ * Prevents unwanted native interactions on core game surface elements.
+ *
+ * @returns {void}
+ */
 function attachGameSurfaceInteractionGuards() {
     let guardedElements = [
         canvas,
@@ -204,10 +239,22 @@ function handleRestartKeyup(event) {
     restartPrimaryActionArmed = true;
 }
 
+/**
+ * Checks whether a keyboard event matches the primary action keys.
+ *
+ * @param {KeyboardEvent} event Browser keyboard event.
+ * @returns {boolean} True when Enter or Space was pressed.
+ */
 function isPrimaryActionKey(event) {
     return event.code === 'Enter' || event.code === 'Space';
 }
 
+/**
+ * Determines whether the restart hotkey may trigger for the current event.
+ *
+ * @param {KeyboardEvent} event Browser keyboard event.
+ * @returns {boolean} True when the restart action should fire.
+ */
 function canHandleRestartPrimaryAction(event) {
     if (!restartPrimaryActionArmed || event.repeat) {
         return false;
@@ -217,12 +264,22 @@ function canHandleRestartPrimaryAction(event) {
     return true;
 }
 
+/**
+ * Enables the restart input path after a run has ended.
+ *
+ * @returns {void}
+ */
 function enableRestart() {
     hideTouchControls();
     restartPrimaryActionArmed = false;
     attachRestartListeners();
 }
 
+/**
+ * Attaches all touch-control input listeners.
+ *
+ * @returns {void}
+ */
 function attachTouchControlListeners() {
     touchButtons.forEach((button) => {
         button.addEventListener('pointerdown', handleTouchControlPress);
@@ -234,10 +291,22 @@ function attachTouchControlListeners() {
     });
 }
 
+/**
+ * Prevents the browser's default interaction for touch controls.
+ *
+ * @param {Event} event Triggering browser event.
+ * @returns {void}
+ */
 function preventTouchControlDefault(event) {
     event.preventDefault();
 }
 
+/**
+ * Applies the matching keyboard state when a touch button is pressed.
+ *
+ * @param {PointerEvent} event Pointer event from the touch button.
+ * @returns {void}
+ */
 function handleTouchControlPress(event) {
     if (!keyboard) {
         return;
@@ -255,6 +324,12 @@ function handleTouchControlPress(event) {
     button.classList.add('is-pressed');
 }
 
+/**
+ * Clears the matching keyboard state when a touch button is released.
+ *
+ * @param {PointerEvent} event Pointer event from the touch button.
+ * @returns {void}
+ */
 function handleTouchControlRelease(event) {
     let button = event.currentTarget;
     let action = getTouchControlAction(button.dataset.action);
@@ -266,10 +341,22 @@ function handleTouchControlRelease(event) {
     button.classList.remove('is-pressed');
 }
 
+/**
+ * Checks whether an action name maps to a tracked keyboard property.
+ *
+ * @param {string} action Action name to test.
+ * @returns {boolean} True when the action maps to keyboard state.
+ */
 function isKeyboardAction(action) {
     return !!action && keyboard && action in keyboard;
 }
 
+/**
+ * Maps touch button action names to internal keyboard state keys.
+ *
+ * @param {string} action Raw action value from the button dataset.
+ * @returns {string} Normalized keyboard state key.
+ */
 function getTouchControlAction(action) {
     let actionMap = {
         LEFT: 'left',
@@ -283,10 +370,22 @@ function getTouchControlAction(action) {
     return actionMap[action] || action;
 }
 
+/**
+ * Applies a pressed state to the tracked keyboard action.
+ *
+ * @param {string} action Keyboard state key to update.
+ * @param {boolean} isPressed Whether the action is currently pressed.
+ * @returns {void}
+ */
 function setKeyboardActionState(action, isPressed) {
     keyboard[action] = isPressed;
 }
 
+/**
+ * Clears all active touch-control press states.
+ *
+ * @returns {void}
+ */
 function resetTouchInputState() {
     touchButtons.forEach((button) => button.classList.remove('is-pressed'));
 
@@ -302,6 +401,11 @@ function resetTouchInputState() {
     keyboard.throwKey = false;
 }
 
+/**
+ * Shows the mobile touch-control overlay.
+ *
+ * @returns {void}
+ */
 function showTouchControls() {
     if (!touchControls) {
         return;
@@ -311,6 +415,11 @@ function showTouchControls() {
     touchControls.setAttribute('aria-hidden', 'false');
 }
 
+/**
+ * Hides the mobile touch-control overlay and clears active input.
+ *
+ * @returns {void}
+ */
 function hideTouchControls() {
     if (!touchControls) {
         return;
@@ -321,6 +430,11 @@ function hideTouchControls() {
     touchControls.setAttribute('aria-hidden', 'true');
 }
 
+/**
+ * Attaches the start-screen input listeners.
+ *
+ * @returns {void}
+ */
 function attachStartListeners() {
     if (startListenersAttached) {
         return;
@@ -331,6 +445,11 @@ function attachStartListeners() {
     startListenersAttached = true;
 }
 
+/**
+ * Removes the start-screen input listeners.
+ *
+ * @returns {void}
+ */
 function detachStartListeners() {
     if (!startListenersAttached) {
         return;
@@ -341,6 +460,12 @@ function detachStartListeners() {
     startListenersAttached = false;
 }
 
+/**
+ * Adds or removes the start-screen click listener.
+ *
+ * @param {'add'|'remove'} action Listener operation to perform.
+ * @returns {void}
+ */
 function toggleStartScreenClickListener(action) {
     if (!startScreen) {
         return;
@@ -349,6 +474,12 @@ function toggleStartScreenClickListener(action) {
     startScreen[`${action}EventListener`]('click', handleStartScreenClick);
 }
 
+/**
+ * Starts the game when the start screen itself is activated.
+ *
+ * @param {MouseEvent} event Browser click event.
+ * @returns {void}
+ */
 function handleStartScreenClick(event) {
     if (shouldIgnoreStartScreenClick(event)) {
         return;
@@ -357,10 +488,21 @@ function handleStartScreenClick(event) {
     startGame();
 }
 
+/**
+ * Determines whether a start-screen click should be ignored.
+ *
+ * @param {MouseEvent} event Browser click event.
+ * @returns {boolean} True when the click should not start the game.
+ */
 function shouldIgnoreStartScreenClick(event) {
     return wasHelpOverlayJustOpened() || !!event.target.closest('button, a, [role="dialog"]');
 }
 
+/**
+ * Attaches keyboard and button listeners for the restart state.
+ *
+ * @returns {void}
+ */
 function attachRestartListeners() {
     if (restartListenersAttached) {
         return;
@@ -373,6 +515,11 @@ function attachRestartListeners() {
     restartListenersAttached = true;
 }
 
+/**
+ * Removes keyboard and button listeners for the restart state.
+ *
+ * @returns {void}
+ */
 function detachRestartListeners() {
     if (!restartListenersAttached) {
         return;
@@ -386,6 +533,15 @@ function detachRestartListeners() {
     restartPrimaryActionArmed = true;
 }
 
+/**
+ * Adds or removes overlay button listeners as a batch.
+ *
+ * @param {HTMLButtonElement[]} buttons Buttons to update.
+ * @param {string} eventName Browser event name to bind.
+ * @param {Function} handler Listener callback.
+ * @param {'add'|'remove'} action Listener operation to perform.
+ * @returns {void}
+ */
 function toggleOverlayButtonListeners(buttons, eventName, handler, action) {
     buttons.forEach((button) => button[`${action}EventListener`](eventName, handler));
 }

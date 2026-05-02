@@ -97,6 +97,12 @@ function handleHelpOverlayKeydown(event) {
     closeHelpOverlay();
 }
 
+/**
+ * Prevents default browser handling for help overlay interactions.
+ *
+ * @param {Event} [event] Triggering browser event.
+ * @returns {void}
+ */
 function preventOverlayEventDefault(event) {
     if (!event) {
         return;
@@ -106,22 +112,42 @@ function preventOverlayEventDefault(event) {
     event.stopPropagation();
 }
 
+/**
+ * Removes focus from the help trigger button.
+ *
+ * @returns {void}
+ */
 function blurHelpButton() {
     if (helpButton) {
         helpButton.blur();
     }
 }
 
+/**
+ * Clears any scheduled help overlay close timeout.
+ *
+ * @returns {void}
+ */
 function resetHelpOverlayCloseTimeout() {
     window.clearTimeout(helpOverlayCloseTimeout);
 }
 
+/**
+ * Makes the help overlay visible before the opening animation starts.
+ *
+ * @returns {void}
+ */
 function showHelpOverlay() {
     helpOverlay.classList.remove('hidden');
     helpOverlay.classList.remove('is-closing');
     helpOverlay.setAttribute('aria-hidden', 'false');
 }
 
+/**
+ * Applies the visible help overlay state and focuses the close button.
+ *
+ * @returns {void}
+ */
 function revealHelpOverlay() {
     helpOverlay.classList.add('is-visible');
 
@@ -130,23 +156,43 @@ function revealHelpOverlay() {
     }
 }
 
+/**
+ * Removes focus from any currently focused help overlay element.
+ *
+ * @returns {void}
+ */
 function blurFocusedHelpElement() {
     if (helpOverlay.contains(document.activeElement)) {
         document.activeElement.blur();
     }
 }
 
+/**
+ * Starts the visual closing state for the help overlay.
+ *
+ * @returns {void}
+ */
 function hideHelpOverlay() {
     helpOverlay.classList.remove('is-visible');
     helpOverlay.classList.add('is-closing');
     helpOverlay.setAttribute('aria-hidden', 'true');
 }
 
+/**
+ * Schedules the final hidden state after the close animation completes.
+ *
+ * @returns {void}
+ */
 function scheduleHelpOverlayHide() {
     resetHelpOverlayCloseTimeout();
     helpOverlayCloseTimeout = window.setTimeout(finalizeHelpOverlayHide, HELP_OVERLAY_ANIMATION_DURATION_MS);
 }
 
+/**
+ * Applies the fully hidden state to the help overlay.
+ *
+ * @returns {void}
+ */
 function finalizeHelpOverlayHide() {
     if (!helpOverlay) {
         return;
@@ -156,6 +202,11 @@ function finalizeHelpOverlayHide() {
     helpOverlay.classList.remove('is-closing');
 }
 
+/**
+ * Checks whether the help overlay is currently hidden.
+ *
+ * @returns {boolean} True when the help overlay is hidden.
+ */
 function isHelpOverlayHidden() {
     return !helpOverlay || helpOverlay.classList.contains('hidden');
 }

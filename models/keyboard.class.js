@@ -40,6 +40,12 @@ class Keyboard {
         event.preventDefault();
     }
 
+    /**
+     * Maps a browser key code to the tracked gameplay key name.
+     *
+     * @param {string} code Browser keyboard code.
+     * @returns {string|undefined} Matching tracked key name.
+     */
     getTrackedKeyName(code) {
         let keyMap = {
             ArrowLeft: 'left',

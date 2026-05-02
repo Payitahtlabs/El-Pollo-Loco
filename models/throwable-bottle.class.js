@@ -68,6 +68,12 @@ class ThrowableBottle extends MovableObject {
         this.checkGroundImpact();
     }
 
+    /**
+     * Advances the bottle's horizontal flight and gravity.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     updateFlightMovement(deltaTime) {
         if (this.throwToLeft) {
             this.moveLeft(deltaTime);
@@ -78,18 +84,35 @@ class ThrowableBottle extends MovableObject {
         this.applyGravity(deltaTime);
     }
 
+    /**
+     * Advances the bottle rotation animation while in flight.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     updateFlightAnimation(deltaTime) {
         if (this.isAnimationFrameDue(deltaTime)) {
             this.playAnimation(this.rotationImages);
         }
     }
 
+    /**
+     * Starts the splash state once the bottle hits the ground.
+     *
+     * @returns {void}
+     */
     checkGroundImpact() {
         if ((!this.isAboveGround() || this.y >= this.groundY) && this.speedY >= 0) {
             this.startSplash();
         }
     }
 
+    /**
+     * Advances the splash animation frames.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     animateSplash(deltaTime) {
         if (this.isAnimationFrameDue(deltaTime)) {
             this.playAnimation(this.splashImages);

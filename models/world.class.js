@@ -88,25 +88,52 @@ class World {
         this.scheduleNextFrame();
     }
 
+    /**
+     * Calculates the bounded frame delta time for the current animation frame.
+     *
+     * @param {number} timestamp Browser-provided animation frame timestamp.
+     * @returns {number} Delta time in seconds.
+     */
     getFrameDeltaTime(timestamp) {
         let deltaTime = this.lastFrameTime ? (timestamp - this.lastFrameTime) / 1000 : 0;
         this.lastFrameTime = timestamp;
         return Math.min(deltaTime, this.maxDeltaTime);
     }
 
+    /**
+     * Runs the update and render steps for one frame.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     runFrame(deltaTime) {
         this.update(deltaTime);
         this.draw();
     }
 
+    /**
+     * Schedules the next animation frame.
+     *
+     * @returns {void}
+     */
     scheduleNextFrame() {
         this.animationId = requestAnimationFrame((nextTimestamp) => this.gameLoop(nextTimestamp));
     }
 
+    /**
+     * Resets stored frame timing data.
+     *
+     * @returns {void}
+     */
     resetFrameTiming() {
         this.lastFrameTime = 0;
     }
 
+    /**
+     * Cancels the active animation frame loop.
+     *
+     * @returns {void}
+     */
     stopAnimationLoop() {
         cancelAnimationFrame(this.animationId);
     }
@@ -128,6 +155,12 @@ class World {
         this.updateCamera();
     }
 
+    /**
+     * Updates counters, dynamic objects, collisions, and outcome checks.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     updateCollisionAndAudioState(deltaTime) {
         this.updateDisplayState();
         this.updateThrowableObjects(deltaTime);
@@ -156,6 +189,11 @@ class World {
         this.updateEndbossFightState();
     }
 
+    /**
+     * Updates character-related looping audio based on the current state.
+     *
+     * @returns {void}
+     */
     updateCharacterAudioState() {
         if (this.character.isLongIdleActive()) {
             this.audioManager?.startLoopingSound('characterLongIdleSnore');
@@ -165,10 +203,20 @@ class World {
         this.stopCharacterLongIdleSound();
     }
 
+    /**
+     * Stops the looping long-idle character sound.
+     *
+     * @returns {void}
+     */
     stopCharacterLongIdleSound() {
         this.audioManager?.stopLoopingSound('characterLongIdleSnore');
     }
 
+    /**
+     * Synchronizes all HUD displays with the current world state.
+     *
+     * @returns {void}
+     */
     updateDisplayState() {
         this.healthStatusBar.setPercentage(this.character.energy);
         this.bottleCounter.setValue(this.character.collectedBottles);
@@ -176,6 +224,12 @@ class World {
         this.endbossStatusBar.setPercentage(this.level.endboss.energy);
     }
 
+    /**
+     * Updates and filters all active thrown bottles.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     updateThrowableObjects(deltaTime) {
         this.throwableObjects = this.throwableObjects.filter((bottle) => {
             let wasSplashing = bottle.isSplashing;
@@ -189,6 +243,12 @@ class World {
         });
     }
 
+    /**
+     * Updates collectible items and enemy objects inside the active level.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     updateLevelObjects(deltaTime) {
         this.level.bottles.forEach((bottle) => {
             if (bottle.update) {
@@ -202,11 +262,22 @@ class World {
         });
     }
 
+    /**
+     * Updates the endboss behavior and animation state.
+     *
+     * @param {number} deltaTime Time since the previous frame in seconds.
+     * @returns {void}
+     */
     updateEndboss(deltaTime) {
         this.level.endboss.update(deltaTime, this.character, this.bossFightStarted);
         this.level.endboss.animate(deltaTime, this.bossFightStarted, this.character);
     }
 
+    /**
+     * Updates the camera so the character remains within view.
+     *
+     * @returns {void}
+     */
     updateCamera() {
         let maxCameraX = this.level.levelEndX - this.canvas.width;
         let targetCameraX = -this.character.x + 120;
@@ -214,6 +285,11 @@ class World {
         this.camera_x = Math.max(-maxCameraX, Math.min(0, targetCameraX));
     }
 
+    /**
+     * Checks whether the player has entered the boss arena trigger.
+     *
+     * @returns {void}
+     */
     updateEndbossFightState() {
         if (this.bossFightStarted) return;
 
@@ -241,27 +317,55 @@ class World {
         this.playBossFightStartSounds();
     }
 
+    /**
+     * Checks whether the character reached the boss-fight trigger.
+     *
+     * @param {number} triggerX Left boundary of the boss arena trigger.
+     * @returns {boolean} True when the trigger was reached.
+     */
     isBossFightTriggerReached(triggerX) {
         let characterFront = this.character.x + this.character.width;
         return characterFront >= triggerX;
     }
 
+    /**
+     * Activates the boss fight and locks the boss arena's left boundary.
+     *
+     * @param {number} triggerX Left boundary of the boss arena trigger.
+     * @returns {void}
+     */
     activateBossFight(triggerX) {
         this.bossFightStarted = true;
         this.bossArenaLeftX = Math.max(0, triggerX - 180);
     }
 
+    /**
+     * Starts the boss-fight audio transition and alert sound.
+     *
+     * @returns {void}
+     */
     playBossFightStartSounds() {
         this.audioManager?.crossfadeToBossMusic();
         this.audioManager?.playSound('endbossAlert');
     }
 
+    /**
+     * Plays all endboss audio events queued during the current frame.
+     *
+     * @returns {void}
+     */
     playPendingEndbossSounds() {
         this.level.endboss.consumeAudioEvents().forEach((eventName) => {
             this.playEndbossAudioEvent(eventName);
         });
     }
 
+    /**
+     * Plays a specific endboss sound event.
+     *
+     * @param {string} eventName Queued endboss audio event name.
+     * @returns {void}
+     */
     playEndbossAudioEvent(eventName) {
         switch (eventName) {
             case 'attack':
@@ -276,12 +380,22 @@ class World {
         }
     }
 
+    /**
+     * Plays the jump sound when the character jumped in the current frame.
+     *
+     * @returns {void}
+     */
     playJumpSoundIfNeeded() {
         if (this.character.didJumpThisFrame) {
             this.audioManager?.playSound('jump');
         }
     }
 
+    /**
+     * Starts a bottle throw on the rising edge of the throw input.
+     *
+     * @returns {void}
+     */
     handleBottleThrow() {
         if (this.keyboard.throwKey && !this.throwKeyPressed && this.canThrowBottle()) {
             this.throwBottle();
@@ -290,6 +404,11 @@ class World {
         this.throwKeyPressed = this.keyboard.throwKey;
     }
 
+    /**
+     * Checks whether the character may currently throw a bottle.
+     *
+     * @returns {boolean} True when a bottle throw is allowed.
+     */
     canThrowBottle() {
         if (this.character.isDead()) {
             return false;
@@ -298,14 +417,29 @@ class World {
         return this.getTimeSinceLastBottleThrow() >= this.getBottleThrowCooldown();
     }
 
+    /**
+     * Returns the elapsed time since the last bottle throw.
+     *
+     * @returns {number} Seconds since the last bottle throw.
+     */
     getTimeSinceLastBottleThrow() {
         return (Date.now() - this.lastBottleThrowAt) / 1000;
     }
 
+    /**
+     * Resolves the active bottle throw cooldown.
+     *
+     * @returns {number} Cooldown duration in seconds.
+     */
     getBottleThrowCooldown() {
         return this.bossFightStarted ? this.bossBottleThrowCooldown : this.bottleThrowCooldown;
     }
 
+    /**
+     * Spawns and plays a new thrown bottle when inventory allows it.
+     *
+     * @returns {void}
+     */
     throwBottle() {
         if (!this.character.throwBottle()) {
             return;
@@ -321,6 +455,11 @@ class World {
         this.audioManager?.playSound('bottleThrow');
     }
 
+    /**
+     * Checks whether the lose condition has been reached.
+     *
+     * @returns {void}
+     */
     checkLoseCondition() {
         if (!this.canLoseGame()) {
             return;
@@ -329,6 +468,11 @@ class World {
         this.handleGameLost();
     }
 
+    /**
+     * Checks whether the win condition has been reached.
+     *
+     * @returns {void}
+     */
     checkWinCondition() {
         if (!this.canWinGame()) {
             return;
@@ -337,14 +481,29 @@ class World {
         this.handleGameWon();
     }
 
+    /**
+     * Checks whether the game may transition into a loss state.
+     *
+     * @returns {boolean} True when the loss condition is satisfied.
+     */
     canLoseGame() {
         return !this.gameWon && !this.gameLost && this.character.isDead() && this.character.deathAnimationFinished;
     }
 
+    /**
+     * Checks whether the game may transition into a win state.
+     *
+     * @returns {boolean} True when the win condition is satisfied.
+     */
     canWinGame() {
         return !this.gameWon && !this.gameLost && this.level.endboss.isDead() && this.level.endboss.deathAnimationFinished;
     }
 
+    /**
+     * Marks the game as won and shows the win overlay.
+     *
+     * @returns {void}
+     */
     handleGameWon() {
         this.gameWon = true;
         this.stopCharacterLongIdleSound();
@@ -355,6 +514,11 @@ class World {
         }
     }
 
+    /**
+     * Marks the game as lost and shows the game-over overlay.
+     *
+     * @returns {void}
+     */
     handleGameLost() {
         this.gameLost = true;
         this.stopCharacterLongIdleSound();
@@ -365,22 +529,49 @@ class World {
         }
     }
 
+    /**
+     * Shows the win overlay.
+     *
+     * @returns {void}
+     */
     showWinOverlay() {
         this.setOverlayVisibility(this.winScreenOverlay, true);
     }
 
+    /**
+     * Hides the win overlay.
+     *
+     * @returns {void}
+     */
     hideWinOverlay() {
         this.setOverlayVisibility(this.winScreenOverlay, false);
     }
 
+    /**
+     * Shows the game-over overlay.
+     *
+     * @returns {void}
+     */
     showGameOverOverlay() {
         this.setOverlayVisibility(this.gameOverScreenOverlay, true);
     }
 
+    /**
+     * Hides the game-over overlay.
+     *
+     * @returns {void}
+     */
     hideGameOverOverlay() {
         this.setOverlayVisibility(this.gameOverScreenOverlay, false);
     }
 
+    /**
+     * Toggles an overlay's visible and ARIA-hidden state.
+     *
+     * @param {?HTMLElement} overlay Overlay element to update.
+     * @param {boolean} isVisible Whether the overlay should be visible.
+     * @returns {void}
+     */
     setOverlayVisibility(overlay, isVisible) {
         if (!overlay) {
             return;
@@ -391,11 +582,21 @@ class World {
     }
 
     // ── Steuerung ────────────────────────────────────────
+    /**
+     * Pauses the world loop.
+     *
+     * @returns {void}
+     */
     pause() {
         this.paused = true;
         this.stopAnimationLoop();
     }
 
+    /**
+     * Resumes the world loop after a pause.
+     *
+     * @returns {void}
+     */
     resume() {
         if (!this.paused) return;
         this.paused = false;
@@ -403,6 +604,11 @@ class World {
         this.gameLoop(0);
     }
 
+    /**
+     * Stops the world loop and active long-idle audio.
+     *
+     * @returns {void}
+     */
     gameOver() {
         this.stopCharacterLongIdleSound();
         this.stopAnimationLoop();

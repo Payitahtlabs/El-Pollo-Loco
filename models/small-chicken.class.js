@@ -32,6 +32,11 @@ class SmallChicken extends MovableObject {
         this.setRandomSpeed();
     }
 
+    /**
+     * Applies a random patrol speed to the small chicken.
+     *
+     * @returns {void}
+     */
     setRandomSpeed() {
         this.speed = 70 + Math.random() * 70;
     }

@@ -25,6 +25,11 @@ function prepareGameStart() {
     prepareRunAudio();
 }
 
+/**
+ * Hides the start screen overlay.
+ *
+ * @returns {void}
+ */
 function hideStartScreen() {
     if (!startScreen) {
         return;
@@ -34,6 +39,11 @@ function hideStartScreen() {
     startScreen.setAttribute('aria-hidden', 'true');
 }
 
+/**
+ * Shows the start screen overlay.
+ *
+ * @returns {void}
+ */
 function showStartScreen() {
     if (!startScreen) {
         return;
@@ -113,6 +123,11 @@ function stopGameAudio() {
     }
 }
 
+/**
+ * Hides both game end overlays.
+ *
+ * @returns {void}
+ */
 function hideGameEndScreens() {
     if (winScreen) {
         winScreen.classList.add('hidden');
@@ -125,12 +140,22 @@ function hideGameEndScreens() {
     }
 }
 
+/**
+ * Shows the gameplay canvas.
+ *
+ * @returns {void}
+ */
 function showGameCanvas() {
     if (canvas) {
         canvas.classList.remove('hidden');
     }
 }
 
+/**
+ * Hides the gameplay canvas.
+ *
+ * @returns {void}
+ */
 function hideGameCanvas() {
     if (canvas) {
         canvas.classList.add('hidden');

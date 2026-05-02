@@ -27,12 +27,23 @@ class AudioManager {
         }
     }
 
+    /**
+     * Starts the regular background music track.
+     *
+     * @returns {void}
+     */
     playBackgroundMusic() {
         this.clearMusicFade();
         this.backgroundMusic.volume = this.backgroundMusicTargetVolume;
         this.playMusicTrack(this.backgroundMusic, 'backgroundMusicStarted');
     }
 
+    /**
+     * Starts the boss music track at the requested initial volume.
+     *
+     * @param {number} [initialVolume=0] Initial boss track volume.
+     * @returns {void}
+     */
     playBossMusic(initialVolume = 0) {
         if (!this.bossMusic) {
             return;
@@ -62,11 +73,22 @@ class AudioManager {
         }, fadeState.stepMs);
     }
 
+    /**
+     * Starts both music tracks in preparation for a crossfade.
+     *
+     * @returns {void}
+     */
     prepareBossMusicCrossfade() {
         this.playBackgroundMusic();
         this.playBossMusic(0);
     }
 
+    /**
+     * Creates the timing state used by the boss crossfade.
+     *
+     * @param {number} durationMs Fade duration in milliseconds.
+     * @returns {{stepMs: number, totalSteps: number, currentStep: number, backgroundStartVolume: number, bossStartVolume: number}} Crossfade timing state.
+     */
     createCrossfadeState(durationMs) {
         let stepMs = 50;
 
@@ -79,6 +101,12 @@ class AudioManager {
         };
     }
 
+    /**
+     * Advances the current boss music crossfade by one step.
+     *
+     * @param {{stepMs: number, totalSteps: number, currentStep: number, backgroundStartVolume: number, bossStartVolume: number}} fadeState Active crossfade state.
+     * @returns {void}
+     */
     advanceBossMusicCrossfade(fadeState) {
         fadeState.currentStep++;
 
@@ -90,11 +118,23 @@ class AudioManager {
         }
     }
 
+    /**
+     * Applies the computed crossfade progress to both music tracks.
+     *
+     * @param {number} progress Current fade progress between 0 and 1.
+     * @param {{backgroundStartVolume: number, bossStartVolume: number}} fadeState Active crossfade state.
+     * @returns {void}
+     */
     applyCrossfadeProgress(progress, fadeState) {
         this.backgroundMusic.volume = fadeState.backgroundStartVolume * (1 - progress);
         this.bossMusic.volume = fadeState.bossStartVolume + (this.bossMusicTargetVolume - fadeState.bossStartVolume) * progress;
     }
 
+    /**
+     * Finalizes the boss music crossfade and resets track volumes.
+     *
+     * @returns {void}
+     */
     finishBossMusicCrossfade() {
         this.clearMusicFade();
         this.pauseTrack(this.backgroundMusic, 'backgroundMusicStarted');
@@ -103,6 +143,11 @@ class AudioManager {
         this.bossMusic.volume = this.bossMusicTargetVolume;
     }
 
+    /**
+     * Restores both music tracks to their default idle state.
+     *
+     * @returns {void}
+     */
     resetMusicBlend() {
         this.clearMusicFade();
         this.pauseTrack(this.bossMusic, 'bossMusicStarted');
@@ -117,10 +162,22 @@ class AudioManager {
         this.backgroundMusic.volume = this.backgroundMusicTargetVolume;
     }
 
+    /**
+     * Stops all active music playback.
+     *
+     * @returns {void}
+     */
     stopAllMusic() {
         this.resetMusicBlend();
     }
 
+    /**
+     * Starts a music track if it is not already marked as playing.
+     *
+     * @param {HTMLAudioElement} track Music track to start.
+     * @param {string} startedFlagName Property name that tracks playback state.
+     * @returns {void}
+     */
     playMusicTrack(track, startedFlagName) {
         if (!track || this[startedFlagName]) {
             return;
@@ -135,6 +192,13 @@ class AudioManager {
         this.attachTrackStartHandler(playPromise, startedFlagName);
     }
 
+    /**
+     * Marks a track as started once its play promise resolves.
+     *
+     * @param {Promise<void>} playPromise Playback promise from the audio element.
+     * @param {string} startedFlagName Property name that tracks playback state.
+     * @returns {void}
+     */
     attachTrackStartHandler(playPromise, startedFlagName) {
         playPromise
             .then(() => {
@@ -143,18 +207,40 @@ class AudioManager {
             .catch(() => {});
     }
 
+    /**
+     * Checks whether a value behaves like a promise.
+     *
+     * @param {*} value Value to inspect.
+     * @returns {boolean} True when the value exposes a then function.
+     */
     isPromiseLike(value) {
         return !!value && typeof value.then === 'function';
     }
 
+    /**
+     * Sets the started flag for a track.
+     *
+     * @param {string} startedFlagName Property name that tracks playback state.
+     * @returns {void}
+     */
     markTrackStarted(startedFlagName) {
         this[startedFlagName] = true;
     }
 
+    /**
+     * Pauses the regular background music.
+     *
+     * @returns {void}
+     */
     pauseBackgroundMusic() {
         this.pauseTrack(this.backgroundMusic, 'backgroundMusicStarted');
     }
 
+    /**
+     * Stops the background music and rewinds it to the start.
+     *
+     * @returns {void}
+     */
     stopBackgroundMusic() {
         this.pauseBackgroundMusic();
         this.backgroundMusic.currentTime = 0;
@@ -192,6 +278,12 @@ class AudioManager {
         this.loopingSoundEffects.set(name, sound);
     }
 
+    /**
+     * Plays a registered one-shot sound effect by name.
+     *
+     * @param {string} name Registered sound lookup key.
+     * @returns {void}
+     */
     playSound(name) {
         let soundEntry = this.soundEffects.get(name);
         if (!soundEntry || soundEntry.sounds.length === 0) {
@@ -205,6 +297,12 @@ class AudioManager {
         sound.play().catch(() => {});
     }
 
+    /**
+     * Starts a registered looping sound effect.
+     *
+     * @param {string} name Registered sound lookup key.
+     * @returns {void}
+     */
     startLoopingSound(name) {
         let sound = this.loopingSoundEffects.get(name);
         if (!sound || !sound.paused) {
@@ -214,6 +312,12 @@ class AudioManager {
         sound.play().catch(() => {});
     }
 
+    /**
+     * Stops and rewinds a registered looping sound effect.
+     *
+     * @param {string} name Registered sound lookup key.
+     * @returns {void}
+     */
     stopLoopingSound(name) {
         let sound = this.loopingSoundEffects.get(name);
         if (!sound) {
@@ -224,6 +328,11 @@ class AudioManager {
         sound.currentTime = 0;
     }
 
+    /**
+     * Stops all registered looping sound effects.
+     *
+     * @returns {void}
+     */
     stopAllLoopingSounds() {
         this.loopingSoundEffects.forEach((sound, name) => {
             this.stopLoopingSound(name);
@@ -247,6 +356,12 @@ class AudioManager {
         this.setMutedOnLoopingSoundEffects(isMuted);
     }
 
+    /**
+     * Applies the mute state to all pooled one-shot sound effects.
+     *
+     * @param {boolean} isMuted Whether sound effects should be muted.
+     * @returns {void}
+     */
     setMutedOnSoundEffects(isMuted) {
         this.soundEffects.forEach((soundEntry) => {
             soundEntry.sounds.forEach((sound) => {
@@ -255,6 +370,12 @@ class AudioManager {
         });
     }
 
+    /**
+     * Applies the mute state to all looping sound effects.
+     *
+     * @param {boolean} isMuted Whether looping effects should be muted.
+     * @returns {void}
+     */
     setMutedOnLoopingSoundEffects(isMuted) {
         this.loopingSoundEffects.forEach((sound) => {
             sound.muted = isMuted;
@@ -277,6 +398,11 @@ class AudioManager {
         this.audioUnlocked = true;
     }
 
+    /**
+     * Preloads the managed music tracks.
+     *
+     * @returns {void}
+     */
     loadMusicTracks() {
         this.backgroundMusic.load();
 
@@ -285,6 +411,11 @@ class AudioManager {
         }
     }
 
+    /**
+     * Preloads all pooled one-shot sound effects.
+     *
+     * @returns {void}
+     */
     loadSoundEffects() {
         this.soundEffects.forEach((soundEntry) => {
             soundEntry.sounds.forEach((sound) => {
@@ -293,6 +424,11 @@ class AudioManager {
         });
     }
 
+    /**
+     * Preloads all registered looping sound effects.
+     *
+     * @returns {void}
+     */
     loadLoopingSoundEffects() {
         this.loopingSoundEffects.forEach((sound) => {
             sound.load();
@@ -309,6 +445,13 @@ class AudioManager {
         return this.backgroundMusic.muted;
     }
 
+    /**
+     * Creates a configured sound effect audio element.
+     *
+     * @param {string} soundPath File path for the sound asset.
+     * @param {number} volume Initial playback volume.
+     * @returns {HTMLAudioElement} Configured audio element.
+     */
     createSoundElement(soundPath, volume) {
         let sound = new Audio(soundPath);
         sound.preload = 'auto';
@@ -317,6 +460,13 @@ class AudioManager {
         return sound;
     }
 
+    /**
+     * Creates a configured looping music track.
+     *
+     * @param {string} soundPath File path for the track asset.
+     * @param {number} volume Initial playback volume.
+     * @returns {HTMLAudioElement} Configured audio element.
+     */
     createMusicTrack(soundPath, volume) {
         let track = new Audio(soundPath);
         track.loop = true;
@@ -325,6 +475,13 @@ class AudioManager {
         return track;
     }
 
+    /**
+     * Pauses a track and clears its started flag.
+     *
+     * @param {?HTMLAudioElement} track Track to pause.
+     * @param {string} startedFlagName Property name that tracks playback state.
+     * @returns {void}
+     */
     pauseTrack(track, startedFlagName) {
         if (!track) {
             return;
@@ -334,6 +491,11 @@ class AudioManager {
         this[startedFlagName] = false;
     }
 
+    /**
+     * Clears the active music fade interval if one exists.
+     *
+     * @returns {void}
+     */
     clearMusicFade() {
         if (!this.musicFadeInterval) {
             return;
