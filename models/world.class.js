@@ -29,6 +29,9 @@ class World {
     bottleDropChance = 0.25;
     throwableObjects = [];
     throwKeyPressed = false;
+    lastBottleThrowAt = 0;
+    bottleThrowCooldown = 0.22;
+    bossBottleThrowCooldown = 0.8;
     bossArenaLeftX = 0;
 
     // ── Canvas ───────────────────────────────────────────
@@ -280,11 +283,27 @@ class World {
     }
 
     handleBottleThrow() {
-        if (this.keyboard.throwKey && !this.throwKeyPressed && !this.character.isDead()) {
+        if (this.keyboard.throwKey && !this.throwKeyPressed && this.canThrowBottle()) {
             this.throwBottle();
         }
 
         this.throwKeyPressed = this.keyboard.throwKey;
+    }
+
+    canThrowBottle() {
+        if (this.character.isDead()) {
+            return false;
+        }
+
+        return this.getTimeSinceLastBottleThrow() >= this.getBottleThrowCooldown();
+    }
+
+    getTimeSinceLastBottleThrow() {
+        return (Date.now() - this.lastBottleThrowAt) / 1000;
+    }
+
+    getBottleThrowCooldown() {
+        return this.bossFightStarted ? this.bossBottleThrowCooldown : this.bottleThrowCooldown;
     }
 
     throwBottle() {
@@ -297,6 +316,7 @@ class World {
         let bottleX = this.character.x + horizontalOffset;
         let bottleY = this.character.y + 100;
 
+        this.lastBottleThrowAt = Date.now();
         this.throwableObjects.push(new ThrowableBottle(bottleX, bottleY, throwToLeft));
         this.audioManager?.playSound('bottleThrow');
     }
