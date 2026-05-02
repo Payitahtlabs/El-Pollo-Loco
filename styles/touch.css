@@ -253,12 +253,17 @@
         gap: 10px 16px;
     }
 
-    .help-button {
+    .start-screen-help-button,
+    .start-screen-link {
+        min-height: 34px;
+        padding: 0 2px;
+        font-size: 0.9rem;
+    }
+
+    .start-screen-actions {
         right: 10px;
         bottom: 10px;
-        width: 34px;
-        height: 34px;
-        font-size: 0.96rem;
+        gap: 8px;
     }
 
     .game-toolbar {

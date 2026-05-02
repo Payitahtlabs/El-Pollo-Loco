@@ -10,7 +10,6 @@ const HELP_OVERLAY_INTERACTION_GUARD_MS = 400;
  */
 function attachHelpOverlayListeners() {
     if (helpButton) {
-        helpButton.addEventListener('pointerup', openHelpOverlay);
         helpButton.addEventListener('click', openHelpOverlay);
     }
 
