@@ -1,7 +1,7 @@
-@import url('styles/base.css?v=20260501-1');
-@import url('styles/layout.css?v=20260501-1');
-@import url('styles/overlays.css?v=20260501-1');
-@import url('styles/touch.css?v=20260501-1');
+@import url('styles/base.css');
+@import url('styles/layout.css');
+@import url('styles/overlays.css');
+@import url('styles/touch.css');
 
 .hidden {
 	display: none;
