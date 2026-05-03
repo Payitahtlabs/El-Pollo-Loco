@@ -222,7 +222,10 @@
     }
 
     .game-shell-frame {
+        position: relative;
+        justify-content: center;
         gap: 6px;
+        min-height: calc(100dvh - 8px);
     }
 
     h1 {
@@ -292,7 +295,14 @@
     }
 
     .game-toolbar {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 4;
+        width: auto;
         min-height: 24px;
+        padding-right: 2px;
+        transform: none;
     }
 
     .touch-controls {
